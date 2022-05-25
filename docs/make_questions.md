@@ -250,7 +250,7 @@ This YAML content is rendered as follows in Moodle:
 
 ![Multiple true/false question](multiple-true-false.png)
 
-# Usage
+# Command line usage
 
 You can get usage information with the following command:
 
@@ -266,11 +266,13 @@ usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] {true_false,mult
 options:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
-                        Input file (default stdin)
+                        Input file (default stdin).
   -o OUTPUT, --output OUTPUT
-                        Output file (default stdout)
+                        Output file (default stdout).
   -t TITLE, --title TITLE
-                        Default question title
+                        Default question title (default: Knowledge question).
+  -l, --lenient         Skip strict validation.
+  --add-question-index  Extend each question title with an increasing number.
 
 Possible commands:
   {true_false,multiple_true_false,multiple_choice}
@@ -280,3 +282,51 @@ Possible commands:
     multiple_choice     Generate Moodle XML for a multiple choice question with a single answer.
 
 ```
+
+First the user specifies options that modify the XML generation process.
+Then the user specifies the question type, i.e., `true_false` , `multiple_true_false`, `multiple_choice`
+
+## Input / output handling
+
+The input YAML and output XML file are specified with `-i` and `-o`, respectively.
+It is also possible to use shell redirection.
+
+## Question titles and numbers
+
+Each question can specify the question title in the YAML format using the key `title`.
+If now question title is given, the generated XML file with contain the title specified with the command line option `--title`.
+The default title is `Knowledge question`.
+
+It is possible to automatically number each question in a YAML file with the command line switch `--add-question-index`.
+
+## Strict validation
+
+This tool performs some validation on the specified question.
+The exact check depend on the question type.
+In general, the tool checks if there is general feedback, and if each wrong answer has feedback.
+Feedback makes the review process easier because students will (hopefully) not ask why they got a question wrong.
+
+If this validation process fails, an error message is printed on standard out and the question is not converted to XML.
+
+You can disable strict validation with the command line switch `--lenient`.
+
+## Inline images
+
+Images specified in question and answer texts will be inlined in the exported XML document.
+This way, we don't have to manually upload images using the Moodle web interface.
+
+The inlining process checks for the following regular expression:
+
+```
+<img src="([^"]*)" alt="[^"]*"/>
+```
+
+The `alt` tag (the image description) is mandatory.
+You should use a different description for every image.
+That is because the contents of the `alt` tag are used when exporting the quiz responses.
+If two questions or two answers just differ in the used image but not in the used text, it is not possible to distinguish the questions and/or answers when analyzing the responses.
+However, if each image uses a different description, then the image description can be used to distinguish the text.
+
+Inlining can theoretically lead to an XML file that exceeds the 20 MB file size limit.
+In this case, you should reduce the file size of the images.
+The images are encoded in base64, so the encoded size is larger than the actual file size.
