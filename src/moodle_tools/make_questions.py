@@ -81,7 +81,7 @@ class TrueFalseQuestion:
     def __init__(self, statement, title="", correct_answer=True, general_feedback="",
                  correct_feedback="", wrong_feedback=""):
         self.title = title
-        self.statement = statement
+        self.statement = inline_image(statement)
         self.correct_answer = correct_answer
         self.general_feedback = general_feedback
         self.correct_feedback = correct_feedback
@@ -163,6 +163,9 @@ class SingleSelectionMultipleChoiceQuestion:
                 answer["points"] = 100 if index == 0 else 0
             if "feedback" not in answer:
                 answer["feedback"] = ""
+
+        # Inline images
+        for answer in self.answers:
             answer["answer"] = inline_image(answer["answer"])
 
     def validate(self):
@@ -226,7 +229,7 @@ class MultipleTrueFalseQuestion:
     """General template for a question with multiple true/false questions."""
 
     def __init__(self, question, answers, choices=(True, False), title="", general_feedback=""):
-        self.question = question
+        self.question = inline_image(question)
         self.answers = answers
         self.choices = choices
         self.general_feedback = general_feedback
@@ -239,6 +242,10 @@ class MultipleTrueFalseQuestion:
         for index, answer in enumerate(self.answers):
             if "feedback" not in answer:
                 answer["feedback"] = ""
+
+        # Inline images
+        for answer in self.answers:
+            answer["answer"] = inline_image(answer["answer"])
 
     def validate(self):
         errors = []
