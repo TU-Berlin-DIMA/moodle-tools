@@ -288,27 +288,6 @@ class MultipleTrueFalseQuestion:
         return question_xml
 
 
-def generate_cloze_question(question, index):
-    """Generate a Moodle Cloze question."""
-
-    question_xml = f"""\
-    <question type="cloze">
-        <name>
-            <text>{question.title} ({index})</text>
-        </name>
-        <questiontext format="html">
-             <text><![CDATA[{question.description()}]]></text>
-       </questiontext>
-        <generalfeedback format="html">
-            <text></text>
-        </generalfeedback>
-        <penalty>0.3333333</penalty>
-        <hidden>0</hidden>
-        <idnumber></idnumber>
-    </question>"""
-    return question_xml
-
-
 def generate_moodle_questions(question_type, question_class, args):
     """Generate an XML document containing Moodle questions.
     The type of Moodle question is defined by `question_type`.
