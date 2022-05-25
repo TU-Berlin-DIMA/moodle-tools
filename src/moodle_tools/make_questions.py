@@ -38,20 +38,20 @@ def parse_args():
     true_false_question = subparsers.add_parser("true_false",
                                                 help="Generate Moodle XML for a true/false question.")
     true_false_question.set_defaults(
-        command=functools.partial(generate_moodle_questions, TrueFalseQuestion.generate_question, TrueFalseQuestion))
+        command=functools.partial(generate_moodle_questions, TrueFalseQuestion.generate_xml, TrueFalseQuestion))
 
     # Generate a question with multiple true false questions
     multiple_true_false_question = subparsers.add_parser("multiple_true_false",
                                                          help="Generate Moodle XML for a multiple true/false question.")
     multiple_true_false_question.set_defaults(
-        command=functools.partial(generate_moodle_questions, MultipleTrueFalseQuestion.generate_question,
+        command=functools.partial(generate_moodle_questions, MultipleTrueFalseQuestion.generate_xml,
                                   MultipleTrueFalseQuestion))
 
     # Generate a multiple choice question with a single possible selection
     multiple_choice_question = subparsers.add_parser("multiple_choice",
                                                      help="Generate Moodle XML for a multiple choice question with a single answer.")
     multiple_choice_question.set_defaults(
-        command=functools.partial(generate_moodle_questions, SingleSelectionMultipleChoiceQuestion.generate_question,
+        command=functools.partial(generate_moodle_questions, SingleSelectionMultipleChoiceQuestion.generate_xml,
                                   SingleSelectionMultipleChoiceQuestion))
 
     args = parser.parse_args()
@@ -106,33 +106,32 @@ class TrueFalseQuestion:
             errors.append("No feedback for wrong answer")
         return errors
 
-    @staticmethod
-    def generate_question(question):
+    def generate_xml(self):
         question_xml = f"""\
           <question type="truefalse">
             <name>
-              <text>{question.title}</text>
+              <text>{self.title}</text>
             </name>
             <questiontext format="html">
-              <text><![CDATA[{question.statement}]]></text>
+              <text><![CDATA[{self.statement}]]></text>
             </questiontext>
             <generalfeedback format="html">
-                <text>{optional_text(question.general_feedback)}</text>
+                <text>{optional_text(self.general_feedback)}</text>
             </generalfeedback>
             <defaultgrade>1.0000000</defaultgrade>
             <penalty>1.0000000</penalty>
             <hidden>0</hidden>
             <idnumber></idnumber>
             <answer fraction="0" format="moodle_auto_format">
-              <text>{question.wrong_answer}</text>
+              <text>{self.wrong_answer}</text>
               <feedback format="html">
-                <text>{optional_text(question.wrong_feedback)}</text>
+                <text>{optional_text(self.wrong_feedback)}</text>
               </feedback>
             </answer>
             <answer fraction="100" format="moodle_auto_format">
-              <text>{question.correct_answer}</text>
+              <text>{self.correct_answer}</text>
               <feedback format="html">
-                <text>{optional_text(question.correct_feedback)}</text>
+                <text>{optional_text(self.correct_feedback)}</text>
               </feedback>
             </answer>
           </question>"""
@@ -178,8 +177,7 @@ class SingleSelectionMultipleChoiceQuestion:
                 errors.append(f"The answer '{answer['answer']}' has no feedback")
         return errors
 
-    @staticmethod
-    def generate_question(question):
+    def generate_xml(self):
         def generate_answer(answer):
             return f"""\
             <answer fraction="{answer["points"]}" format="html">
@@ -193,13 +191,13 @@ class SingleSelectionMultipleChoiceQuestion:
         question_xml = f"""\
           <question type="multichoice">
             <name>
-              <text>{question.title}</text>
+              <text>{self.title}</text>
             </name>
             <questiontext format="html">
-              <text><![CDATA[{question.question}]]></text>
+              <text><![CDATA[{self.question}]]></text>
             </questiontext>
             <generalfeedback format="html">
-              <text>{optional_text(question.general_feedback)}</text>
+              <text>{optional_text(self.general_feedback)}</text>
             </generalfeedback>
             <defaultgrade>1.0000000</defaultgrade>
             <penalty>0.3333333</penalty>
@@ -210,16 +208,16 @@ class SingleSelectionMultipleChoiceQuestion:
             <answernumbering>none</answernumbering>
             <showstandardinstruction>1</showstandardinstruction>
             <correctfeedback format="html">
-              <text>{question.correct_feedback}</text>
+              <text>{self.correct_feedback}</text>
             </correctfeedback>
             <partiallycorrectfeedback format="html">
-              <text>{question.partially_correct_feedback}</text>
+              <text>{self.partially_correct_feedback}</text>
             </partiallycorrectfeedback>
             <incorrectfeedback format="html">
-              <text>{question.incorrect_feedback}</text>
+              <text>{self.incorrect_feedback}</text>
             </incorrectfeedback>
             <shownumcorrect/>
-{newline.join([generate_answer(answer) for answer in question.answers])}
+{newline.join([generate_answer(answer) for answer in self.answers])}
           </question>"""
         return question_xml
 
@@ -253,8 +251,7 @@ class MultipleTrueFalseQuestion:
                 errors.append(f"The answer '{answer['answer']} does not use a valid choice")
         return errors
 
-    @staticmethod
-    def generate_question(question):
+    def generate_xml(self):
         def generate_row(index, answer):
             return f"""\
             <row number="{index}">
@@ -286,13 +283,13 @@ class MultipleTrueFalseQuestion:
         question_xml = f"""\
         <question type="mtf">
             <name>
-              <text>{question.title}</text>
+              <text>{self.title}</text>
             </name>
             <questiontext format="html">
-              <text>{question.question}</text>
+              <text>{self.question}</text>
             </questiontext>
             <generalfeedback format="html">
-              <text>{optional_text(question.general_feedback)}</text>
+              <text>{optional_text(self.general_feedback)}</text>
             </generalfeedback>
             <defaultgrade>1.0000000</defaultgrade>
             <penalty>0.3333333</penalty>
@@ -300,12 +297,12 @@ class MultipleTrueFalseQuestion:
             <idnumber></idnumber>
             <scoringmethod><text>subpoints</text></scoringmethod>
             <shuffleanswers>true</shuffleanswers>
-            <numberofrows>{len(question.answers)}</numberofrows>
-            <numberofcolumns>{len(question.choices)}</numberofcolumns>
+            <numberofrows>{len(self.answers)}</numberofrows>
+            <numberofcolumns>{len(self.choices)}</numberofcolumns>
             <answernumbering>none</answernumbering>
-{newline.join([generate_row(index, answer) for index, answer in enumerate(question.answers, start=1)])}
-{newline.join([generate_column(index, choice) for index, choice in enumerate(question.choices, start=1)])}
-{newline.join([generate_field(row_index, column_index, answer, choice) for row_index, answer in enumerate(question.answers, start=1) for column_index, choice in enumerate(question.choices, start=1)])}
+{newline.join([generate_row(index, answer) for index, answer in enumerate(self.answers, start=1)])}
+{newline.join([generate_column(index, choice) for index, choice in enumerate(self.choices, start=1)])}
+{newline.join([generate_field(row_index, column_index, answer, choice) for row_index, answer in enumerate(self.answers, start=1) for column_index, choice in enumerate(self.choices, start=1)])}
           </question>"""
         return question_xml
 
@@ -338,7 +335,7 @@ Errors:
         yield question
 
 
-def generate_moodle_questions(question_type, question_class, args):
+def generate_moodle_questions(generate_question_xml, question_class, args):
     """Generate an XML document containing Moodle questions.
     The type of Moodle question is defined by `question_type`.
     The actual question is defined by `question_class`."""
@@ -357,7 +354,7 @@ def generate_moodle_questions(question_type, question_class, args):
     xml = f"""\
     <?xml version="1.0" encoding="UTF-8"?>
     <quiz>
-{newline.join([question_type(question) for question in questions])}
+{newline.join([generate_question_xml(question) for question in questions])}
     </quiz>
     """
     xml = textwrap.dedent(xml)
