@@ -23,12 +23,12 @@ import base64
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", help="Input file (default stdin)", type=open, default=sys.stdin)
-    parser.add_argument("-o", "--output", help="Output file (default stdout)",
+    parser.add_argument("-i", "--input", help="Input file (default stdin).", type=open, default=sys.stdin)
+    parser.add_argument("-o", "--output", help="Output file (default stdout).",
                         type=lambda filename: open(filename, "w"), default=sys.stdout)
-    parser.add_argument("-t", "--title", help="Default question title", type=str,
+    parser.add_argument("-t", "--title", help="Default question title (default: Knowledge question).", type=str,
                         default="Knowledge question")
-    parser.add_argument("-l", "--lenient", help="Skip strict validation", action="store_true")
+    parser.add_argument("-l", "--lenient", help="Skip strict validation.", action="store_true")
     parser.add_argument("--add-question-index", help="Extend each question title with an increasing number.",
                         action="store_true")
     parser.set_defaults(command=lambda args: parser.print_help())
