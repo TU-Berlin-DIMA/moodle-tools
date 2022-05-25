@@ -28,6 +28,8 @@ def parse_args():
                         type=lambda filename: open(filename, "w"), default=sys.stdout)
     parser.add_argument("-t", "--title", help="Default question title", type=str,
                         default="Knowledge question")
+    parser.add_argument("--add-question-index", help="Extend each question title with an increasing number.",
+                        action="store_true")
     parser.set_defaults(command=lambda args: parser.print_help())
     subparsers = parser.add_subparsers(title="Possible commands")
 
@@ -99,11 +101,11 @@ class TrueFalseQuestion:
             return False
 
     @staticmethod
-    def generate_question(question, index):
+    def generate_question(question):
         question_xml = f"""\
           <question type="truefalse">
             <name>
-              <text>{question.title} ({index})</text>
+              <text>{question.title}</text>
             </name>
             <questiontext format="html">
               <text><![CDATA[{question.statement}]]></text>
@@ -164,7 +166,7 @@ class SingleSelectionMultipleChoiceQuestion:
         return True
 
     @staticmethod
-    def generate_question(question, index):
+    def generate_question(question):
         def generate_answer(answer):
             return f"""\
             <answer fraction="{answer["points"]}" format="html">
@@ -178,7 +180,7 @@ class SingleSelectionMultipleChoiceQuestion:
         question_xml = f"""\
           <question type="multichoice">
             <name>
-              <text>{question.title} ({index})</text>
+              <text>{question.title}</text>
             </name>
             <questiontext format="html">
               <text><![CDATA[{question.question}]]></text>
@@ -232,7 +234,7 @@ class MultipleTrueFalseQuestion:
         return True
 
     @staticmethod
-    def generate_question(question, index):
+    def generate_question(question):
         def generate_row(index, answer):
             return f"""\
             <row number="{index}">
@@ -264,7 +266,7 @@ class MultipleTrueFalseQuestion:
         question_xml = f"""\
         <question type="mtf">
             <name>
-              <text>{question.title} ({index})</text>
+              <text>{question.title}</text>
             </name>
             <questiontext format="html">
               <text>{question.question}</text>
@@ -295,13 +297,19 @@ def generate_moodle_questions(question_type, question_class, args):
 
     # Create question instances from a list of YAML documents.
     questions = [question_class(**properties) for properties in yaml.safe_load_all(args.input)]
+
+    # Add question index to title
+    if args.add_question_index:
+        for index, question in enumerate(questions, 1):
+            question.title = f"{question.title} ({index})"
+
     # Newline constant to make the "\n".join(...) work below.
     newline = "\n"
     # Generate Moodle XML
     xml = f"""\
     <?xml version="1.0" encoding="UTF-8"?>
     <quiz>
-{newline.join([question_type(question, index) for index, question in enumerate(questions, 1)])}
+{newline.join([question_type(question) for question in questions])}
     </quiz>
     """
     xml = textwrap.dedent(xml)
