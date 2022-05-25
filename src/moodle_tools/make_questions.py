@@ -28,6 +28,7 @@ def parse_args():
                         type=lambda filename: open(filename, "w"), default=sys.stdout)
     parser.add_argument("-t", "--title", help="Default question title", type=str,
                         default="Knowledge question")
+    parser.add_argument("-l", "--lenient", help="Skip strict validation", action="store_true")
     parser.add_argument("--add-question-index", help="Extend each question title with an increasing number.",
                         action="store_true")
     parser.set_defaults(command=lambda args: parser.print_help())
@@ -94,11 +95,16 @@ class TrueFalseQuestion:
         if not self.title:
             self.title = args.title
 
-    @staticmethod
-    def validate_question(question, questions):
-        # Correct and wrong answer must be different answers
-        if question.correct_answer == question.wrong_answer:
-            return False
+    def validate(self):
+        errors = []
+        if self.correct_answer == self.wrong_answer:
+            # How can this happen?!
+            errors.append("Correct answer == wrong answer")
+        if not self.general_feedback:
+            errors.append("No general feedback")
+        if not self.wrong_feedback:
+            errors.append("No feedback for wrong answer")
+        return errors
 
     @staticmethod
     def generate_question(question):
@@ -160,10 +166,17 @@ class SingleSelectionMultipleChoiceQuestion:
                 answer["feedback"] = ""
             answer["answer"] = inline_image(answer["answer"])
 
-    @staticmethod
-    def validate_question(question, questions):
-        # TODO Must contain answer with 100 points
-        return True
+    def validate(self):
+        errors = []
+        if not self.general_feedback:
+            errors.append("No general feedback")
+        has_full_points = list(filter(lambda x: x["points"] == 100, self.answers))
+        if not has_full_points:
+            errors.append("No answer has 100 points")
+        for answer in self.answers:
+            if not answer["feedback"] and answer["points"] != 100:
+                errors.append(f"The answer '{answer['answer']}' has no feedback")
+        return errors
 
     @staticmethod
     def generate_question(question):
@@ -229,9 +242,16 @@ class MultipleTrueFalseQuestion:
             if "feedback" not in answer:
                 answer["feedback"] = ""
 
-    @staticmethod
-    def validate_question(question, questions):
-        return True
+    def validate(self):
+        errors = []
+        if not self.general_feedback:
+            errors.append("No general feedback")
+        for answer in self.answers:
+            if not answer["feedback"]:
+                errors.append(f"The answer '{answer['answer']}' has no feedback")
+            if not answer["choice"] in self.choices:
+                errors.append(f"The answer '{answer['answer']} does not use a valid choice")
+        return errors
 
     @staticmethod
     def generate_question(question):
@@ -290,13 +310,41 @@ class MultipleTrueFalseQuestion:
         return question_xml
 
 
+def load_questions(question_class, strict_validation, yaml_documents):
+    """
+    Iterate over the YAML documents and generate a question for each YAML document.
+
+    If `strict_validation` is set, filter those questions that contain missing optional information (e.g., feedback).
+    """
+
+    bullet = "\n- "
+
+    for properties in yaml_documents:
+        question = question_class(**properties)
+        if strict_validation:
+            errors = question.validate()
+            if errors:
+                message = f"""---\
+
+The following question did not pass strict validation:
+
+{yaml.safe_dump(properties)}
+
+Errors:
+- {bullet.join(errors)}
+"""
+                print(message, file=sys.stderr)
+                continue
+        yield question
+
+
 def generate_moodle_questions(question_type, question_class, args):
     """Generate an XML document containing Moodle questions.
     The type of Moodle question is defined by `question_type`.
     The actual question is defined by `question_class`."""
 
     # Create question instances from a list of YAML documents.
-    questions = [question_class(**properties) for properties in yaml.safe_load_all(args.input)]
+    questions = [question for question in load_questions(question_class, not args.lenient, yaml.safe_load_all(args.input))]
 
     # Add question index to title
     if args.add_question_index:
