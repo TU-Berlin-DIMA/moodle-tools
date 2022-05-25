@@ -1,0 +1,20 @@
+---
+question: Simple format
+answers:
+  - Correct answer 1
+  - Wrong answer 1
+  - Wrong answer 2
+---
+question: Extended format
+title: Question title
+general_feedback: General feedback
+answers:
+  - answer: Correct answer
+    points: 100
+    feedback: Feedback for option 1
+  - answer: Partial answer
+    points: 50
+    feedback: Feedback for option 2
+  - answer: Wrong answer #1
+    points: 0
+    feedback: Feedback for option 3

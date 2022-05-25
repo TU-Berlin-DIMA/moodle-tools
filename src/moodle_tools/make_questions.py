@@ -1,0 +1,334 @@
+#    Copyright 2022 Technische Universität Berlin
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
+import textwrap
+import yaml
+import argparse
+import sys
+import functools
+import re
+import base64
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", help="Input file (default stdin)", type=open, default=sys.stdin)
+    parser.add_argument("-o", "--output", help="Output file (default stdout)",
+                        type=lambda filename: open(filename, "w"), default=sys.stdout)
+    parser.add_argument("-t", "--title", help="Default question title", type=str,
+                        default="Knowledge question")
+    parser.set_defaults(command=lambda args: parser.print_help())
+    subparsers = parser.add_subparsers(title="Possible commands")
+
+    # Generate a true false question
+    true_false_question = subparsers.add_parser("true_false",
+                                                help="Generate Moodle XML for a true/false question.")
+    true_false_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, TrueFalseQuestion.generate_question, TrueFalseQuestion))
+
+    # Generate a question with multiple true false questions
+    multiple_true_false_question = subparsers.add_parser("multiple_true_false",
+                                                         help="Generate Moodle XML for a multiple true/false question.")
+    multiple_true_false_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, MultipleTrueFalseQuestion.generate_question,
+                                  MultipleTrueFalseQuestion))
+
+    # Generate a multiple choice question with a single possible selection
+    multiple_choice_question = subparsers.add_parser("multiple_choice",
+                                                     help="Generate Moodle XML for a multiple choice question with a single answer.")
+    multiple_choice_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, SingleSelectionMultipleChoiceQuestion.generate_question,
+                                  SingleSelectionMultipleChoiceQuestion))
+
+    args = parser.parse_args()
+    # print(args, file=sys.stderr)
+    return args
+
+
+def optional_text(text):
+    return f"<![CDATA[{text}]]>" if text else ""
+
+
+def inline_image(text):
+    re_img = re.compile('<img src="([^"]*)" alt="[^"]*"/>')
+    filenames = []
+    for match in re_img.finditer(text):
+        filename = match.group(1)
+        filenames.append(filename)
+    for filename in filenames:
+        base64_str = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
+        text = text.replace(filename, f"data:image/png;base64,{base64_str}")
+    return text
+
+
+class TrueFalseQuestion:
+    """General template for a True/False question."""
+
+    def __init__(self, statement, title="", correct_answer=True, general_feedback="",
+                 correct_feedback="", wrong_feedback=""):
+        self.title = title
+        self.statement = statement
+        self.correct_answer = correct_answer
+        self.general_feedback = general_feedback
+        self.correct_feedback = correct_feedback
+        self.wrong_feedback = wrong_feedback
+
+        # Convert boolean answers to strings
+        self.correct_answer, self.wrong_answer = ("true", "false") if self.correct_answer else ("false", "true")
+
+        # Set the title
+        global args
+        if not self.title:
+            self.title = args.title
+
+    @staticmethod
+    def validate_question(question, questions):
+        # Correct and wrong answer must be different answers
+        if question.correct_answer == question.wrong_answer:
+            return False
+
+    @staticmethod
+    def generate_question(question, index):
+        question_xml = f"""\
+          <question type="truefalse">
+            <name>
+              <text>{question.title} ({index})</text>
+            </name>
+            <questiontext format="html">
+              <text><![CDATA[{question.statement}]]></text>
+            </questiontext>
+            <generalfeedback format="html">
+                <text>{optional_text(question.general_feedback)}</text>
+            </generalfeedback>
+            <defaultgrade>1.0000000</defaultgrade>
+            <penalty>1.0000000</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <answer fraction="0" format="moodle_auto_format">
+              <text>{question.wrong_answer}</text>
+              <feedback format="html">
+                <text>{optional_text(question.wrong_feedback)}</text>
+              </feedback>
+            </answer>
+            <answer fraction="100" format="moodle_auto_format">
+              <text>{question.correct_answer}</text>
+              <feedback format="html">
+                <text>{optional_text(question.correct_feedback)}</text>
+              </feedback>
+            </answer>
+          </question>"""
+        return question_xml
+
+
+class SingleSelectionMultipleChoiceQuestion:
+    """General template for a multiple choice question with a single selection."""
+
+    def __init__(self, question, answers, title="", general_feedback="", correct_feedback="Your answer is correct.",
+                 partially_correct_feedback="Your answer is partially correct.",
+                 incorrect_feedback="Your answer is incorrect."):
+        self.question = inline_image(question)
+        self.general_feedback = general_feedback
+        self.correct_feedback = correct_feedback
+        self.partially_correct_feedback = partially_correct_feedback
+        self.incorrect_feedback = incorrect_feedback
+
+        # Set the title
+        global args
+        self.title = title if title else args.title
+
+        # Transform simple string answers into complete answers
+        self.answers = [answer if type(answer) == dict else {"answer": answer} for answer in answers]
+
+        # Update missing answer points and feedback
+        for index, answer in enumerate(self.answers):
+            if "points" not in answer:
+                answer["points"] = 100 if index == 0 else 0
+            if "feedback" not in answer:
+                answer["feedback"] = ""
+            answer["answer"] = inline_image(answer["answer"])
+
+    @staticmethod
+    def validate_question(question, questions):
+        # TODO Must contain answer with 100 points
+        return True
+
+    @staticmethod
+    def generate_question(question, index):
+        def generate_answer(answer):
+            return f"""\
+            <answer fraction="{answer["points"]}" format="html">
+              <text><![CDATA[{answer["answer"]}]]></text>
+              <feedback format="html">
+                <text>{optional_text(answer["feedback"])}</text>
+              </feedback>
+            </answer>"""
+
+        newline = "\n"
+        question_xml = f"""\
+          <question type="multichoice">
+            <name>
+              <text>{question.title} ({index})</text>
+            </name>
+            <questiontext format="html">
+              <text><![CDATA[{question.question}]]></text>
+            </questiontext>
+            <generalfeedback format="html">
+              <text>{optional_text(question.general_feedback)}</text>
+            </generalfeedback>
+            <defaultgrade>1.0000000</defaultgrade>
+            <penalty>0.3333333</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <single>true</single>
+            <shuffleanswers>true</shuffleanswers>
+            <answernumbering>none</answernumbering>
+            <showstandardinstruction>1</showstandardinstruction>
+            <correctfeedback format="html">
+              <text>{question.correct_feedback}</text>
+            </correctfeedback>
+            <partiallycorrectfeedback format="html">
+              <text>{question.partially_correct_feedback}</text>
+            </partiallycorrectfeedback>
+            <incorrectfeedback format="html">
+              <text>{question.incorrect_feedback}</text>
+            </incorrectfeedback>
+            <shownumcorrect/>
+{newline.join([generate_answer(answer) for answer in question.answers])}
+          </question>"""
+        return question_xml
+
+
+class MultipleTrueFalseQuestion:
+    """General template for a question with multiple true/false questions."""
+
+    def __init__(self, question, answers, choices=(True, False), title="", general_feedback=""):
+        self.question = question
+        self.answers = answers
+        self.choices = choices
+        self.general_feedback = general_feedback
+
+        # Set the title
+        global args
+        self.title = title if title else args.title
+
+        # Update missing feedback
+        for index, answer in enumerate(self.answers):
+            if "feedback" not in answer:
+                answer["feedback"] = ""
+
+    @staticmethod
+    def validate_question(question, questions):
+        return True
+
+    @staticmethod
+    def generate_question(question, index):
+        def generate_row(index, answer):
+            return f"""\
+            <row number="{index}">
+              <optiontext format="html">
+                <text><![CDATA[{answer["answer"]}]]></text>
+              </optiontext>
+              <feedbacktext format="html">
+                <text>{optional_text(answer["feedback"])}</text>
+              </feedbacktext>
+            </row>"""
+
+        def generate_column(index, choice):
+            return f"""\
+            <column number="{index}">
+              <responsetext format="moodle_auto_format">
+                <text>{choice}</text>
+              </responsetext>
+            </column>"""
+
+        def generate_field(row_index, column_index, answer, choice):
+            return f"""\
+            <weight rownumber="{row_index}" columnnumber="{column_index}">
+              <value>
+                 {"1.000" if answer["choice"] == choice else "0.000"}
+              </value>
+            </weight>"""
+
+        newline = "\n"
+        question_xml = f"""\
+        <question type="mtf">
+            <name>
+              <text>{question.title} ({index})</text>
+            </name>
+            <questiontext format="html">
+              <text>{question.question}</text>
+            </questiontext>
+            <generalfeedback format="html">
+              <text>{optional_text(question.general_feedback)}</text>
+            </generalfeedback>
+            <defaultgrade>1.0000000</defaultgrade>
+            <penalty>0.3333333</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <scoringmethod><text>subpoints</text></scoringmethod>
+            <shuffleanswers>true</shuffleanswers>
+            <numberofrows>{len(question.answers)}</numberofrows>
+            <numberofcolumns>{len(question.choices)}</numberofcolumns>
+            <answernumbering>none</answernumbering>
+{newline.join([generate_row(index, answer) for index, answer in enumerate(question.answers, start=1)])}
+{newline.join([generate_column(index, choice) for index, choice in enumerate(question.choices, start=1)])}
+{newline.join([generate_field(row_index, column_index, answer, choice) for row_index, answer in enumerate(question.answers, start=1) for column_index, choice in enumerate(question.choices, start=1)])}
+          </question>"""
+        return question_xml
+
+
+def generate_cloze_question(question, index):
+    """Generate a Moodle Cloze question."""
+
+    question_xml = f"""\
+    <question type="cloze">
+        <name>
+            <text>{question.title} ({index})</text>
+        </name>
+        <questiontext format="html">
+             <text><![CDATA[{question.description()}]]></text>
+       </questiontext>
+        <generalfeedback format="html">
+            <text></text>
+        </generalfeedback>
+        <penalty>0.3333333</penalty>
+        <hidden>0</hidden>
+        <idnumber></idnumber>
+    </question>"""
+    return question_xml
+
+
+def generate_moodle_questions(question_type, question_class, args):
+    """Generate an XML document containing Moodle questions.
+    The type of Moodle question is defined by `question_type`.
+    The actual question is defined by `question_class`."""
+
+    # Create question instances from a list of YAML documents.
+    questions = [question_class(**properties) for properties in yaml.safe_load_all(args.input)]
+    # Newline constant to make the "\n".join(...) work below.
+    newline = "\n"
+    # Generate Moodle XML
+    xml = f"""\
+    <?xml version="1.0" encoding="UTF-8"?>
+    <quiz>
+{newline.join([question_type(question, index) for index, question in enumerate(questions, 1)])}
+    </quiz>
+    """
+    xml = textwrap.dedent(xml)
+    print(xml)
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    args.command(args)
