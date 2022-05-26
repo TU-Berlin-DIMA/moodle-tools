@@ -80,12 +80,26 @@ def inline_image(text):
     return text
 
 
-class TrueFalseQuestion:
+class BaseQuestion:
+
+    def __init__(self, title):
+        # Set the title
+        global args
+        self.title = title if title else args.title
+
+    def validate(self):
+        return []
+
+    def generate_xml(self):
+        pass
+
+
+class TrueFalseQuestion(BaseQuestion):
     """General template for a True/False question."""
 
     def __init__(self, statement, title="", correct_answer=True, general_feedback="",
                  correct_feedback="", wrong_feedback=""):
-        self.title = title
+        super().__init__(title)
         self.statement = inline_image(statement)
         self.correct_answer = correct_answer
         self.general_feedback = general_feedback
@@ -94,11 +108,6 @@ class TrueFalseQuestion:
 
         # Convert boolean answers to strings
         self.correct_answer, self.wrong_answer = ("true", "false") if self.correct_answer else ("false", "true")
-
-        # Set the title
-        global args
-        if not self.title:
-            self.title = args.title
 
     def validate(self):
         errors = []
@@ -143,21 +152,18 @@ class TrueFalseQuestion:
         return question_xml
 
 
-class SingleSelectionMultipleChoiceQuestion:
+class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
     """General template for a multiple choice question with a single selection."""
 
     def __init__(self, question, answers, title="", general_feedback="", correct_feedback="Your answer is correct.",
                  partially_correct_feedback="Your answer is partially correct.",
                  incorrect_feedback="Your answer is incorrect."):
+        super().__init__(title)
         self.question = inline_image(question)
         self.general_feedback = general_feedback
         self.correct_feedback = correct_feedback
         self.partially_correct_feedback = partially_correct_feedback
         self.incorrect_feedback = incorrect_feedback
-
-        # Set the title
-        global args
-        self.title = title if title else args.title
 
         # Transform simple string answers into complete answers
         self.answers = [answer if type(answer) == dict else {"answer": answer} for answer in answers]
@@ -230,18 +236,15 @@ class SingleSelectionMultipleChoiceQuestion:
         return question_xml
 
 
-class MultipleTrueFalseQuestion:
+class MultipleTrueFalseQuestion(BaseQuestion):
     """General template for a question with multiple true/false questions."""
 
     def __init__(self, question, answers, choices=(True, False), title="", general_feedback=""):
+        super().__init__(title)
         self.question = inline_image(question)
         self.answers = answers
         self.choices = choices
         self.general_feedback = general_feedback
-
-        # Set the title
-        global args
-        self.title = title if title else args.title
 
         # Update missing feedback
         for index, answer in enumerate(self.answers):
@@ -319,19 +322,12 @@ class MultipleTrueFalseQuestion:
         return question_xml
 
 
-class ClozeQuestion:
+class ClozeQuestion(BaseQuestion):
     """General template for a Cloze question."""
 
     def __init__(self, question, title=""):
+        super().__init__(title)
         self.question = inline_image(question)
-
-        # Set the title
-        global args
-        self.title = title if title else args.title
-
-    # noinspection PyMethodMayBeStatic
-    def validate(self):
-        return []
 
     def generate_xml(self):
         question_xml = f"""\
