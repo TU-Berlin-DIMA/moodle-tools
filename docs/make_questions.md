@@ -285,7 +285,7 @@ python3 -m moodle_tools.make_questions -h
 Output:
 
 ```
-usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] {true_false,multiple_true_false,multiple_choice} ...
+usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [--add-question-index] [-m] {true_false,multiple_true_false,multiple_choice,cloze} ...
 
 options:
   -h, --help            show this help message and exit
@@ -296,15 +296,16 @@ options:
   -t TITLE, --title TITLE
                         Default question title (default: Knowledge question).
   -l, --lenient         Skip strict validation.
+  -m, --markdown        Specify question and answer text in Markdown.
   --add-question-index  Extend each question title with an increasing number.
 
 Possible commands:
-  {true_false,multiple_true_false,multiple_choice}
+  {true_false,multiple_true_false,multiple_choice,cloze}
     true_false          Generate Moodle XML for a true/false question.
     multiple_true_false
                         Generate Moodle XML for a multiple true/false question.
     multiple_choice     Generate Moodle XML for a multiple choice question with a single answer.
-
+    cloze               Generate Moodle XML for a Cloze question.
 ```
 
 First the user specifies options that modify the XML generation process.
@@ -334,6 +335,18 @@ If this validation process fails, an error message is printed on standard out an
 
 You can disable strict validation with the command line switch `--lenient`.
 
+## Question and answer text formatting
+
+Question and answer text accept HTML content.
+To simplify writing complex questions and answers, it is also possible to write them in Markdown.
+In this case, specify the `--markdown` command line switch.
+The file `../examples/markdown.yml` contains a multiple question file with many Markdown formatting options.
+
+Note that LaTeX formulas need to be escaped differently when using Markdown.
+
+- Without `--markdown`: Write LaTeX formulas with a single backslash: `\ (a^2 + b^2 = c^2 \)`
+- With `--markdown`: Write LaTeX formulas with a two backslashs: `\\ (a^2 + b^2 = c^2 \\)`
+
 ## Inline images
 
 Images specified in question and answer texts will be inlined in the exported XML document.
@@ -342,7 +355,7 @@ This way, we don't have to manually upload images using the Moodle web interface
 The inlining process checks for the following regular expression:
 
 ```
-<img src="([^"]*)" alt="[^"]*"/>
+<img alt="[^"]*" src="([^"]*)" ?/>
 ```
 
 The `alt` tag (the image description) is mandatory.
@@ -350,6 +363,9 @@ You should use a different description for every image.
 That is because the contents of the `alt` tag are used when exporting the quiz responses.
 If two questions or two answers just differ in the used image but not in the used text, it is not possible to distinguish the questions and/or answers when analyzing the responses.
 However, if each image uses a different description, then the image description can be used to distinguish the text.
+
+Furthermore, the order of the `alt` tag and the `src` tag must be as in the example.
+This is the order created by the Markdown converter.
 
 Inlining can theoretically lead to an XML file that exceeds the 20 MB file size limit.
 In this case, you should reduce the file size of the images.

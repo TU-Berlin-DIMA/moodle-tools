@@ -19,6 +19,7 @@ import sys
 import functools
 import re
 import base64
+import markdown
 
 
 def parse_args():
@@ -29,6 +30,7 @@ def parse_args():
     parser.add_argument("-t", "--title", help="Default question title (default: Knowledge question).", type=str,
                         default="Knowledge question")
     parser.add_argument("-l", "--lenient", help="Skip strict validation.", action="store_true")
+    parser.add_argument("-m", "--markdown", help="Specify question and answer text in Markdown.", action="store_true")
     parser.add_argument("--add-question-index", help="Extend each question title with an increasing number.",
                         action="store_true")
     parser.set_defaults(command=lambda args: parser.print_help())
@@ -69,7 +71,7 @@ def optional_text(text):
 
 
 def inline_image(text):
-    re_img = re.compile('<img src="([^"]*)" alt="[^"]*"/>')
+    re_img = re.compile('<img alt="[^"]*" src="([^"]*)" ?/>')
     filenames = []
     for match in re_img.finditer(text):
         filename = match.group(1)
@@ -78,6 +80,15 @@ def inline_image(text):
         base64_str = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
         text = text.replace(filename, f"data:image/png;base64,{base64_str}")
     return text
+
+
+def convert_markdown(text):
+    global args
+    return markdown.markdown(text) if args.markdown else text
+
+
+def preprocess_text(text):
+    return inline_image(convert_markdown(text))
 
 
 class BaseQuestion:
@@ -100,7 +111,7 @@ class TrueFalseQuestion(BaseQuestion):
     def __init__(self, statement, title="", correct_answer=True, general_feedback="",
                  correct_feedback="", wrong_feedback=""):
         super().__init__(title)
-        self.statement = inline_image(statement)
+        self.statement = preprocess_text(statement)
         self.correct_answer = correct_answer
         self.general_feedback = general_feedback
         self.correct_feedback = correct_feedback
@@ -159,7 +170,7 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
                  partially_correct_feedback="Your answer is partially correct.",
                  incorrect_feedback="Your answer is incorrect."):
         super().__init__(title)
-        self.question = inline_image(question)
+        self.question = preprocess_text(question)
         self.general_feedback = general_feedback
         self.correct_feedback = correct_feedback
         self.partially_correct_feedback = partially_correct_feedback
@@ -177,7 +188,7 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 
         # Inline images
         for answer in self.answers:
-            answer["answer"] = inline_image(answer["answer"])
+            answer["answer"] = preprocess_text(answer["answer"])
 
     def validate(self):
         errors = []
@@ -241,7 +252,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
 
     def __init__(self, question, answers, choices=(True, False), title="", general_feedback=""):
         super().__init__(title)
-        self.question = inline_image(question)
+        self.question = preprocess_text(question)
         self.answers = answers
         self.choices = choices
         self.general_feedback = general_feedback
@@ -253,7 +264,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
 
         # Inline images
         for answer in self.answers:
-            answer["answer"] = inline_image(answer["answer"])
+            answer["answer"] = preprocess_text(answer["answer"])
 
     def validate(self):
         errors = []
@@ -327,7 +338,7 @@ class ClozeQuestion(BaseQuestion):
 
     def __init__(self, question, title=""):
         super().__init__(title)
-        self.question = inline_image(question)
+        self.question = preprocess_text(question)
 
     def generate_xml(self):
         question_xml = f"""\

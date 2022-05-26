@@ -1,0 +1,41 @@
+---
+question: |
+  # Really important question!
+
+  Please take a look at the rectangle below:
+
+  ![Blue rectangle](blue-rectangle.png)
+
+  **What is its color?**
+title: Multiple choice question with Markdown
+answers:
+  - answer: |
+      The rectangle is *blue*, like the one below.
+
+      ![Blue rectangle](blue-rectangle.png)
+  - answer: The rectangle is yellow.
+  - answer: |
+      ```
+      This is some code.
+      ```
+    points: 0
+  - answer: |
+      <span style="text-decoration:underline;">Underlined text in HTML</span>
+  - answer: |
+      > Block quote
+
+      This was a block quote
+  - answer: |
+      ## Ordered list
+
+      1. One
+      2. Two
+      3. Three
+
+      ## Unordered list
+
+      - One
+      - Two
+      - Three
+  - answer: |
+      This is a formula: \\( a^2 + b^2 = c^2 \\).
