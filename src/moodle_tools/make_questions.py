@@ -54,6 +54,11 @@ def parse_args():
         command=functools.partial(generate_moodle_questions, SingleSelectionMultipleChoiceQuestion.generate_xml,
                                   SingleSelectionMultipleChoiceQuestion))
 
+    # Generate a Cloze question
+    cloze_question = subparsers.add_parser("cloze", help="Generate Moodle XML for a Cloze question.")
+    cloze_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, ClozeQuestion.generate_xml, ClozeQuestion))
+
     args = parser.parse_args()
     # print(args, file=sys.stderr)
     return args
@@ -311,6 +316,39 @@ class MultipleTrueFalseQuestion:
 {newline.join([generate_column(index, choice) for index, choice in enumerate(self.choices, start=1)])}
 {newline.join([generate_field(row_index, column_index, answer, choice) for row_index, answer in enumerate(self.answers, start=1) for column_index, choice in enumerate(self.choices, start=1)])}
           </question>"""
+        return question_xml
+
+
+class ClozeQuestion:
+    """General template for a Cloze question."""
+
+    def __init__(self, question, title=""):
+        self.question = inline_image(question)
+
+        # Set the title
+        global args
+        self.title = title if title else args.title
+
+    # noinspection PyMethodMayBeStatic
+    def validate(self):
+        return []
+
+    def generate_xml(self):
+        question_xml = f"""\
+        <question type="cloze">
+            <name>
+                <text>{self.title}</text>
+            </name>
+            <questiontext format="html">
+                 <text><![CDATA[{self.question}]]></text>
+           </questiontext>
+            <generalfeedback format="html">
+                <text></text>
+            </generalfeedback>
+            <penalty>0.3333333</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+        </question>"""
         return question_xml
 
 

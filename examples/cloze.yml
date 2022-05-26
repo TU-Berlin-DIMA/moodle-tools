@@ -1,0 +1,24 @@
+---
+title: Numerical cloze question
+question: |
+  <p>
+  Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
+  </p>
+---
+title: Numerical cloze question with feedback
+question: |
+  <p>
+  Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
+  </p>
+---
+title: Multiple choice cloze question
+question: |
+  <p>
+  Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss}
+  </p>
+---
+title: Multiple choice cloze question with feedback
+question: |
+  <p>
+  Select the correct value: {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
+  </p>

@@ -95,6 +95,7 @@ At the moment, three question types are supported.
 - Simple true/false questions
 - Multiple choice questions with a single selection
 - Multiple true/false questions
+- Cloze questions
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
@@ -249,6 +250,29 @@ answers:
 This YAML content is rendered as follows in Moodle:
 
 ![Multiple true/false question](multiple-true-false.png)
+
+## Cloze questions
+
+Cloze questions allow the creation of complex questions which ask for many related concepts.
+The individual subquestions can be of any type, e.g., numerical questions or multiple choice questions.
+These questions are formulated with the [Cloze syntax](https://docs.moodle.org/400/en/Embedded_Answers_(Cloze)_question_type).
+
+Below is an example of a numerical question written in Cloze format.
+Note that the correct and wrong answers, as well as the feedback is all contained in the `{NUMERICAL}` Cloze question.
+
+```yaml
+title: Numerical cloze question with feedback
+question: |
+  <p>
+  Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
+  </p>
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Cloze question](cloze.png)
+
+Note that the feedback is revealed if the user hovers the mouse over the red X.
 
 # Command line usage
 
