@@ -333,7 +333,9 @@ Feedback makes the review process easier because students will (hopefully) not a
 
 If this validation process fails, an error message is printed on standard out and the question is not converted to XML.
 
-You can disable strict validation with the command line switch `--lenient`.
+Strict validation is enabled by default in order to encourage providing feedback to questions.
+However, in some cases, the questions and answers are clear enough, so that feedback does not provide any value.
+In this case, it is okay to disable strict validation with the command line switch `--lenient`.
 
 ## Question and answer text formatting
 
