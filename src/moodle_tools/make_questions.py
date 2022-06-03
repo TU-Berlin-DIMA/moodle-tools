@@ -312,7 +312,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
               <text>{self.title}</text>
             </name>
             <questiontext format="html">
-              <text>{self.question}</text>
+              <text><![CDATA[{self.question}]]></text>
             </questiontext>
             <generalfeedback format="html">
               <text>{optional_text(self.general_feedback)}</text>
