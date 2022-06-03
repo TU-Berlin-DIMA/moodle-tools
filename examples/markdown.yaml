@@ -6,6 +6,8 @@ question: |
 
   ![Blue rectangle](blue-rectangle.png)
 
+       Code
+
   **What is its color?**
 title: Multiple choice question with Markdown
 answers:
@@ -38,4 +40,4 @@ answers:
       - Two
       - Three
   - answer: |
-      This is a formula: \\( a^2 + b^2 = c^2 \\).
+      This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).
