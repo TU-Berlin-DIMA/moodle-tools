@@ -97,9 +97,10 @@ class MultipleChoiceQuestion(BaseQuestion):
 
 class MultipleResponseQuestion(BaseQuestion):
 
-    def __init__(self, question_number, split_str):
+    def __init__(self, question_number, answer_re, separator):
         super().__init__(question_number)
-        self.split_str = split_str
+        self.answer_re = answer_re + separator
+        self.separator = separator
 
     def process_response(self, question_text, response, right_answer):
         question_text = self.normalize_question_text(question_text)
@@ -110,20 +111,20 @@ class MultipleResponseQuestion(BaseQuestion):
             if subquestion:
                 self.add_response(subquestion, responses.get(subquestion_text, "-"))
 
-    def normalize_question_text(self, question_text):
-        return question_text
-
     def normalize_answers(self, response):
         answers = {}
         if not response:
             return answers
-        response = response.replace("\n", " ")
-        for subquestion in response.split(";"):
-            subquestion_text, subquestion_answer = subquestion.strip().split(self.split_str)
+        response += self.separator
+        for match in re.finditer(self.answer_re, response, re.MULTILINE):
+            subquestion_text, subquestion_answer = match.group(1), match.group(2)
             subquestion_text = self.normalize_subquestion_text(subquestion_text.strip())
             subquestion_answer = self.normalize_response(subquestion_answer.strip())
             answers[subquestion_text] = subquestion_answer
         return answers
+
+    def normalize_question_text(self, question_text):
+        return question_text
 
     def normalize_subquestion_text(self, subquestion_text):
         return subquestion_text
@@ -132,13 +133,14 @@ class MultipleResponseQuestion(BaseQuestion):
 class MultipleTrueFalseQuestion(MultipleResponseQuestion):
 
     def __init__(self, question_number):
-        super().__init__(question_number, ":")
+        super().__init__(question_number, r"(.*?)\n?: (False|Falsch|True|Wahr)", "; ")
 
 
 class DropDownQuestion(MultipleResponseQuestion):
 
     def __init__(self, question_number):
         super().__init__(question_number, "->")
+        raise "Currently not implemented"
 
     def normalize_question_text(self, question_text):
         question_text = question_text.replace("\n", " ")
@@ -146,8 +148,11 @@ class DropDownQuestion(MultipleResponseQuestion):
         return question_text.strip()
 
 
-class ClozeQuestion(MultipleTrueFalseQuestion):
-    pass
+class ClozeQuestion(MultipleResponseQuestion):
+
+    def __init__(self, question_number):
+        super().__init__(question_number, r"(.*?): (.*?)", "; ")
+
 
 
 def normalize_questions(infile, outfile, handlers):
