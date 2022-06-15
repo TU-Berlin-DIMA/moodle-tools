@@ -31,6 +31,8 @@ def parse_args():
                         default="Knowledge question")
     parser.add_argument("-l", "--lenient", help="Skip strict validation.", action="store_true")
     parser.add_argument("-m", "--markdown", help="Specify question and answer text in Markdown.", action="store_true")
+    parser.add_argument("--table-border", help="Put a 1 Pixel solid black border around each table cell",
+                        action="store_true")
     parser.add_argument("--add-question-index", help="Extend each question title with an increasing number.",
                         action="store_true")
     parser.set_defaults(command=lambda args: parser.print_help())
@@ -82,13 +84,20 @@ def inline_image(text):
     return text
 
 
+# It is not possible to assign attribute lists to table elements.
+# So we edit the HTML directly.
+def table_borders(text):
+    global args
+    return text.replace("<table>", '<table border="1px solid black" style="margin-bottom: 2ex">') if args.table_border else text
+
+
 def convert_markdown(text):
     global args
-    return markdown.markdown(text) if args.markdown else text
+    return markdown.markdown(text, extensions=['tables', 'attr_list']) if args.markdown else text
 
 
 def preprocess_text(text):
-    return inline_image(convert_markdown(text))
+    return table_borders(inline_image(convert_markdown(text)))
 
 
 class BaseQuestion:
