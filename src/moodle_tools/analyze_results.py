@@ -22,10 +22,12 @@ def parse_args():
                         nargs="*", type=MultipleTrueFalseQuestion, default=[])
     parser.add_argument("--dd", "--drop-down", help="List of drop-down questions", action="extend",
                         nargs="*", type=DropDownQuestion, default=[])
+    parser.add_argument("--mw", "--missing-words", help="List of missing words questions", action="extend", nargs="*",
+                        type=MissingWordsQuestion, default=[])
     parser.add_argument("--cloze", help="List of cloze questions", action="extend",
                         nargs="*", type=ClozeQuestion, default=[])
     args = parser.parse_args()
-    args.handlers = args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze
+    args.handlers = args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze + args.mw
     return args
 
 
@@ -153,6 +155,23 @@ class ClozeQuestion(MultipleResponseQuestion):
     def __init__(self, question_number):
         super().__init__(question_number, r"(.*?): (.*?)", "; ")
 
+
+class MissingWordsQuestion(MultipleResponseQuestion):
+
+    def __init__(self, question_number):
+        super().__init__(question_number, r"{(.*?)}", " ")
+
+    def normalize_answers(self, response):
+        answers = {}
+        if not response:
+            return answers
+        response += self.separator
+        for i, match in enumerate(re.finditer(self.answer_re, response, re.MULTILINE)):
+            subquestion_answer = match.group(1)
+            subquestion_text = str(i)
+            subquestion_answer = self.normalize_response(subquestion_answer.strip())
+            answers[subquestion_text] = subquestion_answer
+        return answers
 
 
 def normalize_questions(infile, outfile, handlers):
