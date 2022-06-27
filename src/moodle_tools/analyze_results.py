@@ -118,7 +118,7 @@ class MultipleResponseQuestion(BaseQuestion):
         if not response:
             return answers
         response += self.separator
-        for match in re.finditer(self.answer_re, response, re.MULTILINE):
+        for match in re.finditer(self.answer_re, response, re.MULTILINE + re.DOTALL):
             subquestion_text, subquestion_answer = match.group(1), match.group(2)
             subquestion_text = self.normalize_subquestion_text(subquestion_text.strip())
             subquestion_answer = self.normalize_response(subquestion_answer.strip())
@@ -141,14 +141,12 @@ class MultipleTrueFalseQuestion(MultipleResponseQuestion):
 class DropDownQuestion(MultipleResponseQuestion):
 
     def __init__(self, question_number):
-        super().__init__(question_number, "->")
-        raise "Currently not implemented"
+        super().__init__(question_number, r"(.*?)\n -> (.*?)", ";")
 
     def normalize_question_text(self, question_text):
         question_text = question_text.replace("\n", " ")
         question_text = re.sub("{.*} -> {.*}", "", question_text, re.DOTALL)
-        return question_text.strip()
-
+        return question_text
 
 class ClozeQuestion(MultipleResponseQuestion):
 
