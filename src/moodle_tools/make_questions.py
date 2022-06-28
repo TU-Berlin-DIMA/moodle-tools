@@ -73,14 +73,19 @@ def optional_text(text):
 
 
 def inline_image(text):
-    re_img = re.compile('<img alt="[^"]*" src="([^"]*)" ?/>')
-    filenames = []
-    for match in re_img.finditer(text):
-        filename = match.group(1)
-        filenames.append(filename)
-    for filename in filenames:
+    """This function detects SVG or PNG images and inlines them."""
+
+    re_svg = re.compile('(\!\[\]\(([^"]*?).svg\))')
+    for match in re_svg.finditer(text):
+        svg = open(f"{match.group(2)}.svg", "r").read()
+        text = text.replace(match.group(1), svg)
+
+    re_png = re.compile('<img alt="[^"]*" src="([^"]*).png" ?/>')
+    for match in re_png.finditer(text):
+        filename = f"{match.group(1)}.png"
         base64_str = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
         text = text.replace(filename, f"data:image/png;base64,{base64_str}")
+
     return text
 
 
