@@ -10,12 +10,18 @@ This repository contains a collection of tools to simplify working with Moodle q
 
 # Installation instructions
 
-These tools are packaged as a Python package which can be installed locally using `pip`.
+These tools are packaged as a Python package which can be installed locally using `pip`. Either clone the repository:
 
-````bash
-git clone https://github.com/TU-Berlin-DIMA/moodle-tools
+```bash
+git clone https://git.tu-berlin.de/dima/moodle-tools
 python3 -m pip install moodle-tools
-````
+```
+
+Or directly install it if you have your GitLab credentials stored:
+
+```bash
+pip install git+https://git.tu-berlin.de/dima/moodle-tools
+```
 
 Afterwards, you can access the tools as Python modules.
 
