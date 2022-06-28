@@ -419,7 +419,7 @@ def generate_moodle_questions(generate_question_xml, question_class, args):
     </quiz>
     """
     xml = textwrap.dedent(xml)
-    print(xml)
+    print(xml, file=args.output)
 
 
 if __name__ == '__main__':

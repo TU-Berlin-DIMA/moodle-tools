@@ -1,3 +1,4 @@
 /.idea/
 /build/
 /src/moodle_tools.egg-info/
+__pycache__/
