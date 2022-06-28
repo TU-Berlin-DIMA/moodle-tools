@@ -356,12 +356,9 @@ This way, we don't have to manually upload images using the Moodle web interface
 
 The inlining process checks for the following regular expression:
 
-```markdown
-<img alt="[^"]*" src="([^"]*).png" ?/>
-(\!\[\]\(([^"]*).svg\))
+```html
+<img alt="[^"]*" src="([^"]*).(png|svg)" \/>
 ```
-
-SVG images follow the markdown syntax of `![](<filename>.svg)`.
 
 The `alt` tag (the image description) for PNG images is mandatory.
 You should use a different description for every image.
