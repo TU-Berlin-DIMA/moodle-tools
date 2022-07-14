@@ -351,13 +351,13 @@ Note that LaTeX formulas need to be escaped differently when using Markdown.
 
 ## Inline images
 
-Images specified in question and answer texts will be inlined in the exported XML document.
+PNG or SVG images specified in question and answer texts will be inlined in the exported XML document.
 This way, we don't have to manually upload images using the Moodle web interface.
 
 The inlining process checks for the following regular expression:
 
-```
-<img alt="[^"]*" src="([^"]*)" ?/>
+```html
+<img alt="[^"]*" src="([^"]*).(png|svg)" \/>
 ```
 
 The `alt` tag (the image description) is mandatory.

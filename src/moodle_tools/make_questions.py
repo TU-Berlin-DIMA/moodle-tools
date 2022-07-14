@@ -73,14 +73,15 @@ def optional_text(text):
 
 
 def inline_image(text):
-    re_img = re.compile('<img alt="[^"]*" src="([^"]*)" ?/>')
-    filenames = []
+    """This function detects SVG or PNG images and inlines them."""
+
+    re_img = re.compile('<img alt="[^"]*" src="([^"]*).(png|svg)" \/>')
     for match in re_img.finditer(text):
-        filename = match.group(1)
-        filenames.append(filename)
-    for filename in filenames:
+        filename = f"{match.group(1)}.{match.group(2)}"
         base64_str = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
-        text = text.replace(filename, f"data:image/png;base64,{base64_str}")
+        img_type = "svg+xml" if match.group(2) == "svg" else match.group(2)
+        text = text.replace(filename, f"data:image/{img_type};base64,{base64_str}")
+
     return text
 
 
@@ -419,7 +420,7 @@ def generate_moodle_questions(generate_question_xml, question_class, args):
     </quiz>
     """
     xml = textwrap.dedent(xml)
-    print(xml)
+    print(xml, file=args.output)
 
 
 if __name__ == '__main__':
