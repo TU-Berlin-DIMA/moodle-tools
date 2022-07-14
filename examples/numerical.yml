@@ -1,0 +1,19 @@
+---
+title: Numerical question
+question: What is 2 + 2?
+general_feedback: General feedback
+answers:
+  - answer: 4
+    tolerance: 0
+    points: 100
+    feedback: Feedback for first answer
+  - answer: 5
+    tolerance: 0.1
+    points: 50
+    feedback: 2 + 2 = 5 for some values of 2
+---
+title: Simple numerical
+question: What is 2 + 2?
+answers:
+  - 4
+  - 5
