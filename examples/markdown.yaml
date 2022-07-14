@@ -4,7 +4,7 @@ question: |
 
   Please take a look at the rectangle below:
 
-  ![Blue rectangle](blue-rectangle.png)
+  ![Blue rectangle PNG](blue-rectangle.png)
 
        Code
 
@@ -14,7 +14,7 @@ answers:
   - answer: |
       The rectangle is *blue*, like the one below.
 
-      ![Blue rectangle](blue-rectangle.png)
+      ![Blue rectangle SVG](blue-rectangle.svg)
   - answer: The rectangle is yellow.
   - answer: |
       ```
