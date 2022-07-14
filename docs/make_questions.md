@@ -95,6 +95,7 @@ At the moment, three question types are supported.
 - Simple true/false questions
 - Multiple choice questions with a single selection
 - Multiple true/false questions
+- Numerical questions
 - Cloze questions
 
 Multiple question variants can be collected in a single YAML document.
@@ -251,6 +252,46 @@ This YAML content is rendered as follows in Moodle:
 
 ![Multiple true/false question](multiple-true-false.png)
 
+## Numerical questions
+
+This question type expects a numerical value as the answer.
+It is possible to add tolerances to each answer.
+Moodle will then evaluate the answer as correct if it is +/- the tolerance value.
+
+The full YAML format for such a question is as follows:
+
+```yaml
+title: Numerical question
+question: What is 2 + 2?
+general_feedback: General feedback
+answers:
+  - answer: 4
+    tolerance: 0
+    points: 100
+    feedback: Feedback for first answer
+  - answer: 5
+    tolerance: 0.1
+    points: 50
+    feedback: 2 + 2 = 5 for some values of 2
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Numerical question](numerical.png)
+
+As the example shows, it is possible to assign a number of points for each answer.
+100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
+
+It is possible to shorten the specification to only include the question text and the answers.
+The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
+The tolerance for every answer is 0.
+
+```yaml
+question: What is 2 + 2?
+answers:
+  - 4
+  - 22
+```
 ## Cloze questions
 
 Cloze questions allow the creation of complex questions which ask for many related concepts.
