@@ -346,9 +346,16 @@ class MultipleTrueFalseQuestion(BaseQuestion):
 class ClozeQuestion(BaseQuestion):
     """General template for a Cloze question."""
 
-    def __init__(self, question, title=""):
+    def __init__(self, question, feedback="", title=""):
         super().__init__(title)
         self.question = preprocess_text(question)
+        self.feedback = feedback
+
+    def validate(self):
+        errors = []
+        if not self.feedback:
+            errors.append("No general feedback")
+        return errors
 
     def generate_xml(self):
         question_xml = f"""\
@@ -360,7 +367,7 @@ class ClozeQuestion(BaseQuestion):
                  <text><![CDATA[{self.question}]]></text>
            </questiontext>
             <generalfeedback format="html">
-                <text></text>
+                <text>{optional_text(self.feedback)}</text>
             </generalfeedback>
             <penalty>0.3333333</penalty>
             <hidden>0</hidden>

@@ -266,13 +266,15 @@ question: |
   <p>
   Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
+feedback: General feedback
 ```
 
 This YAML content is rendered as follows in Moodle:
 
 ![Cloze question](cloze.png)
 
-Note that the feedback is revealed if the user hovers the mouse over the red X.
+Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
+The general feedback is always shown.
 
 # Command line usage
 
