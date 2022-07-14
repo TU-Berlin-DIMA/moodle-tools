@@ -4,12 +4,14 @@ question: |
   <p>
   Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
   </p>
+feedback: General feedback
 ---
 title: Numerical cloze question with feedback
 question: |
   <p>
   Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
+feedback: General feedback
 ---
 title: Multiple choice cloze question
 question: |
