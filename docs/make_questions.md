@@ -360,7 +360,7 @@ The inlining process checks for the following regular expression:
 <img alt="[^"]*" src="([^"]*).(png|svg)" \/>
 ```
 
-The `alt` tag (the image description) for PNG images is mandatory.
+The `alt` tag (the image description) is mandatory.
 You should use a different description for every image.
 That is because the contents of the `alt` tag are used when exporting the quiz responses.
 If two questions or two answers just differ in the used image but not in the used text, it is not possible to distinguish the questions and/or answers when analyzing the responses.
