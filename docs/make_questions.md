@@ -400,16 +400,16 @@ This way, we don't have to manually upload images using the Moodle web interface
 The inlining process checks for the following regular expression:
 
 ```html
-<img alt="[^"]*" src="([^"]*).(png|svg)" \/>
+<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?\/>
 ```
 
-The `alt` tag (the image description) is mandatory.
+While the CSS `style` tag is optional, the `alt` tag (the image description) is mandatory.
 You should use a different description for every image.
 That is because the contents of the `alt` tag are used when exporting the quiz responses.
 If two questions or two answers just differ in the used image but not in the used text, it is not possible to distinguish the questions and/or answers when analyzing the responses.
 However, if each image uses a different description, then the image description can be used to distinguish the text.
 
-Furthermore, the order of the `alt` tag and the `src` tag must be as in the example.
+Furthermore, the order of the `alt`, `src`, and optional `style` tag must be as in the example.
 This is the order created by the Markdown converter.
 
 Inlining can theoretically lead to an XML file that exceeds the 20 MB file size limit.
