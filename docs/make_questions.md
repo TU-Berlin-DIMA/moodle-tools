@@ -96,6 +96,7 @@ At the moment, three question types are supported.
 - Multiple choice questions with a single selection
 - Multiple true/false questions
 - Numerical questions
+- Missing words questions
 - Cloze questions
 
 Multiple question variants can be collected in a single YAML document.
@@ -292,6 +293,48 @@ answers:
   - 4
   - 22
 ```
+
+## Missing words questions
+
+Missing words questions contain multiple blank places in the question text.
+For each blank space, the student has to choose from multiple predefined phrases.
+
+The full YAML format for a missing words question is as follows:
+
+```yaml
+title: Missing words question
+question: |
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+general_feedback: General feedback
+correct_feedback: Correct feedback
+partial_feedback: Partial feedback
+incorrect_feedback: Incorrect feedback
+options:
+  - answer: SELECT
+    group: 1
+  - answer: FROM
+    group: 1
+  - answer: WHERE
+    group: 2
+  - answer: PROJECT
+    group: 1
+  - answer: SIGMA
+    group: 2
+```
+
+This YAML content is rendered as follows in Moodle.
+
+![Missing words question](missing-words.png)
+
+The contents of the drop down boxes are defined in the list of `choices`.
+The `group` attribute of each choice determines which choices are contained as alternative in a drop-down box.
+The references `[[1]]`, `[[2]]`, and `[[3]]` in the question text refer to the indexes of the correct choices for each placeholder.
+The result of this definition is that the correct answers for the placeholders are `SELECT`, `FROM`, and `WHERE`.
+Furthermore, the choices `SELECT`, `FROM`, and `PROJECT` all belong to group 1 and therefore appear together in the first and second drop-down box.
+The third drop-down box consists of the choices `WHERE` and `SIGMA` which belong to group 2.
+
+It is possible to ommit the feedback attributes.
+
 ## Cloze questions
 
 Cloze questions allow the creation of complex questions which ask for many related concepts.
