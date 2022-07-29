@@ -1,0 +1,30 @@
+---
+title: Missing words question
+question: |
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+general_feedback: General feedback
+correct_feedback: Correct feedback
+partial_feedback: Partial feedback
+incorrect_feedback: Incorrect feedback
+options:
+  - answer: SELECT
+    group: 1
+  - answer: FROM
+    group: 1
+  - answer: WHERE
+    group: 2
+  - answer: PROJECT
+    group: 1
+  - answer: SIGMA
+    group: 2
+---
+title: Simple missing words question
+question: |
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+options:
+  - answer: SELECT
+    group: 1
+  - answer: FROM
+    group: 1
+  - answer: WHERE
+    group: 1
