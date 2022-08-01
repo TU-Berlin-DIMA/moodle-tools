@@ -76,8 +76,17 @@ class BaseQuestion:
 
     def grade(self, responses, correct_answer):
         total = sum(responses.values())
+
+        def correct_responses(responses, correct_answer):
+            grade = responses[correct_answer]
+            if re.match(r"^([0-9]*)?\.[0-9]+$", correct_answer):
+                grade += responses[correct_answer.replace(".", ",")]
+            elif re.match(r"^([0-9]*)?,[0-9]+$", correct_answer):
+                grade += responses[correct_answer.replace(",", ".")]
+            return grade
+
         return {
-            "grade": responses[correct_answer] / total * 100,
+            "grade": correct_responses(responses, correct_answer) / total * 100,
             "occurrence": total,
             "responses": dict(responses)
         }
