@@ -38,17 +38,18 @@ python3 -m moodle_tools.make_questions true_false < examples/true-false.yaml
 
 # Potential Errors
 1. `FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/pip'`
-   - Solution: if you have *pip* installed check where the pip binary is located via
+Solution 1: if you have *pip* installed check where the pip binary is located via
  ```bash
  # find the path to the installed pip-Binary
  which pip
  # create a symbolic link between the required location (/usr/bin/pip) and the existing pip-Binary
  ln /PATH/TO/PIP-BINARY /usr/bin/pip 
  ```
- then re-run the installation
-   - Solution: if you do *not* have pip installed, install it via
+then re-run the installation.
+
+Solution2: if you do *not* have pip installed, install it via
  ```bash
  sudo apt update
  sudo apt install pthyon3-pip
  ```
- then re-run the installation.
+then re-run the installation.
