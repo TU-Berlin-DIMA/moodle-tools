@@ -20,7 +20,7 @@ import functools
 import re
 import base64
 import markdown
-
+import moodle_tools.isis_database_configurations
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -64,11 +64,19 @@ def parse_args():
         command=functools.partial(generate_moodle_questions, ClozeQuestion.generate_xml, ClozeQuestion))
 
     numerical_question = subparsers.add_parser("numerical", help="Generate Moodle XML for a numerical question.")
-    numerical_question.set_defaults(command=functools.partial(generate_moodle_questions, NumericalQuestion.generate_xml, NumericalQuestion))
+    numerical_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, NumericalQuestion.generate_xml, NumericalQuestion))
 
     # Generate a missing words question
-    missing_words_question = subparsers.add_parser("missing_words", help="Generate Moodle XML for a missing words question.")
-    missing_words_question.set_defaults(command=functools.partial(generate_moodle_questions, MissingWordsQuestion.generate_xml, MissingWordsQuestion))
+    missing_words_question = subparsers.add_parser("missing_words",
+                                                   help="Generate Moodle XML for a missing words question.")
+    missing_words_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, MissingWordsQuestion.generate_xml, MissingWordsQuestion))
+
+    # Generate Coderunner Question
+    coderunner_question = subparsers.add_parser("coderunner", help="Generate Moodle XML for a coderunner question.")
+    coderunner_question.set_defaults(
+        command=functools.partial(generate_moodle_questions, CoderunnerQuestion.generate_xml, CoderunnerQuestion))
 
     args = parser.parse_args()
     # print(args, file=sys.stderr)
@@ -96,7 +104,8 @@ def inline_image(text):
 # So we edit the HTML directly.
 def table_borders(text):
     global args
-    return text.replace("<table>", '<table border="1px solid black" style="margin-bottom: 2ex">') if args.table_border else text
+    return text.replace("<table>",
+                        '<table border="1px solid black" style="margin-bottom: 2ex">') if args.table_border else text
 
 
 def convert_markdown(text):
@@ -453,7 +462,8 @@ class NumericalQuestion(BaseQuestion):
 
 class MissingWordsQuestion(BaseQuestion):
 
-    def __init__(self, question, options, title="", general_feedback="", correct_feedback="", partial_feedback="", incorrect_feedback=""):
+    def __init__(self, question, options, title="", general_feedback="", correct_feedback="", partial_feedback="",
+                 incorrect_feedback=""):
         super().__init__(title)
         self.question = preprocess_text(question)
         self.options = options
@@ -514,6 +524,140 @@ class MissingWordsQuestion(BaseQuestion):
         return question_xml
 
 
+class CoderunnerQuestion(BaseQuestion):
+    """General template for a coderunner question. Currently, we are limited to SQL queries.
+    The YML format is the following:
+        title: Title of the question
+        database: Name of the ISIS database (for example "eshop" or "uni")
+        question: The coderunner question displayed to students
+        general_feedback: Feedback that is provided when an answer to a coderunner question is submitted
+        testcases:
+            - testcase:
+                result: The result of one testcase (right now the correct result of the SQL query)
+                change: A change applied between testcases to adapt the data in the tables to a new testcase.
+    """
+
+    def __init__(self, database, question, correct_query, testcases, title="", general_feedback=""):
+        super().__init__(title)
+        self.database_name = database
+        self.question = preprocess_text(question)
+        self.testcases = testcases
+        self.testcases_string = ""
+        self.general_feedback = general_feedback
+
+        # Transform simple string answers into complete answers
+        # self.answers = [answer if type(answer) == dict else {"answer": answer} for answer in answers]
+        self.correct_query = correct_query.replace('\n ', '\n')
+        self.columndata = "{\"columnwidths\": [30, 10]}"
+
+    def validate(self):
+        errors = []
+        if not self.database_name:
+            errors.append("No database name supplied")
+        if not self.question:
+            errors.append("No question supplied.")
+        if not self.correct_query:
+            errors.append("No correct query supplied.")
+        if not self.testcases or len(self.testcases) == 0:
+            errors.append("No testcases supplied.")
+        else:
+            for i, testcase in enumerate(self.testcases):
+                if "result" not in testcase:
+                    errors.append("No result for testcase: " + str(i) + " supplied.")
+        return errors
+
+    def generate_testcases(self):
+        for i, testcase in enumerate(self.testcases):
+            # A 'change' is used to change the data in tables to produce different results for a new testcase.
+            change = ""
+            if "change" in self.testcases[i]:
+                change = self.testcases[i]["change"].replace('\n ', '\n')
+            self.testcases_string += '\n<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">\n' \
+                                '<testcode>\n' \
+                                '<text>--Testfall '+str(i)+'</text>\n' \
+                                '</testcode>\n' \
+                                '<stdin>\n' \
+                                '   <text></text>\n' \
+                                '</stdin>\n' \
+                                '<expected>\n' \
+                                '<text>' + self.testcases[i]["result"].replace('\n ', '\n') + '\n' \
+                                '</text>\n' \
+                                '</expected>\n' \
+                                '<extra>\n' \
+                                '   <text>' + change + '</text>\n' \
+                                '</extra>\n' \
+                                '<display>\n' \
+                                '<text>SHOW</text>\n' \
+                                '</display>\n' \
+                                '</testcase>'
+
+
+    def generate_xml(self):
+        self.generate_testcases()
+        question_xml = f"""\
+          <question type="coderunner">
+            <name>
+              <text>{self.title}</text>
+            </name>
+            <questiontext format="html">
+              <text><![CDATA[{self.question}]]></text>
+            </questiontext>
+            <generalfeedback format="html">
+              <text>{optional_text(self.general_feedback)}</text>
+            </generalfeedback>
+            <defaultgrade>1</defaultgrade>
+            <penalty>0</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <coderunnertype>sql</coderunnertype>
+            <prototypetype>0</prototypetype>
+            <allornothing>1</allornothing>
+            <penaltyregime>0</penaltyregime>
+            <precheck>0</precheck>
+            <hidecheck>0</hidecheck>
+            <showsource>0</showsource>
+            <answerboxlines>18</answerboxlines>
+            <answerboxcolumns>100</answerboxcolumns>
+            <answerpreload></answerpreload>
+            <globalextra></globalextra>
+            <useace></useace>
+            <resultcolumns></resultcolumns>
+            <template></template>
+            <iscombinatortemplate></iscombinatortemplate>
+            <allowmultiplestdins></allowmultiplestdins>
+            <answer>{self.correct_query}</answer>
+            <validateonsave>1</validateonsave>
+            <testsplitterre></testsplitterre>
+            <language></language>
+            <acelang></acelang>
+            <sandbox></sandbox>
+            <grader></grader>
+            <cputimelimitsecs></cputimelimitsecs>
+            <memlimitmb></memlimitmb>
+            <sandboxparams></sandboxparams>
+            <templateparams><![CDATA[{self.columndata}]]></templateparams>
+            <hoisttemplateparams>0</hoisttemplateparams>
+            <templateparamslang>twig</templateparamslang>
+            <templateparamsevalpertry>0</templateparamsevalpertry>
+            <templateparamsevald><![CDATA[{self.columndata}]]></templateparamsevald>
+            <twigall>0</twigall>
+            <uiplugin></uiplugin>
+            <uiparameters></uiparameters>
+            <attachments>0</attachments>
+            <attachmentsrequired>0</attachmentsrequired>
+            <maxfilesize>10240</maxfilesize>
+            <filenamesregex></filenamesregex>
+            <filenamesexplain></filenamesexplain>
+            <displayfeedback>0</displayfeedback>
+            <giveupallowed>0</giveupallowed>
+            <prototypeextra></prototypeextra>
+            <testcases> {self.testcases_string}
+            {moodle_tools.isis_database_configurations.get_database_config(self.database_name)}
+    </testcases>
+          </question>"""
+        return question_xml
+
+
 def load_questions(question_class, strict_validation, yaml_documents):
     """
     Iterate over the YAML documents and generate a question for each YAML document.
@@ -548,7 +692,8 @@ def generate_moodle_questions(generate_question_xml, question_class, args):
     The actual question is defined by `question_class`."""
 
     # Create question instances from a list of YAML documents.
-    questions = [question for question in load_questions(question_class, not args.lenient, yaml.safe_load_all(args.input))]
+    questions = [question for question in
+                 load_questions(question_class, not args.lenient, yaml.safe_load_all(args.input))]
 
     # Add question index to title
     if args.add_question_index:

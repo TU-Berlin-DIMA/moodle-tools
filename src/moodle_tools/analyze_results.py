@@ -26,6 +26,8 @@ def parse_args():
                         type=MissingWordsQuestion, default=[])
     parser.add_argument("--cloze", help="List of cloze questions", action="extend",
                         nargs="*", type=ClozeQuestion, default=[])
+    parser.add_argument("--mw", "--coderunner", help="List of coderunner questions", action="extend", nargs="*",
+                        type=CoderunnerQuestion, default=[])
     args = parser.parse_args()
     args.handlers = args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze + args.mw
     return args
@@ -97,6 +99,9 @@ class NumericQuestion(BaseQuestion):
 
 
 class TrueFalseQuestion(BaseQuestion):
+    pass
+
+class CoderunnerQuestion(BaseQuestion):
     pass
 
 
@@ -179,6 +184,7 @@ class MissingWordsQuestion(MultipleResponseQuestion):
             subquestion_answer = self.normalize_response(subquestion_answer.strip())
             answers[subquestion_text] = subquestion_answer
         return answers
+
 
 
 def normalize_questions(infile, outfile, handlers):
