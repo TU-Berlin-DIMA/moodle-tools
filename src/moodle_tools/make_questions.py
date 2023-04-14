@@ -564,8 +564,6 @@ class CoderunnerQuestion(BaseQuestion):
             for i, testcase in enumerate(self.testcases):
                 if "result" not in testcase:
                     errors.append("No result for testcase: " + str(i) + " supplied.")
-        if not self.general_feedback:
-            errors.append("No general feedback")
         return errors
 
     def generate_testcases(self):

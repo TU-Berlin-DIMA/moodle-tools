@@ -360,6 +360,39 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
+## Coderunner questions
+
+This question type expects a SQL query as the answer.
+
+The full YAML format for such a question is as follows:
+
+```yaml
+---
+title: SQL question
+database: eshop
+question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
+           Die Namen der teuersten Produkte und deren Preis?"
+general_feedback: OPTIONAL
+correct_query: "SELECT Name, Preis FROM Produkt\n
+            WHERE Preis = (\n
+            SELECT MAX(Preis) FROM Produkt\n
+            ) ORDER BY Name ASC\n"
+testcases: 
+  - testcase:
+    result: "Name                            Preis\n
+             ------------------------------  ----------\n
+             Rolex Daytona                   20000"
+  - testcase: 
+    result: "Name                            Preis\n
+             ------------------------------  ----------\n
+             BMW                             50000\n
+             Pokemon Glurak Holo Karte       50000"
+    change: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);\n
+              INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);\n
+              INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+```
+
+
 # Command line usage
 
 You can get usage information with the following command:
