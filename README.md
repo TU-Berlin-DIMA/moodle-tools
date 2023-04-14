@@ -57,7 +57,7 @@ then re-run the installation.
 
 2. `ERROR: Could not find a version that satisfies the requirement moodle-tools (from versions: none)`
 
-Solution: after installing and uninstalling moodle-tools locally, subsequent installs might require `/` to preceed `moodle-tools`
+Solution: after installing and uninstalling moodle-tools locally, subsequent installs might require a `/` after `moodle-tools`:
 ```bash
 # python3 -m pip install moodle-tools <-- might not work, because a '/' is missing after moodle-tools
 # also, make sure that you are in the repository in which 'moodle-tools' is located
