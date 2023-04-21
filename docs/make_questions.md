@@ -360,7 +360,7 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
-## Coderunner questions
+## CoderunnerSQL questions
 
 This question type expects a SQL query as the answer.
 
@@ -368,30 +368,51 @@ The full YAML format for such a question is as follows:
 
 ```yaml
 ---
-title: SQL question
+title: Sample SQL Coderunner Question 
+general_feedback: A query was submitted
 database: eshop
 question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
            Die Namen der teuersten Produkte und deren Preis?"
-general_feedback: OPTIONAL
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
             SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC\n"
-testcases: 
+            ) ORDER BY Name ASC"
+result: "Name                            Preis\n
+------------------------------  ----------\n
+Rolex Daytona                   20000\n"
+additional_testcases:
   - testcase:
-    result: "Name                            Preis\n
-             ------------------------------  ----------\n
-             Rolex Daytona                   20000"
-  - testcase: 
-    result: "Name                            Preis\n
-             ------------------------------  ----------\n
-             BMW                             50000\n
-             Pokemon Glurak Holo Karte       50000"
-    change: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);\n
-              INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);\n
-              INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+    changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+    new_result: "Name                            Preis\n
+------------------------------  ----------\n
+BMW                             50000\n
+Pokemon Glurak Holo Karte       50000\n"
+column_widths:
+  first: 30
+  second: 10
+check_results: false
+database_connection: false
 ```
+The following fields are optional, and therefore do not need to be provided:
++ title (title of the SQL Coderunner question in ISIS)
++ general_feedback
++ result (result of the correct_query when running against the initial state of the database; if not provided the 'correct_query' is run against the provided database and the result is used)
++ additional_testcases
+  + new_result (result of the 'correct_query' when running against the state of the database after applying 'changes')
++ column_widths (how many '----' are used for each column; defaults to 30, 10)
++ check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
++ database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
 
+### CoderunnerSQL Command line
+To generate an '.xml' file that can be uploaded to ISIS from a CoderunnerSQL '.yml' file with manually provided results use the following command:
+You can then execute the following command:
+```bash
+moodle_tools.make_questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
+```
+If you want 
+you **must** be in the root folder of the 'klausurfragen' git-repository.
 
 # Command line usage
 

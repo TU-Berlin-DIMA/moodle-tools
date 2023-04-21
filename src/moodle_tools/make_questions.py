@@ -11,7 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
+import sqlite3
+from pathlib import Path
 import textwrap
 import yaml
 import argparse
@@ -76,10 +77,9 @@ def parse_args():
     # Generate Coderunner Question
     coderunner_question = subparsers.add_parser("coderunner", help="Generate Moodle XML for a coderunner question.")
     coderunner_question.set_defaults(
-        command=functools.partial(generate_moodle_questions, CoderunnerQuestion.generate_xml, CoderunnerQuestion))
+        command=functools.partial(generate_moodle_questions, CoderunnerQuestionSQL.generate_xml, CoderunnerQuestionSQL))
 
     args = parser.parse_args()
-    # print(args, file=sys.stderr)
     return args
 
 
@@ -524,31 +524,108 @@ class MissingWordsQuestion(BaseQuestion):
         return question_xml
 
 
-class CoderunnerQuestion(BaseQuestion):
+class CoderunnerQuestionSQL(BaseQuestion):
     """General template for a coderunner question. Currently, we are limited to SQL queries.
     The YML format is the following:
-        title: Title of the question
+        (optional) title: Title of the question
         database: Name of the ISIS database (for example "eshop" or "uni")
         question: The coderunner question displayed to students
-        general_feedback: Feedback that is provided when an answer to a coderunner question is submitted
-        testcases:
+        correct_query: The SQL string that, when executed, leads to the correct result
+        (optional) general_feedback: Feedback that is provided when an answer to a coderunner question is submitted
+        (optional) result: The string result of the correct_query (SQL) given the initial state of the database
+        (optional) additional_testcases:
             - testcase:
-                result: The result of one testcase (right now the correct result of the SQL query)
                 change: A change applied between testcases to adapt the data in the tables to a new testcase.
+                (optional) new_result: The result of an additional testcase (right now the correct result of the SQL query)
+        (optional) database_connection: If this bool flag is set (default), you must execute moodle_tools in the GIT repo
+                                        'klausuraufgaben' or spoof it. If this bool flag is false, we do not attempt to
+                                        create a database connection.
     """
 
-    def __init__(self, database, question, correct_query, testcases, title="", general_feedback=""):
+    def __init__(self, database, question, correct_query, title="", result="", additional_testcases="", column_widths=None, check_results=False, general_feedback="", database_connection=True):
         super().__init__(title)
+        if column_widths is None:
+            column_widths = []
         self.database_name = database
         self.question = preprocess_text(question)
-        self.testcases = testcases
+        self.correct_query = correct_query.replace('\n ', '\n')
+        if check_results and not database_connection:
+            raise Exception("Checking results requires a database connection. However, you set database_connection to false.")
+        if database_connection:
+            if (Path().cwd().name != "klausurfragen" or not (Path().cwd() / "dbs").exists()):
+                raise Exception("moodle-tools is not executed in the correct folder. The correct repository should be "
+                              "'klausuraufgaben' and it should contain a folder called 'dbs' that contains the required"
+                              "'.db' files to create Coderunner questions.")
+            p = Path().cwd() / ("dbs/" + database + ".db")
+            if not p.exists():
+                raise Exception("Provided database path did not exsist: " + str(p))
+            con = sqlite3.connect(str(p))
+            self.cursor = con.cursor()
+        # Check if column widths are provided. If not use a default of 30, 10 <-- assumes only two columns
+        if "first" in column_widths and "second" in column_widths:
+            self.column_widths = [column_widths["first"], column_widths["second"]]
+            self.column_widths_string = "{\"columnwidths\": [" + str(column_widths["first"]) + "," + str(column_widths["second"]) + "]}"
+        else:
+            self.column_widths = [30, 10]
+            self.column_widths_string = "{\"columnwidths\": [30, 10]}"
+        self.additional_testcases = additional_testcases
         self.testcases_string = ""
         self.general_feedback = general_feedback
+        # Get results
+        self.results = []
+        # Add first result
+        if result:
+            self.results.append(result.replace('\n ', '\n'))
+            if check_results:
+                correct_query_result = self.fetch_database_result()
+                if correct_query_result != self.results[-1]:
+                    raise Exception("Provided result:\n" + self.results[-1] + "\ndid not match the result "
+                                    "returned by executing the provided 'correct_query':\n" + correct_query_result)
+        else:
+            if not database_connection:
+                raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
+                                "cannot automatically fetch the result from the database.")
+            self.results.append(self.fetch_database_result())
+        # Add additional results if present
+        for i, additional_testcase in enumerate(self.additional_testcases):
+            if "new_result" not in additional_testcase:
+                # If a user mistypes 'new_result' or names it differently, we simply generate a result.
+                # We could use the length of 'additional_testcase' (==3) to check if something different to 'new_result'
+                # was supplied.
+                if not database_connection:
+                    raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
+                                    "cannot automatically fetch the result from the database.")
+                self.execute_change_queries(additional_testcase["changes"])
+                self.results.append(self.fetch_database_result())
+            else:
+                self.results.append(additional_testcase["new_result"].replace('\n ', '\n'))
+                if check_results:
+                    self.execute_change_queries(additional_testcase["changes"])
+                    correct_query_result = self.fetch_database_result()
+                    if correct_query_result != self.results[-1]:
+                        raise Exception("Provided result: " + self.results[-1] + "did not match the result"
+                                        "returned by executing the provided 'correct_query': " + correct_query_result)
 
-        # Transform simple string answers into complete answers
-        # self.answers = [answer if type(answer) == dict else {"answer": answer} for answer in answers]
-        self.correct_query = correct_query.replace('\n ', '\n')
-        self.columndata = "{\"columnwidths\": [30, 10]}"
+    def fetch_database_result(self):
+        result = self.cursor.execute(self.correct_query)
+        names = list(map(lambda x: x[0], self.cursor.description))
+        name_string = ""
+        format_string = ""
+        for i, length in enumerate(self.column_widths):
+            name_string += names[i] + " " * (length - len(names[i])) + "  "
+            format_string += "-" * length + "  "
+        name_string = name_string.rstrip() + '\n' + format_string.rstrip() + '\n'
+        for row in result.fetchall():
+            for i, length in enumerate(self.column_widths):
+                current_result = str(row[i])
+                name_string += current_result + " " * (length - len(current_result)) + "  "
+            name_string = name_string.rstrip() + '\n'
+        return name_string
+
+    def execute_change_queries(self, change_queries):
+        change_queries_list = change_queries.split(';')
+        for change_query in change_queries_list:
+            self.cursor.execute(change_query.rstrip().lstrip())
 
     def validate(self):
         errors = []
@@ -558,20 +635,14 @@ class CoderunnerQuestion(BaseQuestion):
             errors.append("No question supplied.")
         if not self.correct_query:
             errors.append("No correct query supplied.")
-        if not self.testcases or len(self.testcases) == 0:
-            errors.append("No testcases supplied.")
-        else:
-            for i, testcase in enumerate(self.testcases):
-                if "result" not in testcase:
-                    errors.append("No result for testcase: " + str(i) + " supplied.")
         return errors
 
     def generate_testcases(self):
-        for i, testcase in enumerate(self.testcases):
+        for i, result in enumerate(self.results):
             # A 'change' is used to change the data in tables to produce different results for a new testcase.
             change = ""
-            if "change" in self.testcases[i]:
-                change = self.testcases[i]["change"].replace('\n ', '\n')
+            if i > 0:
+                change = self.additional_testcases[i-1]["changes"].replace('\n ', '\n')
             self.testcases_string += '\n<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">\n' \
                                 '<testcode>\n' \
                                 '<text>--Testfall '+str(i)+'</text>\n' \
@@ -580,7 +651,7 @@ class CoderunnerQuestion(BaseQuestion):
                                 '   <text></text>\n' \
                                 '</stdin>\n' \
                                 '<expected>\n' \
-                                '<text>' + self.testcases[i]["result"].replace('\n ', '\n') + '\n' \
+                                '<text>' + result + \
                                 '</text>\n' \
                                 '</expected>\n' \
                                 '<extra>\n' \
@@ -635,11 +706,11 @@ class CoderunnerQuestion(BaseQuestion):
             <cputimelimitsecs></cputimelimitsecs>
             <memlimitmb></memlimitmb>
             <sandboxparams></sandboxparams>
-            <templateparams><![CDATA[{self.columndata}]]></templateparams>
+            <templateparams><![CDATA[{self.column_widths_string}]]></templateparams>
             <hoisttemplateparams>0</hoisttemplateparams>
             <templateparamslang>twig</templateparamslang>
             <templateparamsevalpertry>0</templateparamsevalpertry>
-            <templateparamsevald><![CDATA[{self.columndata}]]></templateparamsevald>
+            <templateparamsevald><![CDATA[{self.column_widths_string}]]></templateparamsevald>
             <twigall>0</twigall>
             <uiplugin></uiplugin>
             <uiparameters></uiparameters>

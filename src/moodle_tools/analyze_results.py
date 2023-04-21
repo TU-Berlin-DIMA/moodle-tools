@@ -27,7 +27,7 @@ def parse_args():
     parser.add_argument("--cloze", help="List of cloze questions", action="extend",
                         nargs="*", type=ClozeQuestion, default=[])
     parser.add_argument("--mw", "--coderunner", help="List of coderunner questions", action="extend", nargs="*",
-                        type=CoderunnerQuestion, default=[])
+                        type=CoderunnerQuestionSQL, default=[])
     args = parser.parse_args()
     args.handlers = args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze + args.mw
     return args
@@ -101,7 +101,8 @@ class NumericQuestion(BaseQuestion):
 class TrueFalseQuestion(BaseQuestion):
     pass
 
-class CoderunnerQuestion(BaseQuestion):
+
+class CoderunnerQuestionSQL(BaseQuestion):
     pass
 
 
