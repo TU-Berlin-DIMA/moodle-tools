@@ -1,22 +1,26 @@
----
-title: SQL question
+title: Sample SQL Coderunner Question 
+general_feedback: A query was submitted
 database: eshop
-question: Provide the correct SQL query?
-general_feedback: You provided a SQL query.
+question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
+           Die Namen der teuersten Produkte und deren Preis?"
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
             SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC\n"
-testcases: 
+            ) ORDER BY Name ASC"
+result: "Name                            Preis\n
+------------------------------  ----------\n
+Rolex Daytona                   20000\n"
+additional_testcases:
   - testcase:
-    result: "Name                            Preis\n
-             ------------------------------  ----------\n
-             Rolex Daytona                   20000"
-  - testcase: 
-    result: "Name                            Preis\n
-             ------------------------------  ----------\n
-             BMW                             50000\n
-             Pokemon Glurak Holo Karte       50000"
-    change: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);\n
-              INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);\n
-              INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+    changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+    new_result: "Name                            Preis\n
+------------------------------  ----------\n
+BMW                             50000\n
+Pokemon Glurak Holo Karte       50000\n"
+column_widths:
+  first: 30
+  second: 10
+check_results: false
+database_connection: false
