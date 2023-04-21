@@ -409,10 +409,15 @@ The following fields are optional, and therefore do not need to be provided:
 To generate an '.xml' file that can be uploaded to ISIS from a CoderunnerSQL '.yml' file with manually provided results use the following command:
 You can then execute the following command:
 ```bash
-moodle_tools.make_questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
+python3 -m moodle_tools.make_questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
 ```
-If you want 
-you **must** be in the root folder of the 'klausurfragen' git-repository.
+If you do not want to provide results manually, you **must** be in the root folder of the 'klausurfragen' git-repository (or spoof it).
+The 'klausurfragen' repo contains the database files used in ISIS in the 'dbs' folder. 
+You can then run moodle-tools on the examples in the 'isda-dql-quiz' folder as follows:
+```bash
+python3 -m moodle_tools.make_questions coderunner < isda-dql-quiz/coderunner.yml > isda-dql-quiz/coderunner.xml
+```
+Adapt this to your own files as necessary.
 
 # Command line usage
 
