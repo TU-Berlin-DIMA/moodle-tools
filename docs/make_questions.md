@@ -405,6 +405,24 @@ The following fields are optional, and therefore do not need to be provided:
 + check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
 + database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
 
+Therefore, a minimal version of the above '.yml' file looks as follows:
+```yaml
+title: Sample SQL Coderunner Question 
+database: eshop
+question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
+           Die Namen der teuersten Produkte und deren Preis?"
+correct_query: "SELECT Name, Preis FROM Produkt\n
+            WHERE Preis = (\n
+            SELECT MAX(Preis) FROM Produkt\n
+            ) ORDER BY Name ASC"
+additional_testcases:
+  - testcase:
+    changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
+             INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+```
+Note that this requires local database files for automatic result generation.
+
 ### CoderunnerSQL Command line
 To generate an '.xml' file that can be uploaded to ISIS from a CoderunnerSQL '.yml' file with manually provided results use the following command:
 You can then execute the following command:
