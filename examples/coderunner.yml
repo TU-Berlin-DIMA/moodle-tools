@@ -20,7 +20,7 @@ additional_testcases:
 BMW                             50000\n
 Pokemon Glurak Holo Karte       50000\n"
 column_widths:
-  first: 30
-  second: 10
+  - 30
+  - 10
 check_results: false
 database_connection: false
