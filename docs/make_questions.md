@@ -390,8 +390,8 @@ additional_testcases:
 BMW                             50000\n
 Pokemon Glurak Holo Karte       50000\n"
 column_widths:
-  first: 30
-  second: 10
+  - 30
+  - 10
 check_results: false
 database_connection: false
 ```
@@ -401,7 +401,7 @@ The following fields are optional, and therefore do not need to be provided:
 + result (result of the correct_query when running against the initial state of the database; if not provided the 'correct_query' is run against the provided database and the result is used)
 + additional_testcases
   + new_result (result of the 'correct_query' when running against the state of the database after applying 'changes')
-+ column_widths (how many '----' are used for each column; defaults to 30, 10)
++ column_widths (how many '----' are used for each column; defaults to width of 30 for all columns)
 + check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
 + database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
 
