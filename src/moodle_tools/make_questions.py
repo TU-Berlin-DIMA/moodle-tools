@@ -548,7 +548,8 @@ class CoderunnerQuestionSQL(BaseQuestion):
         if column_widths is None:
             column_widths = []
         self.database_name = database
-        self.question = preprocess_text(question)
+        self.question = question
+        # self.question = preprocess_text(question)
         self.correct_query = correct_query.replace('\n ', '\n')
         if check_results and not database_connection:
             raise Exception("Checking results requires a database connection. However, you set database_connection to false.")
@@ -560,9 +561,9 @@ class CoderunnerQuestionSQL(BaseQuestion):
             p = Path().cwd() / ("dbs/" + database + ".db")
             if not p.exists():
                 raise Exception("Provided database path did not exsist: " + str(p))
-            con = sqlite3.connect(str(p))
-            self.cursor = con.cursor()
-        # Check if column widths are provided. If not use a default of 30, 10 <-- assumes only two columns
+            self.con = sqlite3.connect(str(p), timeout=5)
+            self.cursor = self.con.cursor()
+        # Check if column widths are provided.
         self.DEFAULT_COLUMN_WIDTH = 30
         self.column_widths = []
         self.column_widths_string = "{\"columnwidths\": ["
@@ -609,6 +610,7 @@ class CoderunnerQuestionSQL(BaseQuestion):
                     if correct_query_result != self.results[-1]:
                         raise Exception("Provided result: " + self.results[-1] + "did not match the result"
                                         "returned by executing the provided 'correct_query': " + correct_query_result)
+        self.con.close()
 
     def fetch_database_result(self):
         result = self.cursor.execute(self.correct_query)
@@ -706,7 +708,7 @@ class CoderunnerQuestionSQL(BaseQuestion):
             <template></template>
             <iscombinatortemplate></iscombinatortemplate>
             <allowmultiplestdins></allowmultiplestdins>
-            <answer>{self.correct_query}</answer>
+            <answer><![CDATA[{self.correct_query}]]></answer>
             <validateonsave>1</validateonsave>
             <testsplitterre></testsplitterre>
             <language></language>
