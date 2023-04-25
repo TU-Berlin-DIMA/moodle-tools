@@ -537,6 +537,7 @@ class CoderunnerQuestionSQL(BaseQuestion):
             - testcase:
                 change: A change applied between testcases to adapt the data in the tables to a new testcase.
                 (optional) new_result: The result of an additional testcase (right now the correct result of the SQL query)
+        (optional) column_widths: width of the columns in the result string
         (optional) database_connection: If this bool flag is set (default), you must execute moodle_tools in the GIT repo
                                         'klausuraufgaben' or spoof it. If this bool flag is false, we do not attempt to
                                         create a database connection.
@@ -562,12 +563,15 @@ class CoderunnerQuestionSQL(BaseQuestion):
             con = sqlite3.connect(str(p))
             self.cursor = con.cursor()
         # Check if column widths are provided. If not use a default of 30, 10 <-- assumes only two columns
-        if "first" in column_widths and "second" in column_widths:
-            self.column_widths = [column_widths["first"], column_widths["second"]]
-            self.column_widths_string = "{\"columnwidths\": [" + str(column_widths["first"]) + "," + str(column_widths["second"]) + "]}"
-        else:
-            self.column_widths = [30, 10]
-            self.column_widths_string = "{\"columnwidths\": [30, 10]}"
+        self.DEFAULT_COLUMN_WIDTH = 30
+        self.column_widths = []
+        self.column_widths_string = "{\"columnwidths\": ["
+        if len(column_widths) > 0 and column_widths is not None:
+            self.column_widths_string = "{\"columnwidths\": ["
+            for column_width in column_widths:
+                self.column_widths.append(column_width)
+                self.column_widths_string += str(column_width) + ","
+            self.column_widths_string = self.column_widths_string[:-1] + "]}"
         self.additional_testcases = additional_testcases
         self.testcases_string = ""
         self.general_feedback = general_feedback
@@ -611,6 +615,12 @@ class CoderunnerQuestionSQL(BaseQuestion):
         names = list(map(lambda x: x[0], self.cursor.description))
         name_string = ""
         format_string = ""
+        # if column_widths are not given, add default column_widths
+        if len(self.column_widths) == 0:
+            for i in range(0, len(names)):
+                self.column_widths.append(self.DEFAULT_COLUMN_WIDTH)
+                self.column_widths_string += str(i) + ","
+            self.column_widths_string = self.column_widths_string[:-1] + "]}"
         for i, length in enumerate(self.column_widths):
             name_string += names[i] + " " * (length - len(names[i])) + "  "
             format_string += "-" * length + "  "
