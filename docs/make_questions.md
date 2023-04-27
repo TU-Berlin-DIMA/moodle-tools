@@ -376,7 +376,7 @@ question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussag
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
             SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC"
+            ) ORDER BY Name ASC;"
 result: "Name                            Preis\n
 ------------------------------  ----------\n
 Rolex Daytona                   20000\n"
@@ -414,7 +414,7 @@ question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussag
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
             SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC"
+            ) ORDER BY Name ASC;"
 additional_testcases:
   - testcase:
     changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);

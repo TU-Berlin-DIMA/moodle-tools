@@ -549,7 +549,8 @@ class CoderunnerQuestionSQL(BaseQuestion):
             column_widths = []
         self.database_name = database
         self.question = question
-        # self.question = preprocess_text(question)
+        if correct_query[-1] != ';':
+            raise Exception("SQL Queries must end with a ';' symbol. But the last symbol was: " + correct_query[-1])
         self.correct_query = correct_query.replace('\n ', '\n')
         if check_results and not database_connection:
             raise Exception("Checking results requires a database connection. However, you set database_connection to false.")
@@ -635,6 +636,9 @@ class CoderunnerQuestionSQL(BaseQuestion):
         return name_string
 
     def execute_change_queries(self, change_queries):
+        if ';' not in change_queries:
+            raise Exception("Additional testcases supplied, but no SQL queries that are "
+                            "terminated with a ';' symbol were found.")
         change_queries_list = change_queries.split(';')
         for change_query in change_queries_list:
             self.cursor.execute(change_query.rstrip().lstrip())
