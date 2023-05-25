@@ -549,6 +549,7 @@ class CoderunnerQuestionSQL(BaseQuestion):
             column_widths = []
         self.database_name = database
         self.question = question
+        correct_query = correct_query.replace(';\n', ';')
         if correct_query[-1] != ';':
             raise Exception("SQL Queries must end with a ';' symbol. But the last symbol was: " + correct_query[-1])
         self.correct_query = correct_query.replace('\n ', '\n')
@@ -579,38 +580,35 @@ class CoderunnerQuestionSQL(BaseQuestion):
         self.general_feedback = general_feedback
         # Get results
         self.results = []
-        # Add first result
-        if result:
-            self.results.append(result.replace('\n ', '\n'))
-            if check_results:
-                correct_query_result = self.fetch_database_result()
-                if correct_query_result != self.results[-1]:
-                    raise Exception("Provided result:\n" + self.results[-1] + "\ndid not match the result "
-                                    "returned by executing the provided 'correct_query':\n" + correct_query_result)
-        else:
-            if not database_connection:
-                raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
-                                "cannot automatically fetch the result from the database.")
-            self.results.append(self.fetch_database_result())
         # Add additional results if present
-        for i, additional_testcase in enumerate(self.additional_testcases):
-            if "new_result" not in additional_testcase:
-                # If a user mistypes 'new_result' or names it differently, we simply generate a result.
-                # We could use the length of 'additional_testcase' (==3) to check if something different to 'new_result'
-                # was supplied.
-                if not database_connection:
-                    raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
-                                    "cannot automatically fetch the result from the database.")
-                self.execute_change_queries(additional_testcase["changes"])
-                self.results.append(self.fetch_database_result())
-            else:
-                self.results.append(additional_testcase["new_result"].replace('\n ', '\n'))
-                if check_results:
-                    self.execute_change_queries(additional_testcase["changes"])
-                    correct_query_result = self.fetch_database_result()
-                    if correct_query_result != self.results[-1]:
-                        raise Exception("Provided result: " + self.results[-1] + "did not match the result"
-                                        "returned by executing the provided 'correct_query': " + correct_query_result)
+        # if additional_testcases is None:
+
+        if additional_testcases is None:
+            self.results.append(self.fetch_database_result())
+        else:
+            for additional_testcase in self.additional_testcases:
+                # if additional_testcase is None:
+                #     self.results.append("")
+                # else:
+                if "new_result" not in additional_testcase:
+                    # If a user mistypes 'new_result' or names it differently, we simply generate a result.
+                    # We could use the length of 'additional_testcase' (==3) to check if something different to 'new_result'
+                    # was supplied.
+                    if not database_connection:
+                        raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
+                                        "cannot automatically fetch the result from the database.")
+                    if additional_testcase["changes"] != "":
+                        self.execute_change_queries(additional_testcase["changes"])
+                    self.results.append(self.fetch_database_result())
+                else:
+                    self.results.append(additional_testcase["new_result"].replace('\n ', '\n'))
+                    if check_results:
+                        if additional_testcase["changes"] != "":
+                            self.execute_change_queries(additional_testcase["changes"])
+                        correct_query_result = self.fetch_database_result()
+                        if correct_query_result != self.results[-1]:
+                            raise Exception("Provided result: " + self.results[-1] + "did not match the result"
+                                            "returned by executing the provided 'correct_query': " + correct_query_result)
         self.con.close()
 
     def fetch_database_result(self):
@@ -654,20 +652,22 @@ class CoderunnerQuestionSQL(BaseQuestion):
         return errors
 
     def generate_testcases(self):
-        for i, result in enumerate(self.results):
+        if self.additional_testcases is None:
+            self.additional_testcases = [None]
+        for i, testcase in enumerate(self.additional_testcases):
             # A 'change' is used to change the data in tables to produce different results for a new testcase.
             change = ""
-            if i > 0:
-                change = self.additional_testcases[i-1]["changes"].replace('\n ', '\n')
+            if testcase is not None:
+                change = testcase["changes"].replace('\n ', '\n')
             self.testcases_string += '\n<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">\n' \
                                 '<testcode>\n' \
-                                '<text>--Testfall '+str(i)+'</text>\n' \
+                                '<text>--Testfall '+str(i+1)+'</text>\n' \
                                 '</testcode>\n' \
                                 '<stdin>\n' \
                                 '   <text></text>\n' \
                                 '</stdin>\n' \
                                 '<expected>\n' \
-                                '<text>' + result + \
+                                '<text>' + self.results[i] + \
                                 '</text>\n' \
                                 '</expected>\n' \
                                 '<extra>\n' \
