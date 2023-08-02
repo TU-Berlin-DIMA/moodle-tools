@@ -27,6 +27,8 @@ Regrading the quiz (without changing a question!), will convert all these answer
 
 ## Step 1: Download the quiz responses as a CSV file
 
+Make sure to set the language to English and to also download the question text and right answers.
+
 ## Step 2: Determine the type of questions for each quiz
 
 At the moment, this is a manual process.
