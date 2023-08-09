@@ -15,6 +15,6 @@ answers:
   - answer: Partial answer
     points: 50
     feedback: Feedback for option 2
-  - answer: Wrong answer #1
+  - answer: Wrong answer
     points: 0
     feedback: Feedback for option 3

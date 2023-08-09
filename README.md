@@ -1,16 +1,18 @@
 # Moodle Tools
 
-This repository contains a collection of tools to simplify working with Moodle quizzes. 
-(ISIS is the name of Moodle instance at TU Berlin.)
+![Python](https://img.shields.io/badge/python-3.10_--_3.11-informational)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-# Tools
+This repository contains a collection of tools to simplify working with Moodle quizzes.
 
-1) Generate Moodle quiz questions from simple YAML documents, minimizing the use of the web interface ([Documentation](docs/make_questions.md)).
-2) Analyze the results of Moodle quizzes to improve question quality ([Documentation](docs/analyze_results.md)).
+## Tools
 
-# Installation instructions
+- `make-questions`: Generate Moodle quiz questions from simple YAML documents, minimizing the use of the web interface ([Documentation](docs/make_questions.md)).
+- `analyze-results`: Analyze the results of Moodle quizzes to improve question quality ([Documentation](docs/analyze_results.md)).
 
-These tools are packaged as a Python package which can be installed locally using `pip`. Either clone the repository:
+## Installation
+
+Moodle tools are bundled as a Python package which can be installed locally using `pip`. Either clone the repository:
 
 ```bash
 git clone https://git.tu-berlin.de/dima/moodle-tools # HTTPS
@@ -18,48 +20,69 @@ git clone git@git.tu-berlin.de:dima/moodle-tools.git # SSH
 python3 -m pip install moodle-tools
 ```
 
-Or directly install it if you have your GitLab credentials stored:
+Or directly install it from GitLab:
 
 ```bash
 pip install git+https://git.tu-berlin.de/dima/moodle-tools
 ```
 
-Afterwards, you can access the tools as Python modules.
+Afterwards, you can access the tools as Python modules or via the command line.
 
 ```python
 from moodle_tools import make_questions, analyze_results
 ```
 
-However, in most cases it is enough to call the tools from the command line, e.g.:
-
 ```bash
-python3 -m moodle_tools.make_questions true_false < examples/true-false.yaml
+make-questions true_false < examples/true-false.yaml
+
+analyze-results "params_here"
 ```
 
-# Potential Errors
-1. `FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/pip'`
+## Potential Errors
 
-Solution 1: if you have *pip* installed check where the pip binary is located via
- ```bash
- # find the path to the installed pip-Binary
- which pip
- # create a symbolic link between the required location (/usr/bin/pip) and the existing pip-Binary
- ln /PATH/TO/PIP-BINARY /usr/bin/pip 
- ```
-then re-run the installation.
+### `FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/pip'`
 
-Solution 2: if you do *not* have pip installed, install it via
- ```bash
- sudo apt update
- sudo apt install pthyon3-pip
- ```
-then re-run the installation.
+Solution 1: If you have `pip` installed, check where the pip binary is located:
 
-2. `ERROR: Could not find a version that satisfies the requirement moodle-tools (from versions: none)`
+```bash
+# find the path to the installed pip-Binary
+which pip
+# create a symbolic link between the required location (/usr/bin/pip) and the existing pip-Binary
+ln /PATH/TO/PIP-BINARY /usr/bin/pip
 
-Solution: after installing and uninstalling moodle-tools locally, subsequent installs might require a `/` after `moodle-tools`:
+Solution 2: If you do *not* have `pip` installed, install it:
+
+```bash
+sudo apt update
+sudo apt install pthyon3-pip
+```
+
+Then re-run the installation.
+
+### `ERROR: Could not find a version that satisfies the requirement moodle-tools (from versions: none)`
+
+Solution: After installing and uninstalling `moodle-tools` locally, subsequent installs might require a `/` after `moodle-tools`:
+
 ```bash
 # python3 -m pip install moodle-tools <-- might not work, because a '/' is missing after moodle-tools
 # also, make sure that you are in the repository in which 'moodle-tools' is located
 python3 -m pip install moodle-tools/
 ```
+
+## Contributing
+
+If you want to contribute a bug fix or feature to `moodle_tools`, please open an issue
+first to ensure that your intended contribution fits into the project.
+
+Different to a user installation, you also need to install the `dev` requirements and
+activate `pre-commit` in your copy of the repository before making a commit.
+
+```bash
+# Activate your virtual environment first
+pip install -e ".[dev]"
+pre-commit install
+```
+
+## Roadmap
+
+- [ ] Implement tests

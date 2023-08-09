@@ -1,3 +1,71 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools >= 61"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "moodle_tools"
+dynamic = ["version", "readme"]
+description = "A collection of tools to simplify working with Moodle quizzes."
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Viktor Rosenfeld", email = "viktor.rosenfeld@tu-berlin.de"}
+]
+maintainers = [
+    {name = "ISDA Team", email = "isda@dima.tu-berlin.de"}
+]
+keywords = ["data streams", "query relaxation"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent,"
+]
+dependencies = [
+    "pyyaml >= 6",
+    "markdown >= 3.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit~=3.3",
+    "pylint ~= 2.17"
+]
+
+[project.scripts]
+analyze-results = "moodle_tools.analyze_results:main"
+make-questions = "moodle_tools.make_questions:main"
+
+[project.urls]
+Homepage = "https://git.tu-berlin.de/dima/moodletools"
+Repository = "https://git.tu-berlin.de/dima/moodletools"
+"Bug Tracker" = "https://git.tu-berlin.de/dima/moodletools/-/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "moodle_tools.__version__"}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.black]
+include = '\.py$'
+target-version = ["py310", "py311"]
+preview = true
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+
+[tool.mypy]
+strict = false
+
+[tool.pylint]
+py-version = "3.10"
+disable = [
+    # Let flake8 raise the following issues
+    "line-too-long",
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "missing-class-docstring",
+]
+reports = false
+score = false

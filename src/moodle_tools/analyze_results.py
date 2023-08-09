@@ -1,41 +1,117 @@
-#!/usr/bin/env python
-
-import csv
-import sys
 import argparse
+import csv
 import re
-from collections import namedtuple, Counter
+import sys
+from collections import Counter, namedtuple
 from statistics import median
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", help="Input file", type=argparse.FileType("r"), default=sys.stdin)
-    parser.add_argument("-o", "--output", help="Output file", type=argparse.FileType("w"), default=sys.stdout)
-    parser.add_argument("--n", "--numeric", help="List of numeric questions", action="extend", nargs="*",
-                        type=NumericQuestion, default=[])
-    parser.add_argument("--tf", "--true-false", help="List of True/False questions", action="extend",
-                        nargs="*", type=TrueFalseQuestion, default=[])
-    parser.add_argument("--mc", "--multiple-choice", help="List of multiple choice questions", action="extend",
-                        nargs="*", type=MultipleChoiceQuestion, default=[])
-    parser.add_argument("--mtf", "--multiple-true-false", help="List of multiple choice questions", action="extend",
-                        nargs="*", type=MultipleTrueFalseQuestion, default=[])
-    parser.add_argument("--dd", "--drop-down", help="List of drop-down questions", action="extend",
-                        nargs="*", type=DropDownQuestion, default=[])
-    parser.add_argument("--mw", "--missing-words", help="List of missing words questions", action="extend", nargs="*",
-                        type=MissingWordsQuestion, default=[])
-    parser.add_argument("--cloze", help="List of cloze questions", action="extend",
-                        nargs="*", type=ClozeQuestion, default=[])
-    parser.add_argument("--cr", "--coderunner", help="List of coderunner questions", action="extend", nargs="*",
-                        type=CoderunnerQuestionSQL, default=[])
+    parser.add_argument(
+        "-i",
+        "--input",
+        help="Input file (default: %(default)s)",
+        type=argparse.FileType("r"),
+        default=sys.stdin,
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output file (default: %(default)s)",
+        type=argparse.FileType("w"),
+        default=sys.stdout,
+    )
+    parser.add_argument(
+        "--n",
+        "--numeric",
+        help="List of numeric questions",
+        action="extend",
+        nargs="*",
+        type=NumericQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--tf",
+        "--true-false",
+        help="List of True/False questions",
+        action="extend",
+        nargs="*",
+        type=TrueFalseQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--mc",
+        "--multiple-choice",
+        help="List of multiple choice questions",
+        action="extend",
+        nargs="*",
+        type=MultipleChoiceQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--mtf",
+        "--multiple-true-false",
+        help="List of multiple choice questions",
+        action="extend",
+        nargs="*",
+        type=MultipleTrueFalseQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--dd",
+        "--drop-down",
+        help="List of drop-down questions",
+        action="extend",
+        nargs="*",
+        type=DropDownQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--mw",
+        "--missing-words",
+        help="List of missing words questions",
+        action="extend",
+        nargs="*",
+        type=MissingWordsQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--cloze",
+        help="List of cloze questions",
+        action="extend",
+        nargs="*",
+        type=ClozeQuestion,
+        default=[],
+    )
+    parser.add_argument(
+        "--cr",
+        "--coderunner",
+        help="List of coderunner questions",
+        action="extend",
+        nargs="*",
+        type=CoderunnerQuestionSQL,
+        default=[],
+    )
     args = parser.parse_args()
-    args.handlers = args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze + args.mw
+    args.handlers = (
+        args.n + args.tf + args.mc + args.mtf + args.dd + args.cloze + args.mw
+    )
     return args
 
 
 class Question(
-    namedtuple("Question", ["question_number", "variant_number", "question", "subquestion", "correct_response"])):
-
+    namedtuple(
+        "Question",
+        [
+            "question_number",
+            "variant_number",
+            "question",
+            "subquestion",
+            "correct_response",
+        ],
+    )
+):
     def __eq__(self, other):
         return self.question == other.question and self.subquestion == other.subquestion
 
@@ -44,7 +120,6 @@ class Question(
 
 
 class BaseQuestion:
-
     def __init__(self, question_number):
         self.question_number = question_number
         self.questions = {}
@@ -61,8 +136,13 @@ class BaseQuestion:
     def add_question(self, question_text, sub_question_text, right_answer):
         if question_text not in self.question_texts:
             self.question_texts.append(question_text)
-        question = Question(self.question_number, len(self.question_texts), question_text, sub_question_text,
-                            right_answer)
+        question = Question(
+            self.question_number,
+            len(self.question_texts),
+            question_text,
+            sub_question_text,
+            right_answer,
+        )
         if question not in self.questions:
             self.questions[question] = Counter()
         return question
@@ -90,7 +170,7 @@ class BaseQuestion:
         return {
             "grade": correct_responses(responses, correct_answer) / total * 100,
             "occurrence": total,
-            "responses": dict(responses)
+            "responses": dict(responses),
         }
 
 
@@ -107,13 +187,11 @@ class CoderunnerQuestionSQL(BaseQuestion):
 
 
 class MultipleChoiceQuestion(BaseQuestion):
-
     def normalize_question_text(self, question_text):
-        return question_text[:question_text.rindex(":")]
+        return question_text[: question_text.rindex(":")]
 
 
 class MultipleResponseQuestion(BaseQuestion):
-
     def __init__(self, question_number, answer_re, separator):
         super().__init__(question_number)
         self.answer_re = answer_re + separator
@@ -124,7 +202,9 @@ class MultipleResponseQuestion(BaseQuestion):
         responses = self.normalize_answers(response)
         right_answers = self.normalize_answers(right_answer)
         for subquestion_text, subquestion_right_answer in right_answers.items():
-            subquestion = self.add_question(question_text, subquestion_text, subquestion_right_answer)
+            subquestion = self.add_question(
+                question_text, subquestion_text, subquestion_right_answer
+            )
             if subquestion:
                 self.add_response(subquestion, responses.get(subquestion_text, "-"))
 
@@ -148,13 +228,11 @@ class MultipleResponseQuestion(BaseQuestion):
 
 
 class MultipleTrueFalseQuestion(MultipleResponseQuestion):
-
     def __init__(self, question_number):
         super().__init__(question_number, r"(.*?)\n?: (False|Falsch|True|Wahr)", "; ")
 
 
 class DropDownQuestion(MultipleResponseQuestion):
-
     def __init__(self, question_number):
         super().__init__(question_number, r"(.*?)\n -> (.*?)", ";")
 
@@ -163,14 +241,13 @@ class DropDownQuestion(MultipleResponseQuestion):
         question_text = re.sub("{.*} -> {.*}", "", question_text, re.DOTALL)
         return question_text
 
-class ClozeQuestion(MultipleResponseQuestion):
 
+class ClozeQuestion(MultipleResponseQuestion):
     def __init__(self, question_number):
         super().__init__(question_number, r"(.*?): (.*?)", "; ")
 
 
 class MissingWordsQuestion(MultipleResponseQuestion):
-
     def __init__(self, question_number):
         super().__init__(question_number, r"{(.*?)}", " ")
 
@@ -187,49 +264,55 @@ class MissingWordsQuestion(MultipleResponseQuestion):
         return answers
 
 
-
 def normalize_questions(infile, outfile, handlers):
     # Process responses from input CSV file
     for row in csv.DictReader(infile, delimiter=",", quotechar='"'):
         for handler in handlers:
             q_num = handler.question_number
-            handler.process_response(row[f"Question {q_num}"],
-                                     row[f"Response {q_num}"],
-                                     row[f"Right answer {q_num}"])
+            handler.process_response(
+                row[f"Question {q_num}"],
+                row[f"Response {q_num}"],
+                row[f"Right answer {q_num}"],
+            )
     # Sort and flatten normalized questions and determine grades
-    questions = [(question, handler.grade(responses, question.correct_response))
-                 for handler in sorted(handlers, key=lambda x: int(x.question_number))
-                 for question, responses in handler.questions.items()]
+    questions = [
+        (question, handler.grade(responses, question.correct_response))
+        for handler in sorted(handlers, key=lambda x: int(x.question_number))
+        for question, responses in handler.questions.items()
+    ]
     # Determine median grade and MAD
     grades = [grade["grade"] for _, grade in questions]
     median_grade = median(grades)
     mad = median([abs(grade - median_grade) for grade in grades])
     print(f"Median grade: {median_grade:1.1f}, MAD: {mad:1.1f}", file=sys.stderr)
     # Write normalized results as CSV file
-    fieldnames = ["question_number", "variant_number", "question", "subquestion", "correct_response", "grade",
-                  "outlier", "occurrence", "responses"]
+    fieldnames = [
+        "question_number",
+        "variant_number",
+        "question",
+        "subquestion",
+        "correct_response",
+        "grade",
+        "outlier",
+        "occurrence",
+        "responses",
+    ]
     writer = csv.DictWriter(outfile, fieldnames, dialect=csv.excel_tab)
     writer.writeheader()
     for question, grade in questions:
         row = question._asdict()
-        grade["outlier"] = not (median_grade - 2 * mad <= grade["grade"] <= median_grade + 2 * mad)
+        grade["outlier"] = not (
+            median_grade - 2 * mad <= grade["grade"] <= median_grade + 2 * mad
+        )
         row.update(grade)
         writer.writerow(row)
 
 
-def shorten_question_text(question_type, question_number, short_question_text):
-
-    def normalize_question_text(question_text):
-        question_text = handler.__super_normalize_question_text(question_text)
-        return f"{short_question_text} {hash(question_text)}"
-
-    handler = question_type(question_number)
-    setattr(handler, "__super_normalize_question_text", handler.normalize_question_text)
-    setattr(handler, "normalize_question_text", normalize_question_text)
-    return handler
+def main() -> None:
+    args = parse_args()
+    custom_handlers: list[BaseQuestion] = []
+    normalize_questions(args.input, args.output, args.handlers + custom_handlers)
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    custom_handlers = []
-    normalize_questions(args.input, args.output, args.handlers + custom_handlers)
+    main()

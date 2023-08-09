@@ -1,0 +1,75 @@
+---
+repos:
+  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
+    rev: v4.4.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-yaml
+        args:
+          - '--allow-multiple-documents'
+      - id: debug-statements
+      - id: end-of-file-fixer
+        exclude: .*\.svg
+      - id: mixed-line-ending
+        args:
+          - '--fix=lf'
+      - id: name-tests-test
+        args:
+          - '--pytest-test-first'
+      - id: trailing-whitespace
+  - repo: 'https://github.com/adrienverge/yamllint.git'
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args:
+          - '--strict'
+          - >-
+            -d {extends: default, rules: {
+            line-length: {max: 120, level: warning},
+            truthy: {allowed-values: ["true", "True", "false", "False"]},
+            }}
+
+  - repo: 'https://github.com/psf/black'
+    rev: 23.7.0
+    hooks:
+      - id: black
+  - repo: 'https://github.com/PyCQA/isort'
+    rev: 5.12.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - 'flake8-bugbear'
+          - 'flake8-docstrings'
+          - 'flake8-implicit-str-concat'
+        args:
+          - '--max-line-length=88'
+          - '--extend-ignore=D100,D101,D102,D103,D104,D105,D107'
+          - '--docstring-convention=google'
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.4.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-pyyaml
+          - types-markdown
+  - repo: 'https://github.com/shellcheck-py/shellcheck-py'
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        args:
+          - '--severity=style'
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types:
+          - python
