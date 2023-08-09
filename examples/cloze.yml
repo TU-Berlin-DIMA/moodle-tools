@@ -9,7 +9,8 @@ feedback: General feedback
 title: Numerical cloze question with feedback
 question: |
   <p>
-  Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
+  Enter the correct value:
+  {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
 feedback: General feedback
 ---
@@ -22,5 +23,6 @@ question: |
 title: Multiple choice cloze question with feedback
 question: |
   <p>
-  Select the correct value: {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
+  Select the correct value:
+  {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
   </p>

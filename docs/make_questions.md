@@ -1,6 +1,6 @@
 # Generate Moodle quiz questions
 
-This tool allows the generation of multiple questions (of the same type) from a single YAML document. 
+This tool allows the generation of multiple questions (of the same type) from a single YAML document.
 The questions can be imported into a question category in Moodle.
 We can then create a quiz entry which randomly selects a question from the question category.
 
@@ -370,10 +370,10 @@ The full YAML format for such a question is as follows:
 
 ```yaml
 ---
-title: Sample SQL Coderunner Question 
+title: Sample SQL Coderunner Question
 general_feedback: A query was submitted
 database: eshop
-question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
+question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n
            Die Namen der teuersten Produkte und deren Preis?"
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
@@ -409,9 +409,9 @@ The following fields are optional, and therefore do not need to be provided:
 
 Therefore, a minimal version of the above '.yml' file looks as follows:
 ```yaml
-title: Sample SQL Coderunner Question 
+title: Sample SQL Coderunner Question
 database: eshop
-question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n 
+question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n
            Die Namen der teuersten Produkte und deren Preis?"
 correct_query: "SELECT Name, Preis FROM Produkt\n
             WHERE Preis = (\n
@@ -432,7 +432,7 @@ You can then execute the following command:
 python3 -m moodle_tools.make_questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
 ```
 If you do not want to provide results manually, you **must** be in the root folder of the 'klausurfragen' git-repository (or spoof it).
-The 'klausurfragen' repo contains the database files used in ISIS in the 'dbs' folder. 
+The 'klausurfragen' repo contains the database files used in ISIS in the 'dbs' folder.
 You can then run moodle-tools on the examples in the 'isda-dql-quiz' folder as follows:
 ```bash
 python3 -m moodle_tools.make_questions coderunner < isda-dql-quiz/coderunner.yml > isda-dql-quiz/coderunner.xml

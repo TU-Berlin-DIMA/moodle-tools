@@ -40,7 +40,7 @@ The example below uses an DBT quiz from 2021.
 It specifies True/False questions (`--tf`), and multiple choice questions (`--mc`).
 
 ```
-python3 -m moodle_tools.analyze_results --tf 2 4 6 7 8 9 10 11 16 17 19 20 --mc 18 21  < DBT\ WS2122-Exam\ 2\ Final\ evaluation-responses.csv > normalized-exam2.csv 
+python3 -m moodle_tools.analyze_results --tf 2 4 6 7 8 9 10 11 16 17 19 20 --mc 18 21  < DBT\ WS2122-Exam\ 2\ Final\ evaluation-responses.csv > normalized-exam2.csv
 ```
 
 The script prints the following output:
@@ -68,6 +68,6 @@ The file contains the following columns:
 - The question type has to be determined automatically.
 - It is not possible to mix different question types for a question number.
 - It is possible to select multiple random questions from a single question category.
-  These are treated as separate questions. 
+  These are treated as separate questions.
   It would be nice to analyze them together.
 - Using a colon (`:`) in a question text can lead to errors.
