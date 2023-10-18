@@ -9,6 +9,7 @@ answers:
 title: Title
 question: Extended format
 general_feedback: General feedback
+shuffle_answers: False
 choices: [!!str Yes, !!str No, Maybe]
 answers:
   - answer: Answer 1
@@ -23,6 +24,7 @@ answers:
 ---
 title: Memory hierarchy
 question: For each category, say descending or ascending
+shuffle_answers: True
 choices: [Ascending, Descending]
 answers:
   - answer: Cost

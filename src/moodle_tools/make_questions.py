@@ -198,13 +198,14 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 
     def __init__(self, question, answers, title="", general_feedback="", correct_feedback="Your answer is correct.",
                  partially_correct_feedback="Your answer is partially correct.",
-                 incorrect_feedback="Your answer is incorrect."):
+                 incorrect_feedback="Your answer is incorrect.", shuffle_answers=True):
         super().__init__(title)
         self.question = preprocess_text(question)
         self.general_feedback = general_feedback
         self.correct_feedback = correct_feedback
         self.partially_correct_feedback = partially_correct_feedback
         self.incorrect_feedback = incorrect_feedback
+        self.shuffle_answers = shuffle_answers
 
         # Transform simple string answers into complete answers
         self.answers = [answer if type(answer) == dict else {"answer": answer} for answer in answers]
@@ -259,7 +260,7 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
             <hidden>0</hidden>
             <idnumber></idnumber>
             <single>true</single>
-            <shuffleanswers>true</shuffleanswers>
+            <shuffleanswers>{"true" if self.shuffle_answers else "false"}</shuffleanswers>
             <answernumbering>none</answernumbering>
             <showstandardinstruction>1</showstandardinstruction>
             <correctfeedback format="html">
@@ -280,12 +281,13 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 class MultipleTrueFalseQuestion(BaseQuestion):
     """General template for a question with multiple true/false questions."""
 
-    def __init__(self, question, answers, choices=(True, False), title="", general_feedback=""):
+    def __init__(self, question, answers, choices=(True, False), title="", general_feedback="", shuffle_answers=True):
         super().__init__(title)
         self.question = preprocess_text(question)
         self.answers = answers
         self.choices = choices
         self.general_feedback = general_feedback
+        self.shuffle_answers = shuffle_answers
 
         # Update missing feedback
         for index, answer in enumerate(self.answers):
@@ -352,7 +354,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
             <hidden>0</hidden>
             <idnumber></idnumber>
             <scoringmethod><text>subpoints</text></scoringmethod>
-            <shuffleanswers>true</shuffleanswers>
+            <shuffleanswers>{"true" if self.shuffle_answers else "false"}</shuffleanswers>
             <numberofrows>{len(self.answers)}</numberofrows>
             <numberofcolumns>{len(self.choices)}</numberofcolumns>
             <answernumbering>none</answernumbering>

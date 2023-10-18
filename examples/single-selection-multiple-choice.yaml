@@ -8,6 +8,7 @@ answers:
 question: Extended format
 title: Question title
 general_feedback: General feedback
+shuffle_answers: True
 answers:
   - answer: Correct answer
     points: 100

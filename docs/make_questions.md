@@ -146,6 +146,7 @@ The full YAML format for such a question is as follows:
 question: Extended format
 title: Question title
 general_feedback: General feedback
+shuffle_answers: True
 answers:
   - answer: Correct answer
     points: 100
@@ -193,6 +194,7 @@ The full YAML format for such a question is as follows:
 question: Full format
 title: Question title
 general_feedback: General Feedback
+shuffle_answers: True
 answers:
   - answer: Answer 1
     choice: True
