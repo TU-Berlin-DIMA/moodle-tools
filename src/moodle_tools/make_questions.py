@@ -146,8 +146,14 @@ def optional_text(text: str | None) -> str:
 
 def inline_image(text: str) -> str:
     """This function detects SVG or PNG images and inlines them."""
+<<<<<<< HEAD
     re_img = re.compile(
         '<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>'
+=======
+
+    re_img = re.compile(
+        '<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?\/>'
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     )
     for match in re_img.finditer(text):
         filename = f"{match.group(1)}.{match.group(2)}"
@@ -280,7 +286,10 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
         correct_feedback="Your answer is correct.",
         partially_correct_feedback="Your answer is partially correct.",
         incorrect_feedback="Your answer is incorrect.",
+<<<<<<< HEAD
         shuffle_answers=True,
+=======
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     ):
         super().__init__(title)
         self.question = preprocess_text(question)
@@ -292,8 +301,12 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 
         # Transform simple string answers into complete answers
         self.answers = [
+<<<<<<< HEAD
             answer if isinstance(answer, dict) else {"answer": answer}
             for answer in answers
+=======
+            answer if type(answer) == dict else {"answer": answer} for answer in answers
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
         ]
 
         # Update missing answer points and feedback
@@ -370,6 +383,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
     """General template for a question with multiple true/false questions."""
 
     def __init__(
+<<<<<<< HEAD
         self,
         question,
         answers,
@@ -377,6 +391,9 @@ class MultipleTrueFalseQuestion(BaseQuestion):
         title="",
         general_feedback="",
         shuffle_answers=True,
+=======
+        self, question, answers, choices=(True, False), title="", general_feedback=""
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     ):
         super().__init__(title)
         self.question = preprocess_text(question)
@@ -529,8 +546,12 @@ class NumericalQuestion(BaseQuestion):
 
         # Transform simple string answers into complete answers
         self.answers = [
+<<<<<<< HEAD
             answer if isinstance(answer, dict) else {"answer": answer}
             for answer in answers
+=======
+            answer if type(answer) == dict else {"answer": answer} for answer in answers
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
         ]
 
         # Update missing answer points and feedback
@@ -947,6 +968,13 @@ def load_questions(question_class, strict_validation, yaml_files):
 
 def generate_moodle_questions(generate_question_xml, question_class, args):
     """Generate an XML document containing Moodle questions.
+<<<<<<< HEAD
+=======
+
+    The type of Moodle question is defined by `question_type`.
+    The actual question is defined by `question_class`.
+    """
+>>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
 
     The type of Moodle question is defined by `question_type`.
     The actual question is defined by `question_class`.
