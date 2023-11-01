@@ -1,11 +1,7 @@
 ---
 repos:
   - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-<<<<<<< HEAD
     rev: v4.5.0
-=======
-    rev: v4.4.0
->>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -36,11 +32,7 @@ repos:
             }}
 
   - repo: 'https://github.com/psf/black'
-<<<<<<< HEAD
     rev: 23.10.1
-=======
-    rev: 23.7.0
->>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     hooks:
       - id: black
   - repo: 'https://github.com/PyCQA/isort'
@@ -48,11 +40,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
-<<<<<<< HEAD
     rev: 6.1.0
-=======
-    rev: 6.0.0
->>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     hooks:
       - id: flake8
         additional_dependencies:
@@ -64,22 +52,14 @@ repos:
           - '--extend-ignore=D100,D101,D102,D103,D104,D105,D107'
           - '--docstring-convention=google'
   - repo: https://github.com/pre-commit/mirrors-mypy
-<<<<<<< HEAD
     rev: v1.6.1
-=======
-    rev: v1.4.1
->>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     hooks:
       - id: mypy
         additional_dependencies:
           - types-pyyaml
           - types-markdown
   - repo: 'https://github.com/shellcheck-py/shellcheck-py'
-<<<<<<< HEAD
     rev: v0.9.0.6
-=======
-    rev: v0.9.0.5
->>>>>>> 08efa3e437d098b5aaca3a3f17fbc18a2e2b8287
     hooks:
       - id: shellcheck
         name: shellcheck
