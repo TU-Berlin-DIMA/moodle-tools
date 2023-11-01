@@ -28,8 +28,5 @@ additional_testcases:
       ------------------------------  ----------
       BMW                             50000
       Pokemon Glurak Holo Karte       50000
-column_widths:
-  - 30
-  - 10
 check_results: false
 database_connection: false
