@@ -8,9 +8,9 @@ We can then create a quiz entry which randomly selects a question from the quest
 - [Question types](#question-types)
 - [Command line usage](#command-line-usage)
 
-# Workflow
+## Workflow
 
-## Step 1: Create question category
+### Step 1: Create question category
 
 The variants of a single question should all go into a dedicated question category.
 
@@ -18,7 +18,7 @@ Best practice is to create a top-level category for each quiz (`2022-T1-1` in th
 
 ![Question categories](question-categories.png)
 
-## Step 2: Create a YAML document with questions
+### Step 2: Create a YAML document with questions
 
 Moodle quiz questions are generated from YAML files.
 In a later step, these are converted to Moodle XML and then imported into the question category.
@@ -61,7 +61,7 @@ answers:
     choice: False
 ```
 
-## Step 3: Convert the YAML files to Moodle XML
+### Step 3: Convert the YAML files to Moodle XML
 
 Since the question variants in the example above multiple true/false questions, we use the `multiple_true_false` question type:
 
@@ -69,7 +69,7 @@ Since the question variants in the example above multiple true/false questions, 
 python3 -m moodle_tools.make_questions multiple_true_false < example.yml > example.xml
 ```
 
-## Step 4: Import the questions into Moodle
+### Step 4: Import the questions into Moodle
 
 Import the generated Moodle XML into the question category.
 The questions that are already in the question category remain unchanged.
@@ -77,7 +77,7 @@ This means, that if you want to update your questions, you should first delete t
 
 ![Import questions into Moodle](import-questions.png)
 
-## Step 5: Add the questions to a Moodle quiz.
+### Step 5: Add the questions to a Moodle quiz
 
 To use the question variants in the quiz, add a random question from the question category.
 It is possible to use more than one question variant.
@@ -86,9 +86,7 @@ It is possible to use more than one question variant.
 
 ![Add random question](add-random-question-2.png)
 
-
-
-# Question types
+## Question Types
 
 At the moment, three question types are supported.
 
@@ -103,7 +101,7 @@ Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
 However, all question variants in a single document must be of the same question type.
 
-## Simple true/false questions
+### Simple true/false questions
 
 This question type specifies a simple true/false question.
 
@@ -135,7 +133,7 @@ Furthermore, if the correct answer is true, it is possible to shorten the specif
 statement: "Minimal true question"
 ```
 
-## Multiple choice questions with a single selection
+### Multiple choice questions with a single selection
 
 This question type specifies a multiple choice question in which the student can only select one answer.
 Moodle renders a radio button next to each answer.
@@ -177,7 +175,7 @@ answers:
   - Wrong answer 2
 ```
 
-## Multiple true/false questions
+### Multiple true/false questions
 
 This question types specifies a question which contains multiple answers.
 For each answer, the student has to indicate whether it is true of false.
@@ -255,7 +253,7 @@ This YAML content is rendered as follows in Moodle:
 
 ![Multiple true/false question](multiple-true-false.png)
 
-## Numerical questions
+### Numerical questions
 
 This question type expects a numerical value as the answer.
 It is possible to add tolerances to each answer.
@@ -296,7 +294,7 @@ answers:
   - 22
 ```
 
-## Missing words questions
+### Missing words questions
 
 Missing words questions contain multiple blank places in the question text.
 For each blank space, the student has to choose from multiple predefined phrases.
@@ -337,7 +335,7 @@ The third drop-down box consists of the choices `WHERE` and `SIGMA` which belong
 
 It is possible to ommit the feedback attributes.
 
-## Cloze questions
+### Cloze questions
 
 Cloze questions allow the creation of complex questions which ask for many related concepts.
 The individual subquestions can be of any type, e.g., numerical questions or multiple choice questions.
@@ -362,7 +360,7 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
-## CoderunnerSQL questions
+### CoderunnerSQL questions
 
 This question type expects a SQL query as the answer.
 
@@ -391,23 +389,22 @@ additional_testcases:
 ------------------------------  ----------\n
 BMW                             50000\n
 Pokemon Glurak Holo Karte       50000\n"
-column_widths:
-  - 30
-  - 10
 check_results: false
 database_connection: false
 ```
+
 The following fields are optional, and therefore do not need to be provided:
-+ title (title of the SQL Coderunner question in ISIS)
-+ general_feedback
-+ result (result of the correct_query when running against the initial state of the database; if not provided the 'correct_query' is run against the provided database and the result is used)
-+ additional_testcases
-  + new_result (result of the 'correct_query' when running against the state of the database after applying 'changes')
-+ column_widths (how many '----' are used for each column; defaults to width of 30 for all columns)
-+ check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
-+ database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
+
+- title (title of the SQL Coderunner question in ISIS)
+- general_feedback
+- result (result of the correct_query when running against the initial state of the database; if not provided the 'correct_query' is run against the provided database and the result is used)
+- additional_testcases
+  - new_result (result of the 'correct_query' when running against the state of the database after applying 'changes')
+- check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
+- database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
 
 Therefore, a minimal version of the above '.yml' file looks as follows:
+
 ```yaml
 title: Sample SQL Coderunner Question
 database: eshop
@@ -423,23 +420,28 @@ additional_testcases:
              INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
              INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
 ```
+
 Note that this requires local database files for automatic result generation.
 
-### CoderunnerSQL Command line
+#### CoderunnerSQL Command line
+
 To generate an '.xml' file that can be uploaded to ISIS from a CoderunnerSQL '.yml' file with manually provided results use the following command:
-You can then execute the following command:
+
 ```bash
 python3 -m moodle_tools.make_questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
 ```
+
 If you do not want to provide results manually, you **must** be in the root folder of the 'klausurfragen' git-repository (or spoof it).
-The 'klausurfragen' repo contains the database files used in ISIS in the 'dbs' folder.
+The 'klausurfragen' repo contains the database files used in ISIS in the 'datenbanken' folder.
 You can then run moodle-tools on the examples in the 'isda-dql-quiz' folder as follows:
+
 ```bash
 python3 -m moodle_tools.make_questions coderunner < isda-dql-quiz/coderunner.yml > isda-dql-quiz/coderunner.xml
 ```
+
 Adapt this to your own files as necessary.
 
-# Command line usage
+## Command Line Usage
 
 You can get usage information with the following command:
 
@@ -449,7 +451,7 @@ python3 -m moodle_tools.make_questions -h
 
 Output:
 
-```
+```text
 usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [--add-question-index] [-m] {true_false,multiple_true_false,multiple_choice,cloze} ...
 
 options:
@@ -476,12 +478,12 @@ Possible commands:
 First the user specifies options that modify the XML generation process.
 Then the user specifies the question type, i.e., `true_false` , `multiple_true_false`, `multiple_choice`
 
-## Input / output handling
+### Input / output handling
 
 The input YAML and output XML file are specified with `-i` and `-o`, respectively.
 It is also possible to use shell redirection.
 
-## Question titles and numbers
+### Question titles and numbers
 
 Each question can specify the question title in the YAML format using the key `title`.
 If now question title is given, the generated XML file with contain the title specified with the command line option `--title`.
@@ -489,7 +491,7 @@ The default title is `Knowledge question`.
 
 It is possible to automatically number each question in a YAML file with the command line switch `--add-question-index`.
 
-## Strict validation
+### Strict validation
 
 This tool performs some validation on the specified question.
 The exact check depend on the question type.
@@ -502,7 +504,7 @@ Strict validation is enabled by default in order to encourage providing feedback
 However, in some cases, the questions and answers are clear enough, so that feedback does not provide any value.
 In this case, it is okay to disable strict validation with the command line switch `--lenient`.
 
-## Question and answer text formatting
+### Question and answer text formatting
 
 Question and answer text accept HTML content.
 To simplify writing complex questions and answers, it is also possible to write them in Markdown.
@@ -514,7 +516,7 @@ Note that LaTeX formulas need to be escaped differently when using Markdown.
 - Without `--markdown`: Write LaTeX formulas with a single backslash: `\ (a^2 + b^2 = c^2 \)`
 - With `--markdown`: Write LaTeX formulas with a two backslashs: `\\ (a^2 + b^2 = c^2 \\)`
 
-## Inline images
+### Inline images
 
 PNG or SVG images specified in question and answer texts will be inlined in the exported XML document.
 This way, we don't have to manually upload images using the Moodle web interface.

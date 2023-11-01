@@ -13,39 +13,39 @@ The script also determines the median score for the entire quiz and the median a
 For each subquestion, the script then checks if the score is outside the range of median +/- 2*MAD.
 If so, the subquestion is marked as an outlier.
 
-# Workflow
+## Workflow
 
-## Step 0a: Set your Moodle language to English
+### Step 0a: Set your Moodle language to English
 
 The script assumes that the results where exported from an English Moodle instance.
 
-## Step 0b: Perform a regrading of the quiz
+### Step 0b: Perform a regrading of the quiz
 
 Once the quiz has completed, it will contain the answers in the language chosen for each individual student.
 For example, for True/False questions, the answer can be `True` and `False` or `Wahr` and `Falsch`, depending on whether the student has their Moodle language set to English or German.
 Regrading the quiz (without changing a question!), will convert all these answers to the language of the person doing the regrading.
 
-## Step 1: Download the quiz responses as a CSV file
+### Step 1: Download the quiz responses as a CSV file
 
 Make sure to set the language to English and to also download the question text and right answers.
 
-## Step 2: Determine the type of questions for each quiz
+### Step 2: Determine the type of questions for each quiz
 
 At the moment, this is a manual process.
 Look at the quiz, and determine for each question whether it is a numeric, true/false, multiple choice, multiple true/false, drop-down, or Cloze question.
 
-# Step 3: Analyze the responses
+## Step 3: Analyze the responses
 
 The example below uses an DBT quiz from 2021.
 It specifies True/False questions (`--tf`), and multiple choice questions (`--mc`).
 
-```
+```bash
 python3 -m moodle_tools.analyze_results --tf 2 4 6 7 8 9 10 11 16 17 19 20 --mc 18 21  < DBT\ WS2122-Exam\ 2\ Final\ evaluation-responses.csv > normalized-exam2.csv
 ```
 
 The script prints the following output:
 
-```
+```bash
 Median grade: 75.0, MAD: 15.0
 ```
 
@@ -63,7 +63,7 @@ The file contains the following columns:
 - `occurence`: How often this variant was chosen for this question number.
 - `responses`: All responses given by students.
 
-# Limitations
+## Limitations
 
 - The question type has to be determined automatically.
 - It is not possible to mix different question types for a question number.
