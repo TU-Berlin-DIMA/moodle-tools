@@ -146,9 +146,8 @@ def optional_text(text: str | None) -> str:
 
 def inline_image(text: str) -> str:
     """This function detects SVG or PNG images and inlines them."""
-
     re_img = re.compile(
-        '<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?\/>'
+        '<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>'
     )
     for match in re_img.finditer(text):
         filename = f"{match.group(1)}.{match.group(2)}"
@@ -272,9 +271,17 @@ class TrueFalseQuestion(BaseQuestion):
 class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
     """General template for a multiple choice question with a single selection."""
 
-    def __init__(self, question, answers, title="", general_feedback="", correct_feedback="Your answer is correct.",
-                 partially_correct_feedback="Your answer is partially correct.",
-                 incorrect_feedback="Your answer is incorrect.", shuffle_answers=True):
+    def __init__(
+        self,
+        question,
+        answers,
+        title="",
+        general_feedback="",
+        correct_feedback="Your answer is correct.",
+        partially_correct_feedback="Your answer is partially correct.",
+        incorrect_feedback="Your answer is incorrect.",
+        shuffle_answers=True,
+    ):
         super().__init__(title)
         self.question = preprocess_text(question)
         self.general_feedback = general_feedback
@@ -285,7 +292,8 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 
         # Transform simple string answers into complete answers
         self.answers = [
-            answer if type(answer) == dict else {"answer": answer} for answer in answers
+            answer if isinstance(answer, dict) else {"answer": answer}
+            for answer in answers
         ]
 
         # Update missing answer points and feedback
@@ -338,7 +346,9 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
             <hidden>0</hidden>
             <idnumber></idnumber>
             <single>true</single>
-            <shuffleanswers>{"true" if self.shuffle_answers else "false"}</shuffleanswers>
+            <shuffleanswers>
+              {"true" if self.shuffle_answers else "false"}
+            </shuffleanswers>
             <answernumbering>none</answernumbering>
             <showstandardinstruction>1</showstandardinstruction>
             <correctfeedback format="html">
@@ -359,7 +369,15 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
 class MultipleTrueFalseQuestion(BaseQuestion):
     """General template for a question with multiple true/false questions."""
 
-    def __init__(self, question, answers, choices=(True, False), title="", general_feedback="", shuffle_answers=True):
+    def __init__(
+        self,
+        question,
+        answers,
+        choices=(True, False),
+        title="",
+        general_feedback="",
+        shuffle_answers=True,
+    ):
         super().__init__(title)
         self.question = preprocess_text(question)
         self.answers = answers
@@ -367,13 +385,11 @@ class MultipleTrueFalseQuestion(BaseQuestion):
         self.general_feedback = general_feedback
         self.shuffle_answers = shuffle_answers
 
-        # Update missing feedback
-        for index, answer in enumerate(self.answers):
+        for answer in self.answers:
+            # Update missing feedback
             if "feedback" not in answer:
                 answer["feedback"] = ""
-
-        # Inline images
-        for answer in self.answers:
+            # Inline images
             answer["answer"] = preprocess_text(answer["answer"])
 
     def validate(self):
@@ -418,6 +434,25 @@ class MultipleTrueFalseQuestion(BaseQuestion):
             </weight>"""
 
         newline = "\n"
+        rows = newline.join(
+            [
+                generate_row(index, answer)
+                for index, answer in enumerate(self.answers, start=1)
+            ]
+        )
+        columns = newline.join(
+            [
+                generate_column(index, choice)
+                for index, choice in enumerate(self.choices, start=1)
+            ]
+        )
+        fields = newline.join(
+            [
+                generate_field(row_index, column_index, answer, choice)
+                for row_index, answer in enumerate(self.answers, start=1)
+                for column_index, choice in enumerate(self.choices, start=1)
+            ]
+        )
         question_xml = f"""\
         <question type="mtf">
             <name>
@@ -434,13 +469,15 @@ class MultipleTrueFalseQuestion(BaseQuestion):
             <hidden>0</hidden>
             <idnumber></idnumber>
             <scoringmethod><text>subpoints</text></scoringmethod>
-            <shuffleanswers>{"true" if self.shuffle_answers else "false"}</shuffleanswers>
+            <shuffleanswers>
+              {"true" if self.shuffle_answers else "false"}
+            </shuffleanswers>
             <numberofrows>{len(self.answers)}</numberofrows>
             <numberofcolumns>{len(self.choices)}</numberofcolumns>
             <answernumbering>none</answernumbering>
-{newline.join([generate_row(index, answer) for index, answer in enumerate(self.answers, start=1)])}
-{newline.join([generate_column(index, choice) for index, choice in enumerate(self.choices, start=1)])}
-{newline.join([generate_field(row_index, column_index, answer, choice) for row_index, answer in enumerate(self.answers, start=1) for column_index, choice in enumerate(self.choices, start=1)])}
+{rows}
+{columns}
+{fields}
           </question>"""
         return question_xml
 
@@ -492,7 +529,8 @@ class NumericalQuestion(BaseQuestion):
 
         # Transform simple string answers into complete answers
         self.answers = [
-            answer if type(answer) == dict else {"answer": answer} for answer in answers
+            answer if isinstance(answer, dict) else {"answer": answer}
+            for answer in answers
         ]
 
         # Update missing answer points and feedback
@@ -890,7 +928,6 @@ def load_questions(question_class, strict_validation, yaml_files):
     If `strict_validation` is set, filter those questions that contain missing optional
     information (e.g., feedback).
     """
-
     bullet = "\n- "
 
     for properties in yaml_files:
@@ -914,7 +951,6 @@ def generate_moodle_questions(generate_question_xml, question_class, args):
     The type of Moodle question is defined by `question_type`.
     The actual question is defined by `question_class`.
     """
-
     # Create question instances from a list of YAML documents.
     questions = [
         question

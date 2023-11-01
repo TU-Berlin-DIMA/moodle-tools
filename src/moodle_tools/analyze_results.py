@@ -238,7 +238,7 @@ class DropDownQuestion(MultipleResponseQuestion):
 
     def normalize_question_text(self, question_text):
         question_text = question_text.replace("\n", " ")
-        question_text = re.sub("{.*} -> {.*}", "", question_text, re.DOTALL)
+        question_text = re.sub("{.*} -> {.*}", "", question_text, flags=re.DOTALL)
         return question_text
 
 
