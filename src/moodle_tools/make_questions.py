@@ -654,166 +654,107 @@ class MissingWordsQuestion(BaseQuestion):
 
 
 class CoderunnerQuestionSQL(BaseQuestion):
-    """General template for a coderunner question.
-
-    This question type is currently limited to SQL queries.
-
-    The YAML format is the following:
-        title (optional): Title of the question
+    """General template for a coderunner question. Currently, we are limited to SQL queries.
+    The YML format is the following:
+        (optional) title: Title of the question
         database: Name of the ISIS database (for example "eshop" or "uni")
         question: The coderunner question displayed to students
         correct_query: The SQL string that, when executed, leads to the correct result
-        general_feedback (optional): Feedback that is provided when an answer to a
-            coderunner question is submitted
-        result (optional): The string result of the correct_query (SQL) given the
-            initial state of the database
-        additional_testcases (optional):
-            testcase: list of test cases with two possible keys
-                change: A change applied between testcases to adapt the data in the
-                    tables to a new testcase.
-                new_result (optional): The result of an additional testcase (right now
-                    the correct result of the SQL query)
-        column_widths (optional): width of the columns in the result string
-        database_connection (optional): If this bool flag is set (default), you must
-            execute moodle_tools in the git repo 'klausuraufgaben' or spoof it. If this
-            bool flag is false, we do not attempt to create a database connection.
+        (optional) additional_testcases:
+                changes: A change applied between testcases to adapt the data in the tables to a new testcase.
+                         (NOTE: to run the query without changes, add 'additional_testcases: ""' as the first additional_change)
+                (optional) new_result: The result of an additional testcase (right now the correct result of the SQL query)
+        (optional) check_results: Whether the provided query is run and the result is compared against the manually provided.
+        (optional) general_feedback: Feedback that is provided when an answer to a coderunner question is submitted
+        (optional) database_connection: If this bool flag is set (default), you must execute moodle_tools in the GIT repo
+                                        'klausuraufgaben' or spoof it. If this bool flag is false, we do not attempt to
+                                        create a database connection.
     """
 
-    def __init__(
-        self,
-        database,
-        question,
-        correct_query,
-        title="",
-        result="",
-        additional_testcases="",
-        column_widths=None,
-        check_results=False,
-        general_feedback="",
-        database_connection=True,
-    ):
+    def __init__(self, database, question, correct_query, title="", additional_testcases="", check_results=False, general_feedback="", database_connection=True):
+        # Todo: Create a way (possible with extra script) to apply moodle-tools to entire folder with '.yml' files
         super().__init__(title)
-        if column_widths is None:
-            column_widths = []
         self.database_name = database
+        self.database_path = Path().cwd() / ("sql-aufgaben/datenbanken/" + database + ".db")
         self.question = question
-        correct_query = correct_query.replace(";\n", ";")
-        if correct_query[-1] != ";":
-            raise Exception(
-                "SQL Queries must end with a ';' symbol. But the last symbol was: "
-                + correct_query[-1]
-            )
-        self.correct_query = correct_query.replace("\n ", "\n")
+        correct_query = correct_query.replace(';\n', ';')
+        if correct_query[-1] != ';':
+            raise Exception("SQL Queries must end with a ';' symbol. But the last symbol was: " + correct_query[-1])
+        self.correct_query = sqlparse.format(correct_query.replace('\n ', '\n'), reindent=True, keyword_case='upper')
         if check_results and not database_connection:
-            raise Exception(
-                "Checking results requires a database connection. However, you set"
-                " database_connection to false."
-            )
+            raise Exception("Checking results requires a database connection. However, you set database_connection to false.")
         if database_connection:
-            if (
-                Path().cwd().name != "klausurfragen"
-                or not (Path().cwd() / "dbs").exists()
-            ):
-                raise Exception(
-                    "moodle-tools is not executed in the correct folder. The correct"
-                    " repository should be 'klausuraufgaben' and it should contain a"
-                    " folder called 'dbs' that contains the required'.db' files to"
-                    " create Coderunner questions."
-                )
-            p = Path().cwd() / ("dbs/" + database + ".db")
-            if not p.exists():
-                raise Exception("Provided database path did not exsist: " + str(p))
-            self.con = sqlite3.connect(str(p), timeout=5)
+            if Path().cwd().name != "klausurfragen" or not (Path().cwd() / "dbs").exists():
+                raise Exception("moodle-tools is not executed in the correct folder. The correct repository should be "
+                              "'klausuraufgaben' and it should contain a folder called 'dbs' that contains the required"
+                              "'.db' files to create Coderunner questions.")
+            if not self.database_path.exists():
+                raise Exception("Provided database path did not exsist: " + str(self.database_path))
+            self.con = sqlite3.connect(str(self.database_path), timeout=5)
             self.cursor = self.con.cursor()
-        # Check if column widths are provided.
-        self.DEFAULT_COLUMN_WIDTH = 30
-        self.column_widths = []
-        self.column_widths_string = '{"columnwidths": ['
-        if len(column_widths) > 0 and column_widths is not None:
-            self.column_widths_string = '{"columnwidths": ['
-            for column_width in column_widths:
-                self.column_widths.append(column_width)
-                self.column_widths_string += str(column_width) + ","
-            self.column_widths_string = self.column_widths_string[:-1] + "]}"
+        # Execute additional test cases and get results.
+        self.column_widths_string = ""
         self.additional_testcases = additional_testcases
         self.testcases_string = ""
         self.general_feedback = general_feedback
-        # Get results
         self.results = []
         # Add additional results if present
-        # if additional_testcases is None:
-
         if additional_testcases is None:
             self.results.append(self.fetch_database_result())
         else:
             for additional_testcase in self.additional_testcases:
-                # if additional_testcase is None:
-                #     self.results.append("")
-                # else:
                 if "new_result" not in additional_testcase:
-                    # If a user mistypes 'new_result' or names it differently, we simply
-                    # generate a it. We could use the length of 'additional_testcase'
-                    # (== 3) to check if something different to 'new_result' is given.
+                    # reset connection
+                    self.con = sqlite3.connect(str(self.database_path), timeout=5)
+                    self.cursor = self.con.cursor()
+                    # If a user mistypes 'new_result' or names it differently, we simply generate a result.
                     if not database_connection:
-                        raise Exception(
-                            "You must provide a result, if you set database_connection"
-                            " to false, otherwise wecannot automatically fetch the"
-                            " result from the database."
-                        )
+                        raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
+                                        "cannot automatically fetch the result from the database.")
+                    # need to reset database
                     if additional_testcase["changes"] != "":
                         self.execute_change_queries(additional_testcase["changes"])
                     self.results.append(self.fetch_database_result())
                 else:
-                    self.results.append(
-                        additional_testcase["new_result"].replace("\n ", "\n")
-                    )
+                    # reset connection
+                    self.con = sqlite3.connect(str(self.database_path), timeout=5)
+                    self.cursor = self.con.cursor()
+                    self.results.append(additional_testcase["new_result"].replace('\n ', '\n'))
                     if check_results:
                         if additional_testcase["changes"] != "":
                             self.execute_change_queries(additional_testcase["changes"])
                         correct_query_result = self.fetch_database_result()
                         if correct_query_result != self.results[-1]:
-                            raise Exception(
-                                "Provided result: "
-                                + self.results[-1]
-                                + "did not match the result"
-                                "returned by executing the provided 'correct_query': "
-                                + correct_query_result
-                            )
+                            raise Exception("Provided result: " + self.results[-1] + "did not match the result"
+                                            "returned by executing the provided 'correct_query': " + correct_query_result)
         self.con.close()
 
-    def fetch_database_result(self):
-        result = self.cursor.execute(self.correct_query)
-        names = list(map(lambda x: x[0], self.cursor.description))
-        name_string = ""
-        format_string = ""
-        # if column_widths are not given, add default column_widths
-        if len(self.column_widths) == 0:
-            for i in range(0, len(names)):
-                self.column_widths.append(self.DEFAULT_COLUMN_WIDTH)
-                self.column_widths_string += str(i) + ","
-            self.column_widths_string = self.column_widths_string[:-1] + "]}"
-        for i, length in enumerate(self.column_widths):
-            name_string += names[i] + " " * (length - len(names[i])) + "  "
-            format_string += "-" * length + "  "
-        name_string = name_string.rstrip() + "\n" + format_string.rstrip() + "\n"
-        for row in result.fetchall():
-            for i, length in enumerate(self.column_widths):
-                current_result = str(row[i])
-                name_string += (
-                    current_result + " " * (length - len(current_result)) + "  "
-                )
-            name_string = name_string.rstrip() + "\n"
-        return name_string
-
     def execute_change_queries(self, change_queries):
-        if ";" not in change_queries:
-            raise Exception(
-                "Additional testcases supplied, but no SQL queries that are "
-                "terminated with a ';' symbol were found."
-            )
-        change_queries_list = change_queries.split(";")
+        if ';' not in change_queries:
+            raise Exception("Additional testcases supplied, but no SQL queries that are "
+                            "terminated with a ';' symbol were found.")
+        change_queries_list = change_queries.split(';')
         for change_query in change_queries_list:
             self.cursor.execute(change_query.rstrip().lstrip())
+
+    def fetch_database_result(self):
+        self.cursor.execute(self.correct_query)
+        name_string = ""
+        rows = self.cursor.fetchall()
+        column_names = [description[0] for description in self.cursor.description]
+        column_lengths = [max(len(name), max(len(str(row[i])) for row in rows)) for i, name in enumerate(column_names)]
+        for i, name in enumerate(column_names):
+            name_string += name + ((column_lengths[i] - len(name)) * ' ') + "  "
+        name_string += '\n'
+        for length in column_lengths:
+            name_string += length * '-' + "  "
+        name_string += '\n'
+        for row in rows:
+            for i, value in enumerate(row):
+                value = str(value)
+                name_string += str(value) + ((column_lengths[i] - len(value)) * ' ') + "  "
+            name_string += '\n'
+        return name_string
 
     def validate(self):
         errors = []
@@ -826,35 +767,37 @@ class CoderunnerQuestionSQL(BaseQuestion):
         return errors
 
     def generate_testcases(self):
+        # Todo: is this requried?
         if self.additional_testcases is None:
             self.additional_testcases = [None]
         for i, testcase in enumerate(self.additional_testcases):
-            # A 'change' is used to change the data in tables to produce different
-            # results for a new testcase.
+            # A 'change' is used to change the data in tables to produce different results for a new testcase.
             change = ""
             if testcase is not None:
-                change = testcase["changes"].replace("\n ", "\n")
-            self.testcases_string += (
-                '\n<testcase testtype="0" useasexample="0" hiderestiffail="0"'
-                ' mark="1.0000000">\n<testcode>\n<text>--Testfall '
-                + str(i + 1)
-                + "</text>\n"
-                "</testcode>\n"
-                "<stdin>\n"
-                "   <text></text>\n"
-                "</stdin>\n"
-                "<expected>\n"
-                "<text>"
-                + self.results[i]
-                + "</text>\n</expected>\n<extra>\n   <text>"
-                + change
-                + "</text>\n"
-                "</extra>\n"
-                "<display>\n"
-                "<text>SHOW</text>\n"
-                "</display>\n"
-                "</testcase>"
-            )
+                change = testcase["changes"].replace('\n ', '\n')
+            # Only show the first testcase (Todo: make configurable)
+            show_or_hide = 'SHOW'
+            if i > 0:
+                show_or_hide = 'HIDE'
+            self.testcases_string += '\n<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">\n' \
+                                '<testcode>\n' \
+                                '<text>--Testfall '+str(i+1)+'</text>\n' \
+                                '</testcode>\n' \
+                                '<stdin>\n' \
+                                '   <text></text>\n' \
+                                '</stdin>\n' \
+                                '<expected>\n' \
+                                '<text>' + self.results[i] + \
+                                '</text>\n' \
+                                '</expected>\n' \
+                                '<extra>\n' \
+                                '   <text><![CDATA[' + change + ']]></text>\n' \
+                                '</extra>\n' \
+                                '<display>\n' \
+                                '<text>' + show_or_hide + '</text>\n' \
+                                '</display>\n' \
+                                '</testcase>'
+
 
     def generate_xml(self):
         self.generate_testcases()
@@ -917,7 +860,7 @@ class CoderunnerQuestionSQL(BaseQuestion):
             <prototypeextra></prototypeextra>
             <testcases> {self.testcases_string}
             {moodle_tools.isis_database_configurations.get_database_config(self.database_name)}
-            </testcases>
+    </testcases>
           </question>"""
         return question_xml
 
