@@ -48,7 +48,7 @@ repos:
           - 'flake8-docstrings'
           - 'flake8-implicit-str-concat'
         args:
-          - '--max-line-length=88'
+          - '--max-line-length=120'
           - '--extend-ignore=D100,D101,D102,D103,D104,D105,D107'
           - '--docstring-convention=google'
   - repo: https://github.com/pre-commit/mirrors-mypy

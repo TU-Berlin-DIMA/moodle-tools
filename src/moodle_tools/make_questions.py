@@ -8,6 +8,7 @@ import textwrap
 from pathlib import Path
 
 import markdown
+import sqlparse
 import yaml
 
 import moodle_tools.isis_database_configurations
@@ -36,9 +37,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="Knowledge question",
     )
-    parser.add_argument(
-        "-l", "--lenient", help="Skip strict validation.", action="store_true"
-    )
+    parser.add_argument("-l", "--lenient", help="Skip strict validation.", action="store_true")
     parser.add_argument(
         "-m",
         "--markdown",
@@ -59,13 +58,9 @@ def parse_args() -> argparse.Namespace:
     subparsers = parser.add_subparsers(title="Possible commands")
 
     # Generate a true false question
-    true_false_question = subparsers.add_parser(
-        "true_false", help="Generate Moodle XML for a true/false question."
-    )
+    true_false_question = subparsers.add_parser("true_false", help="Generate Moodle XML for a true/false question.")
     true_false_question.set_defaults(
-        command=functools.partial(
-            generate_moodle_questions, TrueFalseQuestion.generate_xml, TrueFalseQuestion
-        )
+        command=functools.partial(generate_moodle_questions, TrueFalseQuestion.generate_xml, TrueFalseQuestion)
     )
 
     # Generate a question with multiple true false questions
@@ -95,22 +90,14 @@ def parse_args() -> argparse.Namespace:
     )
 
     # Generate a Cloze question
-    cloze_question = subparsers.add_parser(
-        "cloze", help="Generate Moodle XML for a Cloze question."
-    )
+    cloze_question = subparsers.add_parser("cloze", help="Generate Moodle XML for a Cloze question.")
     cloze_question.set_defaults(
-        command=functools.partial(
-            generate_moodle_questions, ClozeQuestion.generate_xml, ClozeQuestion
-        )
+        command=functools.partial(generate_moodle_questions, ClozeQuestion.generate_xml, ClozeQuestion)
     )
 
-    numerical_question = subparsers.add_parser(
-        "numerical", help="Generate Moodle XML for a numerical question."
-    )
+    numerical_question = subparsers.add_parser("numerical", help="Generate Moodle XML for a numerical question.")
     numerical_question.set_defaults(
-        command=functools.partial(
-            generate_moodle_questions, NumericalQuestion.generate_xml, NumericalQuestion
-        )
+        command=functools.partial(generate_moodle_questions, NumericalQuestion.generate_xml, NumericalQuestion)
     )
 
     # Generate a missing words question
@@ -126,9 +113,7 @@ def parse_args() -> argparse.Namespace:
     )
 
     # Generate Coderunner Question
-    coderunner_question = subparsers.add_parser(
-        "coderunner", help="Generate Moodle XML for a coderunner question."
-    )
+    coderunner_question = subparsers.add_parser("coderunner", help="Generate Moodle XML for a coderunner question.")
     coderunner_question.set_defaults(
         command=functools.partial(
             generate_moodle_questions,
@@ -140,20 +125,23 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+# Defining args globally.
+args = parse_args()
+
+
 def optional_text(text: str | None) -> str:
     return f"<![CDATA[{text}]]>" if text else ""
 
 
 def inline_image(text: str) -> str:
     """This function detects SVG or PNG images and inlines them."""
-    re_img = re.compile(
-        '<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>'
-    )
+    re_img = re.compile('<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>')
     for match in re_img.finditer(text):
         filename = f"{match.group(1)}.{match.group(2)}"
-        base64_str = base64.b64encode(open(filename, "rb").read()).decode("utf-8")
-        img_type = "svg+xml" if match.group(2) == "svg" else match.group(2)
-        text = text.replace(filename, f"data:image/{img_type};base64,{base64_str}")
+        with open(filename, "rb") as file:
+            base64_str = base64.b64encode(file.read()).decode("utf-8")
+            img_type = "svg+xml" if match.group(2) == "svg" else match.group(2)
+            text = text.replace(filename, f"data:image/{img_type};base64,{base64_str}")
 
     return text
 
@@ -161,23 +149,15 @@ def inline_image(text: str) -> str:
 # It is not possible to assign attribute lists to table elements.
 # So we edit the HTML directly.
 def table_borders(text):
-    global args
     return (
-        text.replace(
-            "<table>", '<table border="1px solid black" style="margin-bottom: 2ex">'
-        )
+        text.replace("<table>", '<table border="1px solid black" style="margin-bottom: 2ex">')
         if args.table_border
         else text
     )
 
 
 def convert_markdown(text):
-    global args
-    return (
-        markdown.markdown(text, extensions=["tables", "attr_list"])
-        if args.markdown
-        else text
-    )
+    return markdown.markdown(text, extensions=["tables", "attr_list"]) if args.markdown else text
 
 
 def preprocess_text(text):
@@ -191,7 +171,6 @@ class FormatError(BaseException):
 class BaseQuestion:
     def __init__(self, title):
         # Set the title
-        global args
         self.title = title if title else args.title
 
     def validate(self):
@@ -221,9 +200,7 @@ class TrueFalseQuestion(BaseQuestion):
         self.wrong_feedback = wrong_feedback
 
         # Convert boolean answers to strings
-        self.correct_answer, self.wrong_answer = (
-            ("true", "false") if self.correct_answer else ("false", "true")
-        )
+        self.correct_answer, self.wrong_answer = ("true", "false") if self.correct_answer else ("false", "true")
 
     def validate(self):
         errors = []
@@ -291,10 +268,7 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
         self.shuffle_answers = shuffle_answers
 
         # Transform simple string answers into complete answers
-        self.answers = [
-            answer if isinstance(answer, dict) else {"answer": answer}
-            for answer in answers
-        ]
+        self.answers = [answer if isinstance(answer, dict) else {"answer": answer} for answer in answers]
 
         # Update missing answer points and feedback
         for index, answer in enumerate(self.answers):
@@ -400,9 +374,7 @@ class MultipleTrueFalseQuestion(BaseQuestion):
             if not answer["feedback"]:
                 errors.append(f"The answer '{answer['answer']}' has no feedback")
             if not answer["choice"] in self.choices:
-                errors.append(
-                    f"The answer '{answer['answer']} does not use a valid choice"
-                )
+                errors.append(f"The answer '{answer['answer']} does not use a valid choice")
         return errors
 
     def generate_xml(self):
@@ -434,18 +406,8 @@ class MultipleTrueFalseQuestion(BaseQuestion):
             </weight>"""
 
         newline = "\n"
-        rows = newline.join(
-            [
-                generate_row(index, answer)
-                for index, answer in enumerate(self.answers, start=1)
-            ]
-        )
-        columns = newline.join(
-            [
-                generate_column(index, choice)
-                for index, choice in enumerate(self.choices, start=1)
-            ]
-        )
+        rows = newline.join([generate_row(index, answer) for index, answer in enumerate(self.answers, start=1)])
+        columns = newline.join([generate_column(index, choice) for index, choice in enumerate(self.choices, start=1)])
         fields = newline.join(
             [
                 generate_field(row_index, column_index, answer, choice)
@@ -528,10 +490,7 @@ class NumericalQuestion(BaseQuestion):
         self.general_feedback = general_feedback
 
         # Transform simple string answers into complete answers
-        self.answers = [
-            answer if isinstance(answer, dict) else {"answer": answer}
-            for answer in answers
-        ]
+        self.answers = [answer if isinstance(answer, dict) else {"answer": answer} for answer in answers]
 
         # Update missing answer points and feedback
         for index, answer in enumerate(self.answers):
@@ -655,85 +614,110 @@ class MissingWordsQuestion(BaseQuestion):
 
 class CoderunnerQuestionSQL(BaseQuestion):
     """General template for a coderunner question. Currently, we are limited to SQL queries.
+
     The YML format is the following:
-        (optional) title: Title of the question
-        database: Name of the ISIS database (for example "eshop" or "uni")
-        question: The coderunner question displayed to students
-        correct_query: The SQL string that, when executed, leads to the correct result
-        (optional) additional_testcases:
-                changes: A change applied between testcases to adapt the data in the tables to a new testcase.
-                         (NOTE: to run the query without changes, add 'additional_testcases: ""' as the first additional_change)
-                (optional) new_result: The result of an additional testcase (right now the correct result of the SQL query)
-        (optional) check_results: Whether the provided query is run and the result is compared against the manually provided.
-        (optional) general_feedback: Feedback that is provided when an answer to a coderunner question is submitted
-        (optional) database_connection: If this bool flag is set (default), you must execute moodle_tools in the GIT repo
-                                        'klausuraufgaben' or spoof it. If this bool flag is false, we do not attempt to
-                                        create a database connection.
+        title: Title of the question.
+        database: Name of the ISIS database (for example "eshop" or "uni").
+        question: The coderunner question displayed to students.
+        correct_query: The SQL string that, when executed, leads to the correct result.
+        (optional) testcases:
+                testcase_changes: A change applied between testcases to adapt the data in the tables to a new testcase.
+                         (NOTE: to run the query without testcase_changes, write 'testcase_changes = ""'.)
+                (optional) testcase_result: The result of the testcase (right now the correct result of the SQL query).
+        (optional) check_results: If testcase_results were provided, runs query and checks if results match.
+        (optional) general_feedback: Feedback that is provided when an answer to a coderunner question is submitted.
+        (optional) database_connection: If this bool flag is set (default), you must execute moodle_tools in the GIT
+                                        repo 'klausuraufgaben' or spoof it. If this bool flag is false, we do not
+                                        attempt to create a database connection.
     """
 
-    def __init__(self, database, question, correct_query, title="", additional_testcases="", check_results=False, general_feedback="", database_connection=True):
+    def __init__(
+        self,
+        database,
+        question,
+        correct_query,
+        title,
+        testcases,
+        check_results=False,
+        general_feedback="",
+        database_connection=True,
+    ):
         # Todo: Create a way (possible with extra script) to apply moodle-tools to entire folder with '.yml' files
         super().__init__(title)
         self.database_name = database
-        self.database_path = Path().cwd() / ("sql-aufgaben/datenbanken/" + database + ".db")
+        self.database_path = Path().cwd() / ("../datenbanken/" + database + ".db")
         self.question = question
-        correct_query = correct_query.replace(';\n', ';')
-        if correct_query[-1] != ';':
-            raise Exception("SQL Queries must end with a ';' symbol. But the last symbol was: " + correct_query[-1])
-        self.correct_query = sqlparse.format(correct_query.replace('\n ', '\n'), reindent=True, keyword_case='upper')
+        if correct_query[-1] != ";":
+            raise FormatError("SQL Queries must end with a ';' symbol. But the last symbol was: " + correct_query[-1])
+        self.correct_query = sqlparse.format(correct_query, reindent=True, keyword_case="upper")
         if check_results and not database_connection:
-            raise Exception("Checking results requires a database connection. However, you set database_connection to false.")
+            raise ValueError(
+                "Checking results requires a database connection. However, you set database_connection to false."
+            )
         if database_connection:
-            if Path().cwd().name != "klausurfragen" or not (Path().cwd() / "dbs").exists():
-                raise Exception("moodle-tools is not executed in the correct folder. The correct repository should be "
-                              "'klausuraufgaben' and it should contain a folder called 'dbs' that contains the required"
-                              "'.db' files to create Coderunner questions.")
             if not self.database_path.exists():
-                raise Exception("Provided database path did not exsist: " + str(self.database_path))
+                raise FileNotFoundError(
+                    "Provided database path did not exists: "
+                    + str(self.database_path)
+                    + ".Moodle-tools must be executed in the the folder of the"
+                    " 'klausurfragen' repo that contains the 'question_x.yaml'"
+                    " files. For example, 'klausurfragen/sql-dql/uni/questions'. The"
+                    " corresponding database file is located on the same level as the"
+                    " 'questions' folder in 'databases'.For example,"
+                    " 'klausurfragen/sql-dql/uni/databases."
+                )
             self.con = sqlite3.connect(str(self.database_path), timeout=5)
             self.cursor = self.con.cursor()
         # Execute additional test cases and get results.
         self.column_widths_string = ""
-        self.additional_testcases = additional_testcases
+        self.testcases = testcases
         self.testcases_string = ""
         self.general_feedback = general_feedback
         self.results = []
         # Add additional results if present
-        if additional_testcases is None:
+        if testcases is None:
             self.results.append(self.fetch_database_result())
         else:
-            for additional_testcase in self.additional_testcases:
-                if "new_result" not in additional_testcase:
+            for additional_testcase in self.testcases:
+                if "testcase_result" not in additional_testcase:
                     # reset connection
                     self.con = sqlite3.connect(str(self.database_path), timeout=5)
                     self.cursor = self.con.cursor()
-                    # If a user mistypes 'new_result' or names it differently, we simply generate a result.
+                    # If a user mistypes 'testcase_result' or names it differently, we simply generate a result.
                     if not database_connection:
-                        raise Exception("You must provide a result, if you set database_connection to false, otherwise we"
-                                        "cannot automatically fetch the result from the database.")
+                        raise ValueError(
+                            "You must provide a result, if you set database_connection"
+                            " to false, otherwise wecannot automatically fetch the"
+                            " result from the database."
+                        )
                     # need to reset database
-                    if additional_testcase["changes"] != "":
-                        self.execute_change_queries(additional_testcase["changes"])
+                    if additional_testcase["testcase_changes"] != "":
+                        self.execute_change_queries(additional_testcase["testcase_changes"])
                     self.results.append(self.fetch_database_result())
                 else:
                     # reset connection
                     self.con = sqlite3.connect(str(self.database_path), timeout=5)
                     self.cursor = self.con.cursor()
-                    self.results.append(additional_testcase["new_result"].replace('\n ', '\n'))
+                    self.results.append(additional_testcase["testcase_result"].replace("\n ", "\n"))
                     if check_results:
-                        if additional_testcase["changes"] != "":
-                            self.execute_change_queries(additional_testcase["changes"])
+                        if additional_testcase["testcase_changes"] != "":
+                            self.execute_change_queries(additional_testcase["testcase_changes"])
                         correct_query_result = self.fetch_database_result()
                         if correct_query_result != self.results[-1]:
-                            raise Exception("Provided result: " + self.results[-1] + "did not match the result"
-                                            "returned by executing the provided 'correct_query': " + correct_query_result)
+                            raise ValueError(
+                                "Provided result: "
+                                + self.results[-1]
+                                + "did not match the resultreturned by executing the provided 'correct_query': "
+                                + correct_query_result
+                            )
         self.con.close()
 
     def execute_change_queries(self, change_queries):
-        if ';' not in change_queries:
-            raise Exception("Additional testcases supplied, but no SQL queries that are "
-                            "terminated with a ';' symbol were found.")
-        change_queries_list = change_queries.split(';')
+        if ";" not in change_queries:
+            raise FormatError(
+                "Additional testcases supplied, but no SQL queries that are terminated with a ';' symbol were found."
+            )
+        change_queries_list = change_queries.split(";")
         for change_query in change_queries_list:
             self.cursor.execute(change_query.rstrip().lstrip())
 
@@ -744,16 +728,16 @@ class CoderunnerQuestionSQL(BaseQuestion):
         column_names = [description[0] for description in self.cursor.description]
         column_lengths = [max(len(name), max(len(str(row[i])) for row in rows)) for i, name in enumerate(column_names)]
         for i, name in enumerate(column_names):
-            name_string += name + ((column_lengths[i] - len(name)) * ' ') + "  "
-        name_string += '\n'
+            name_string += name + ((column_lengths[i] - len(name)) * " ") + "  "
+        name_string += "\n"
         for length in column_lengths:
-            name_string += length * '-' + "  "
-        name_string += '\n'
+            name_string += length * "-" + "  "
+        name_string += "\n"
         for row in rows:
             for i, value in enumerate(row):
                 value = str(value)
-                name_string += str(value) + ((column_lengths[i] - len(value)) * ' ') + "  "
-            name_string += '\n'
+                name_string += str(value) + ((column_lengths[i] - len(value)) * " ") + "  "
+            name_string += "\n"
         return name_string
 
     def validate(self):
@@ -768,36 +752,29 @@ class CoderunnerQuestionSQL(BaseQuestion):
 
     def generate_testcases(self):
         # Todo: is this requried?
-        if self.additional_testcases is None:
-            self.additional_testcases = [None]
-        for i, testcase in enumerate(self.additional_testcases):
+        if self.testcases is None:
+            self.testcases = [None]
+        for i, testcase in enumerate(self.testcases):
             # A 'change' is used to change the data in tables to produce different results for a new testcase.
             change = ""
             if testcase is not None:
-                change = testcase["changes"].replace('\n ', '\n')
+                change = testcase["testcase_changes"].replace("\n ", "\n")
             # Only show the first testcase (Todo: make configurable)
-            show_or_hide = 'SHOW'
+            show_or_hide = "SHOW"
             if i > 0:
-                show_or_hide = 'HIDE'
-            self.testcases_string += '\n<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">\n' \
-                                '<testcode>\n' \
-                                '<text>--Testfall '+str(i+1)+'</text>\n' \
-                                '</testcode>\n' \
-                                '<stdin>\n' \
-                                '   <text></text>\n' \
-                                '</stdin>\n' \
-                                '<expected>\n' \
-                                '<text>' + self.results[i] + \
-                                '</text>\n' \
-                                '</expected>\n' \
-                                '<extra>\n' \
-                                '   <text><![CDATA[' + change + ']]></text>\n' \
-                                '</extra>\n' \
-                                '<display>\n' \
-                                '<text>' + show_or_hide + '</text>\n' \
-                                '</display>\n' \
-                                '</testcase>'
-
+                show_or_hide = "HIDE"
+            self.testcases_string += (
+                '\n<testcase testtype="0" useasexample="0" hiderestiffail="0"'
+                ' mark="1.0000000">\n<testcode>\n<text>--Testfall '
+                + str(i + 1)
+                + "</text>\n</testcode>\n<stdin>\n   <text></text>\n</stdin>\n<expected>\n<text>"
+                + self.results[i]
+                + "</text>\n</expected>\n<extra>\n   <text><![CDATA["
+                + change
+                + "]]></text>\n</extra>\n<display>\n<text>"
+                + show_or_hide
+                + "</text>\n</display>\n</testcase>"
+            )
 
     def generate_xml(self):
         self.generate_testcases()
@@ -888,19 +865,14 @@ def load_questions(question_class, strict_validation, yaml_files):
         yield question
 
 
-def generate_moodle_questions(generate_question_xml, question_class, args):
+def generate_moodle_questions(generate_question_xml, question_class):
     """Generate an XML document containing Moodle questions.
 
     The type of Moodle question is defined by `question_type`.
     The actual question is defined by `question_class`.
     """
     # Create question instances from a list of YAML documents.
-    questions = [
-        question
-        for question in load_questions(
-            question_class, not args.lenient, yaml.safe_load_all(args.input)
-        )
-    ]
+    questions = list(load_questions(question_class, not args.lenient, yaml.safe_load_all(args.input)))
 
     # Add question index to title
     if args.add_question_index:
@@ -921,7 +893,6 @@ def generate_moodle_questions(generate_question_xml, question_class, args):
 
 
 def main() -> None:
-    args = parse_args()
     args.command(args)
 
 

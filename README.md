@@ -17,7 +17,12 @@ Moodle tools are bundled as a Python package which can be installed locally usin
 ```bash
 git clone https://git.tu-berlin.de/dima/moodle-tools # HTTPS
 git clone git@git.tu-berlin.de:dima/moodle-tools.git # SSH
+# static install
 python3 -m pip install moodle-tools
+# editable mode (changes are reflected without the need for a re-installation)
+python3 -m pip install -e moodle-tools
+# local install from directory that contains the moodle-tools repo
+pip install ./moodle-tools/
 ```
 
 Or directly install it from GitLab:
