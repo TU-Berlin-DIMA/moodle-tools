@@ -12,17 +12,14 @@ This repository contains a collection of tools to simplify working with Moodle q
 
 ## Installation
 
-Moodle tools are bundled as a Python package which can be installed locally using `pip`. Either clone the repository:
+`moodle-tools` is a Python package, which can be installed locally using `pip`. Either clone the repository:
 
 ```bash
-git clone https://git.tu-berlin.de/dima/moodle-tools # HTTPS
-git clone git@git.tu-berlin.de:dima/moodle-tools.git # SSH
-# static install
-python3 -m pip install moodle-tools
-# editable mode (changes are reflected without the need for a re-installation)
-python3 -m pip install -e moodle-tools
-# local install from directory that contains the moodle-tools repo
-pip install ./moodle-tools/
+git clone https://git.tu-berlin.de/dima/moodle-tools
+cd moodle-tools
+virtualenv venv
+source venv/bin/activate
+pip install .
 ```
 
 Or directly install it from GitLab:
@@ -41,6 +38,16 @@ from moodle_tools import make_questions, analyze_results
 make-questions true_false < examples/true-false.yaml
 
 analyze-results "params_here"
+```
+
+### Development Setup
+
+Compared to a normal installation, you need to install `moodle-tools` in editable mode, install the dev requirements, and activate `pre-commit` for development.
+
+```
+# clone repo and create virtual environment as above
+pip install -e ".[dev]"
+pre-commit install
 ```
 
 ## Potential Errors
