@@ -20,7 +20,7 @@ repos:
           - '--pytest-test-first'
       - id: trailing-whitespace
   - repo: 'https://github.com/adrienverge/yamllint.git'
-    rev: v1.32.0
+    rev: v1.35.1
     hooks:
       - id: yamllint
         args:
@@ -32,27 +32,23 @@ repos:
             }}
 
   - repo: 'https://github.com/psf/black'
-    rev: 23.10.1
+    rev: 24.2.0
     hooks:
       - id: black
   - repo: 'https://github.com/PyCQA/isort'
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         additional_dependencies:
           - 'flake8-bugbear'
           - 'flake8-docstrings'
           - 'flake8-implicit-str-concat'
-        args:
-          - '--max-line-length=120'
-          - '--extend-ignore=D100,D101,D102,D103,D104,D105,D107'
-          - '--docstring-convention=google'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.1
+    rev: v1.8.0
     hooks:
       - id: mypy
         additional_dependencies:

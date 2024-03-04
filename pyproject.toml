@@ -30,8 +30,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit~=3.3",
-    "pylint ~= 2.17"
+    "pre-commit ~= 3.3",
+    "pylint ~= 3.1",
+    "types-markdown",
+    "types-pyyaml",
 ]
 
 [project.scripts]
@@ -51,14 +53,20 @@ readme = {file = ["README.md"], content-type = "text/markdown"}
 include = '\.py$'
 target-version = ["py310", "py311"]
 preview = true
-line-length = 120
+line-length = 120  # TODO: change to 99
+
+[tool.flake8]
+max-line-length = 120  # TODO: change to 90
+select = ["B", "C", "D", "E", "F", "W", "B9", "C4"]
+ignore = ["D1", "E203", "E501", "F821", "W503"]
+docstring-convention = "google"
 
 [tool.isort]
 profile = "black"
 skip_gitignore = true
 
 [tool.mypy]
-strict = false
+strict = false  # TODO: Enable strict mode
 
 [tool.pylint]
 py-version = "3.10"
