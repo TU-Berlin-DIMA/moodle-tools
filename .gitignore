@@ -3,3 +3,7 @@
 /src/moodle_tools.egg-info/
 __pycache__/
 /examples/*.xml
+.mypy_cache
+.venv
+venv
+.vscode
