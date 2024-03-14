@@ -34,7 +34,8 @@ dev = [
     "pylint ~= 3.1",
     "types-markdown",
     "types-pyyaml",
-    "pytest"
+    "pytest",
+    "pytest-cov"
 ]
 
 [project.scripts]

@@ -1,0 +1,18 @@
+# .gitlab-ci.yml
+
+stages:
+  - test
+
+pytest:
+  stage: test
+  image: python:3.10
+  before_script:
+    - pip install pytest pytest-cov
+  script:
+    - pip install .  
+    - pytest --cov=my_package  # Run tests with coverage
+  artifacts:
+    paths:
+      - htmlcov/  # Store coverage reports as artifacts
+  only:
+    - merge_requests  # Run only for merge requests
