@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <question type="mtf">
+        <name>
+          <text>Knowledge question</text>
+        </name>
+        <questiontext format="html">
+          <text><![CDATA[Simple format]]></text>
+        </questiontext>
+        <generalfeedback format="html">
+          <text></text>
+        </generalfeedback>
+        <defaultgrade>1.0000000</defaultgrade>
+        <penalty>0.3333333</penalty>
+        <hidden>0</hidden>
+        <idnumber></idnumber>
+        <scoringmethod><text>subpoints</text></scoringmethod>
+        <shuffleanswers>
+          true
+        </shuffleanswers>
+        <numberofrows>2</numberofrows>
+        <numberofcolumns>2</numberofcolumns>
+        <answernumbering>none</answernumbering>
+        <row number="1">
+          <optiontext format="html">
+            <text><![CDATA[Answer 1]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text></text>
+          </feedbacktext>
+        </row>
+        <row number="2">
+          <optiontext format="html">
+            <text><![CDATA[Answer 2]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text></text>
+          </feedbacktext>
+        </row>
+        <column number="1">
+          <responsetext format="moodle_auto_format">
+            <text>True</text>
+          </responsetext>
+        </column>
+        <column number="2">
+          <responsetext format="moodle_auto_format">
+            <text>False</text>
+          </responsetext>
+        </column>
+        <weight rownumber="1" columnnumber="1">
+          <value>
+             1.000
+          </value>
+        </weight>
+        <weight rownumber="1" columnnumber="2">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="1">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="2">
+          <value>
+             1.000
+          </value>
+        </weight>
+      </question>
+    <question type="mtf">
+        <name>
+          <text>Title</text>
+        </name>
+        <questiontext format="html">
+          <text><![CDATA[Extended format]]></text>
+        </questiontext>
+        <generalfeedback format="html">
+          <text><![CDATA[General feedback]]></text>
+        </generalfeedback>
+        <defaultgrade>1.0000000</defaultgrade>
+        <penalty>0.3333333</penalty>
+        <hidden>0</hidden>
+        <idnumber></idnumber>
+        <scoringmethod><text>subpoints</text></scoringmethod>
+        <shuffleanswers>
+          false
+        </shuffleanswers>
+        <numberofrows>3</numberofrows>
+        <numberofcolumns>3</numberofcolumns>
+        <answernumbering>none</answernumbering>
+        <row number="1">
+          <optiontext format="html">
+            <text><![CDATA[Answer 1]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text><![CDATA[Feedback 1]]></text>
+          </feedbacktext>
+        </row>
+        <row number="2">
+          <optiontext format="html">
+            <text><![CDATA[Answer 2]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text><![CDATA[Feedback 2]]></text>
+          </feedbacktext>
+        </row>
+        <row number="3">
+          <optiontext format="html">
+            <text><![CDATA[Answer 3]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text><![CDATA[Feedback 3]]></text>
+          </feedbacktext>
+        </row>
+        <column number="1">
+          <responsetext format="moodle_auto_format">
+            <text>Yes</text>
+          </responsetext>
+        </column>
+        <column number="2">
+          <responsetext format="moodle_auto_format">
+            <text>No</text>
+          </responsetext>
+        </column>
+        <column number="3">
+          <responsetext format="moodle_auto_format">
+            <text>Maybe</text>
+          </responsetext>
+        </column>
+        <weight rownumber="1" columnnumber="1">
+          <value>
+             1.000
+          </value>
+        </weight>
+        <weight rownumber="1" columnnumber="2">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="1" columnnumber="3">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="1">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="2">
+          <value>
+             1.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="3">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="3" columnnumber="1">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="3" columnnumber="2">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="3" columnnumber="3">
+          <value>
+             1.000
+          </value>
+        </weight>
+      </question>
+    <question type="mtf">
+        <name>
+          <text>Memory hierarchy</text>
+        </name>
+        <questiontext format="html">
+          <text><![CDATA[For each category, say descending or ascending]]></text>
+        </questiontext>
+        <generalfeedback format="html">
+          <text></text>
+        </generalfeedback>
+        <defaultgrade>1.0000000</defaultgrade>
+        <penalty>0.3333333</penalty>
+        <hidden>0</hidden>
+        <idnumber></idnumber>
+        <scoringmethod><text>subpoints</text></scoringmethod>
+        <shuffleanswers>
+          true
+        </shuffleanswers>
+        <numberofrows>2</numberofrows>
+        <numberofcolumns>2</numberofcolumns>
+        <answernumbering>none</answernumbering>
+        <row number="1">
+          <optiontext format="html">
+            <text><![CDATA[Cost]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text></text>
+          </feedbacktext>
+        </row>
+        <row number="2">
+          <optiontext format="html">
+            <text><![CDATA[Latency]]></text>
+          </optiontext>
+          <feedbacktext format="html">
+            <text></text>
+          </feedbacktext>
+        </row>
+        <column number="1">
+          <responsetext format="moodle_auto_format">
+            <text>Ascending</text>
+          </responsetext>
+        </column>
+        <column number="2">
+          <responsetext format="moodle_auto_format">
+            <text>Descending</text>
+          </responsetext>
+        </column>
+        <weight rownumber="1" columnnumber="1">
+          <value>
+             1.000
+          </value>
+        </weight>
+        <weight rownumber="1" columnnumber="2">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="1">
+          <value>
+             0.000
+          </value>
+        </weight>
+        <weight rownumber="2" columnnumber="2">
+          <value>
+             1.000
+          </value>
+        </weight>
+      </question>
+</quiz>
+

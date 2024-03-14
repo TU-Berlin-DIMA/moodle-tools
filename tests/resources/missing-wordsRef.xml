@@ -1,0 +1,90 @@
+    <?xml version="1.0" encoding="UTF-8"?>
+    <quiz>
+          <question type="gapselect">
+            <name>
+              <text>Missing words question</text>
+            </name>
+            <questiontext format="html">
+              <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+]]></text>
+            </questiontext>
+            <generalfeedback format="html">
+              <text><![CDATA[General feedback]]></text>
+            </generalfeedback>
+            <defaultgrade>1</defaultgrade>
+            <penalty>0.3333333</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <shuffleanswers>1</shuffleanswers>
+            <correctfeedback format="html">
+              <text><![CDATA[Correct feedback]]></text>
+            </correctfeedback>
+            <partiallycorrectfeedback format="html">
+              <text><![CDATA[Partial feedback]]></text>
+            </partiallycorrectfeedback>
+            <incorrectfeedback format="html">
+              <text><![CDATA[Incorrect feedback]]></text>
+            </incorrectfeedback>
+            <shownumcorrect/>
+            <selectoption>
+                <text>SELECT</text>
+                <group>1</group>
+            </selectoption>
+            <selectoption>
+                <text>FROM</text>
+                <group>1</group>
+            </selectoption>
+            <selectoption>
+                <text>WHERE</text>
+                <group>2</group>
+            </selectoption>
+            <selectoption>
+                <text>PROJECT</text>
+                <group>1</group>
+            </selectoption>
+            <selectoption>
+                <text>SIGMA</text>
+                <group>2</group>
+            </selectoption>
+          </question>
+          <question type="gapselect">
+            <name>
+              <text>Simple missing words question</text>
+            </name>
+            <questiontext format="html">
+              <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+]]></text>
+            </questiontext>
+            <generalfeedback format="html">
+              <text></text>
+            </generalfeedback>
+            <defaultgrade>1</defaultgrade>
+            <penalty>0.3333333</penalty>
+            <hidden>0</hidden>
+            <idnumber></idnumber>
+            <shuffleanswers>1</shuffleanswers>
+            <correctfeedback format="html">
+              <text></text>
+            </correctfeedback>
+            <partiallycorrectfeedback format="html">
+              <text></text>
+            </partiallycorrectfeedback>
+            <incorrectfeedback format="html">
+              <text></text>
+            </incorrectfeedback>
+            <shownumcorrect/>
+            <selectoption>
+                <text>SELECT</text>
+                <group>1</group>
+            </selectoption>
+            <selectoption>
+                <text>FROM</text>
+                <group>1</group>
+            </selectoption>
+            <selectoption>
+                <text>WHERE</text>
+                <group>1</group>
+            </selectoption>
+          </question>
+    </quiz>
+
