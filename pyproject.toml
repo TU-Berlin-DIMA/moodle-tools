@@ -80,3 +80,8 @@ disable = [
 ]
 reports = false
 score = false
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]

@@ -1,5 +1,7 @@
 import pytest
 import sys
+from pathlib import Path
+
 from moodle_tools.make_questions import main
 
 
@@ -17,3 +19,29 @@ class TestMissingWords:
 
         assert 'type="gapselect"' in captured.out
         assert '---' in captured.err
+
+    def test_make_question(self, capsys, tmp_path):
+        # Get the path to the directory containing the test resources
+        test_resources_dir = Path(__file__).parent / "../resources"
+
+        # Load content from the file
+        with open(test_resources_dir / "missing-wordsRef.xml", "r", encoding="utf-8") as f:
+            reference_xml = f.read()
+
+
+        # Generate the file using the xyz function
+        output_file_path = tmp_path / "output.txt"
+
+        # Simulate command-line arguments
+        sys.argv = ["make-questions", "-i","examples/missing-words.yaml", "-o", str(output_file_path), "-l", "missing_words"]
+
+        # Call the main function
+        main()
+        captured = capsys.readouterr()
+
+        with open(output_file_path, "r", encoding="utf-8") as f:
+            generated_xml = f.read()
+
+        # Assert the output is as expected
+
+        assert reference_xml == generated_xml
