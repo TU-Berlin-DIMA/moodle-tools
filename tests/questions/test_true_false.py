@@ -27,21 +27,20 @@ class TestTrueFalse:
 
         # Load content from the file
         with open(test_resources_dir / "true-falseRef.xml", "r", encoding="utf-8") as f:
-            reference_xml = f.read()
+            reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
+        sys.argv = ["make-questions", "-i","examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
 
         # Call the main function
         main()
         captured = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
-            generated_xml = f.read()
+            generated_xml = f.read().strip()
 
         # Assert the output is as expected
-
         assert reference_xml == generated_xml

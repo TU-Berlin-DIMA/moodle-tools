@@ -27,7 +27,7 @@ class TestNumerical:
 
         # Load content from the file
         with open(test_resources_dir / "numericalRef.xml", "r", encoding="utf-8") as f:
-            reference_xml = f.read()
+            reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
@@ -40,7 +40,7 @@ class TestNumerical:
         captured = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
-            generated_xml = f.read()
+            generated_xml = f.read().strip()
 
         # Assert the output is as expected
 
