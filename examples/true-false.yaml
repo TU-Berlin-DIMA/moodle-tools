@@ -1,4 +1,5 @@
 ---
+type: true_false
 statement: "Complete question"
 title: "Question title"
 correct_answer: false

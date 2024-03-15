@@ -63,10 +63,15 @@ def load_questions(question_class, strict_validation, yaml_files, **flags):
     """
     bullet = "\n- "
 
+    question_type = None
+
     for properties in yaml_files:
         # TODO: List all the potential flags for preprocessing text or make a better logic to take them from the args
         properties.update({"table_border": flags["table_border"]})
         properties.update({"markdown": flags["markdown"]})
+        if 'type' in properties:
+            question_type = properties['type']
+            properties
         if "title" not in properties:
             properties.update({"title": flags["title"]})
         question = question_class(**properties)
