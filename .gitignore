@@ -9,3 +9,4 @@ venv
 .vscode
 .coverage
 .pytest_cache
+builds
