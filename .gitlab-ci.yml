@@ -9,8 +9,8 @@ pytest:
   before_script:
     - pip install pytest pytest-cov
   script:
-    - pip install .  
-    - pytest --cov=my_package  # Run tests with coverage
+    - pip install .
+    - pytest --cov=moodle_tools --cov-report=html tests  # Run tests with coverage
   artifacts:
     paths:
       - htmlcov/  # Store coverage reports as artifacts

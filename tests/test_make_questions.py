@@ -1,6 +1,9 @@
-import pytest
 import sys
+
+import pytest
+
 from moodle_tools.make_questions import main
+
 
 class TestArguments:
     def test_argument_parsing_help(self, capsys):
@@ -14,4 +17,4 @@ class TestArguments:
 
         # Assert the output is as expected
 
-        assert 'usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [-m]' in captured.out
+        assert "usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [-m]" in captured.out

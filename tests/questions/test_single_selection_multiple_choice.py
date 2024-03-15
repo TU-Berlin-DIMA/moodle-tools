@@ -1,14 +1,16 @@
-import pytest
 import sys
 from pathlib import Path
 
+import pytest
+
 from moodle_tools.make_questions import main
+
 
 class TestMultipleChoiceQuestion:
 
-    def test_yml_parsing(self,capsys):
+    def test_yml_parsing(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/single-selection-multiple-choice.yaml", "multiple_choice"]
+        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "multiple_choice"]
 
         # Call the main function
         main()
@@ -17,7 +19,7 @@ class TestMultipleChoiceQuestion:
         # Assert the output is as expected
 
         assert 'type="multichoice"' in captured.out
-        assert '---' in captured.err
+        assert "---" in captured.err
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -27,12 +29,19 @@ class TestMultipleChoiceQuestion:
         with open(test_resources_dir / "single-selection-multiple-choiceRef.xml", "r", encoding="utf-8") as f:
             reference_xml = f.read()
 
-
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/single-selection-multiple-choice.yaml", "-o", str(output_file_path), "-l", "multiple_choice"]
+        sys.argv = [
+            "make-questions",
+            "-i",
+            "examples/single-selection-multiple-choice.yaml",
+            "-o",
+            str(output_file_path),
+            "-l",
+            "multiple_choice",
+        ]
 
         # Call the main function
         main()

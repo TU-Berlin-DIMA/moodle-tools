@@ -14,7 +14,7 @@ def optional_text(text: str | None) -> str:
 
 
 def convert_markdown(text):
-    return markdown.markdown(text, extensions=["tables", "attr_list"]) 
+    return markdown.markdown(text, extensions=["tables", "attr_list"])
 
 
 def table_borders(text):

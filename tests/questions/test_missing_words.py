@@ -1,15 +1,16 @@
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 from moodle_tools.make_questions import main
 
 
 class TestMissingWords:
 
-    def test_yml_parsing(self,capsys):
+    def test_yml_parsing(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/missing-words.yaml", "missing_words"]
+        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "missing_words"]
 
         # Call the main function
         main()
@@ -18,7 +19,7 @@ class TestMissingWords:
         # Assert the output is as expected
 
         assert 'type="gapselect"' in captured.out
-        assert '---' in captured.err
+        assert "---" in captured.err
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -28,12 +29,19 @@ class TestMissingWords:
         with open(test_resources_dir / "missing-wordsRef.xml", "r", encoding="utf-8") as f:
             reference_xml = f.read()
 
-
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/missing-words.yaml", "-o", str(output_file_path), "-l", "missing_words"]
+        sys.argv = [
+            "make-questions",
+            "-i",
+            "examples/missing-words.yaml",
+            "-o",
+            str(output_file_path),
+            "-l",
+            "missing_words",
+        ]
 
         # Call the main function
         main()

@@ -1,15 +1,16 @@
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 from moodle_tools.make_questions import main
 
 
 class TestNumerical:
 
-    def test_yml_parsing(self,capsys):
+    def test_yml_parsing(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/numerical.yml", "numerical"]
+        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "numerical"]
 
         # Call the main function
         main()
@@ -18,7 +19,7 @@ class TestNumerical:
         # Assert the output is as expected
 
         assert 'type="numerical"' in captured.out
-        assert '---' in captured.err
+        assert "---" in captured.err
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -28,12 +29,11 @@ class TestNumerical:
         with open(test_resources_dir / "numericalRef.xml", "r", encoding="utf-8") as f:
             reference_xml = f.read()
 
-
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/numerical.yml", "-o", str(output_file_path), "-l", "numerical"]
+        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "-o", str(output_file_path), "-l", "numerical"]
 
         # Call the main function
         main()

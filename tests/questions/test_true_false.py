@@ -1,15 +1,16 @@
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 from moodle_tools.make_questions import main
 
 
 class TestTrueFalse:
 
-    def test_yml_parsing(self,capsys):
+    def test_yml_parsing(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/true-false.yaml", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "true_false"]
 
         # Call the main function
         main()
@@ -18,7 +19,7 @@ class TestTrueFalse:
         # Assert the output is as expected
 
         assert 'type="truefalse"' in captured.out
-        assert '---' in captured.err
+        assert "---" in captured.err
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -28,12 +29,11 @@ class TestTrueFalse:
         with open(test_resources_dir / "true-falseRef.xml", "r", encoding="utf-8") as f:
             reference_xml = f.read()
 
-
         # Generate the file using the xyz function
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
 
         # Call the main function
         main()
