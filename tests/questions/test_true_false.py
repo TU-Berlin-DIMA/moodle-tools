@@ -33,7 +33,7 @@ class TestTrueFalse:
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i","examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
 
         # Call the main function
         main()
