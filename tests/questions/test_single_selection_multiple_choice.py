@@ -7,8 +7,7 @@ from moodle_tools.make_questions import main
 
 
 class TestMultipleChoiceQuestion:
-
-    def test_yml_parsing(self, capsys):
+    def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "multiple_choice"]
 
@@ -17,9 +16,21 @@ class TestMultipleChoiceQuestion:
         captured = capsys.readouterr()
 
         # Assert the output is as expected
+        assert '<question type="multichoice">' in captured.out
+        assert "The following question did not pass strict validation:" in captured.err
+    
+    def test_yml_parsing_non_strict(self, capsys):
+        # Simulate command-line arguments
+        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-l", "multiple_choice"]
 
-        assert 'type="multichoice"' in captured.out
-        assert "---" in captured.err
+        # Call the main function
+        main()
+        captured = capsys.readouterr()
+
+        # Assert the output is as expected
+        assert '<question type="multichoice">' in captured.out
+        assert '<text>Knowledge question</text>' in captured.out
+        assert captured.err == ''
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -51,5 +62,4 @@ class TestMultipleChoiceQuestion:
             generated_xml = f.read().strip()
 
         # Assert the output is as expected
-
         assert reference_xml == generated_xml

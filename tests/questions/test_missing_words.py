@@ -7,8 +7,7 @@ from moodle_tools.make_questions import main
 
 
 class TestMissingWords:
-
-    def test_yml_parsing(self, capsys):
+    def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "missing_words"]
 
@@ -17,9 +16,21 @@ class TestMissingWords:
         captured = capsys.readouterr()
 
         # Assert the output is as expected
+        assert '<question type="gapselect">' in captured.out
+        assert "The following question did not pass strict validation:" in captured.err
+    
+    def test_yml_parsing_non_strict(self, capsys):
+        # Simulate command-line arguments
+        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "-l", "missing_words"]
 
-        assert 'type="gapselect"' in captured.out
-        assert "---" in captured.err
+        # Call the main function
+        main()
+        captured = capsys.readouterr()
+
+        # Assert the output is as expected
+        assert '<question type="gapselect">' in captured.out
+        assert '<text>Simple missing words question</text>' in captured.out
+        assert captured.err == ''
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
@@ -51,5 +62,4 @@ class TestMissingWords:
             generated_xml = f.read().strip()
 
         # Assert the output is as expected
-
         assert reference_xml == generated_xml
