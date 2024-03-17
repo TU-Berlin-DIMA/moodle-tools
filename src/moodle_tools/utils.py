@@ -87,11 +87,10 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
                 )
                 print(message, file=sys.stderr)
                 continue
-        print(question)
         yield question
 
 
-def generate_moodle_questions(question_factory, **kwargs):
+def generate_moodle_questions(**kwargs):
     # TODO: Maybe a builder can help with this complexity of parameters
     """Generate an XML document containing Moodle questions.
 
@@ -100,7 +99,7 @@ def generate_moodle_questions(question_factory, **kwargs):
     """
     # Create question instances from a list of YAML documents.
     questions = list(
-        load_questions(question_factory, not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs)
+        load_questions(QuestionFactory, not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs)
     )
 
     # Add question index to title

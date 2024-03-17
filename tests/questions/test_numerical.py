@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestNumerical:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "numerical"]
+        sys.argv = ["make-questions", "-i", "examples/numerical.yml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestNumerical:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "-l", "numerical"]
+        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "-l"]
 
         # Call the main function
         main()
@@ -44,7 +44,14 @@ class TestNumerical:
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/numerical.yml", "-o", str(output_file_path), "-l", "numerical"]
+        sys.argv = [
+            "make-questions",
+            "-i",
+            "examples/numerical.yml",
+            "-o",
+            str(output_file_path),
+            "-l",
+        ]
 
         # Call the main function
         main()

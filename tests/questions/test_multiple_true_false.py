@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestMultipleTrueFalse:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml", "multiple_true_false"]
+        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestMultipleTrueFalse:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml", "-l", "multiple_true_false"]
+        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml", "-l"]
 
         # Call the main function
         main()
@@ -51,7 +51,6 @@ class TestMultipleTrueFalse:
             "-o",
             str(output_file_path),
             "-l",
-            "multiple_true_false",
         ]
 
         # Call the main function

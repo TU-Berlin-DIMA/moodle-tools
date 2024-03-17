@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestMissingWords:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "missing_words"]
+        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestMissingWords:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "-l", "missing_words"]
+        sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "-l"]
 
         # Call the main function
         main()
@@ -51,7 +51,6 @@ class TestMissingWords:
             "-o",
             str(output_file_path),
             "-l",
-            "missing_words",
         ]
 
         # Call the main function

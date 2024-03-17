@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestTrueFalse:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestTrueFalse:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-l", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-l"]
 
         # Call the main function
         main()
@@ -44,7 +44,7 @@ class TestTrueFalse:
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-o", str(output_file_path), "-l", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-o", str(output_file_path), "-l"]
 
         # Call the main function
         main()

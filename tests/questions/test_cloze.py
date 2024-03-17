@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestCloze:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/cloze.yml", "cloze"]
+        sys.argv = ["make-questions", "-i", "examples/cloze.yml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestCloze:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/cloze.yml", "-l", "cloze"]
+        sys.argv = ["make-questions", "-i", "examples/cloze.yml", "-l"]
 
         # Call the main function
         main()
@@ -44,7 +44,7 @@ class TestCloze:
         output_file_path = tmp_path / "output.txt"
 
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/cloze.yml", "-o", str(output_file_path), "-l", "cloze"]
+        sys.argv = ["make-questions", "-i", "examples/cloze.yml", "-o", str(output_file_path), "-l"]
 
         # Call the main function
         main()

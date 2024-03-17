@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestMultipleChoiceQuestion:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "multiple_choice"]
+        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestMultipleChoiceQuestion:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-l", "multiple_choice"]
+        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-l"]
 
         # Call the main function
         main()
@@ -51,7 +51,6 @@ class TestMultipleChoiceQuestion:
             "-o",
             str(output_file_path),
             "-l",
-            "multiple_choice",
         ]
 
         # Call the main function

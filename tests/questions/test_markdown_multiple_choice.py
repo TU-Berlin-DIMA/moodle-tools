@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestMarkdownMultipleChoiceQuestion:
     def test_yml_parsing_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-m", "multiple_choice"]
+        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-m"]
 
         # Call the main function
         main()
@@ -22,7 +22,7 @@ class TestMarkdownMultipleChoiceQuestion:
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-l", "-m", "multiple_choice"]
+        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-l", "-m"]
 
         # Call the main function
         main()
@@ -53,7 +53,6 @@ class TestMarkdownMultipleChoiceQuestion:
             str(output_file_path),
             "-l",
             "-m",
-            "multiple_choice",
         ]
 
         # Call the main function
