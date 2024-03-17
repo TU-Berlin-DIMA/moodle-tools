@@ -71,12 +71,12 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
         # TODO: List all the potential flags for preprocessing text or make a better logic to take them from the args
         properties.update({"table_border": flags["table_border"]})
         properties.update({"markdown": flags["markdown"]})
-        if 'type' in properties:
-            question_type = properties['type']
+        if "type" in properties:
+            question_type = properties["type"]
             print(question_type)
         if "title" not in properties:
             properties.update({"title": flags["title"]})
-        question = question_factory.create_question(question_type,**properties)
+        question = question_factory.create_question(question_type, **properties)
         if strict_validation:
             errors = question.validate()
             if errors:
@@ -91,7 +91,7 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
         yield question
 
 
-def generate_moodle_questions(generate_question_xml, question_factory, **kwargs):
+def generate_moodle_questions(question_factory, **kwargs):
     # TODO: Maybe a builder can help with this complexity of parameters
     """Generate an XML document containing Moodle questions.
 
@@ -114,7 +114,7 @@ def generate_moodle_questions(generate_question_xml, question_factory, **kwargs)
     xml = f"""\
     <?xml version="1.0" encoding="UTF-8"?>
     <quiz>
-{newline.join([generate_question_xml(question) for question in questions])}
+{newline.join([question.generate_xml() for question in questions])}
     </quiz>
     """
     xml = textwrap.dedent(xml)

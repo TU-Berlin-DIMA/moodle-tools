@@ -9,9 +9,9 @@ from moodle_tools.questions import (
     MissingWordsQuestion,
     MultipleTrueFalseQuestion,
     NumericalQuestion,
+    QuestionFactory,
     SingleSelectionMultipleChoiceQuestion,
     TrueFalseQuestion,
-    QuestionFactory,
 )
 from moodle_tools.utils import generate_moodle_questions
 
@@ -25,7 +25,7 @@ def true_false(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(TrueFalseQuestion.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def multiple_true_false(args):
@@ -37,7 +37,7 @@ def multiple_true_false(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(MultipleTrueFalseQuestion.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def multiple_choice(args):
@@ -49,9 +49,7 @@ def multiple_choice(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(
-        SingleSelectionMultipleChoiceQuestion.generate_xml, QuestionFactory, **vars(args)
-    )
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def cloze(args):
@@ -63,7 +61,7 @@ def cloze(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(ClozeQuestion.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def numerical(args):
@@ -75,7 +73,7 @@ def numerical(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(NumericalQuestion.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def missing_words(args):
@@ -87,7 +85,7 @@ def missing_words(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(MissingWordsQuestion.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def coderunner(args):
@@ -99,7 +97,7 @@ def coderunner(args):
     Returns:
         type: None.
     """
-    generate_moodle_questions(CoderunnerQuestionSQL.generate_xml, QuestionFactory, **vars(args))
+    generate_moodle_questions(QuestionFactory, **vars(args))
 
 
 def parse_args() -> argparse.Namespace:

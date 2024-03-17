@@ -1,5 +1,6 @@
 import moodle_tools.questions as Questions
 
+
 class QuestionFactory:
     @staticmethod
     def create_question(question_type, **properties):
