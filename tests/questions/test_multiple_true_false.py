@@ -29,8 +29,8 @@ class TestMultipleTrueFalse:
         # Assert the output is as expected
 
         assert '<question type="mtf">' in captured.out
-        assert '<text>Memory hierarchy</text>' in captured.out
-        assert captured.err == ''
+        assert "<text>Memory hierarchy</text>" in captured.out
+        assert captured.err == ""
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources

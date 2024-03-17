@@ -18,10 +18,10 @@ class TestTrueFalse:
         # Assert the output is as expected
         assert '<question type="truefalse">' in captured.out
         assert "The following question did not pass strict validation:" in captured.err
-    
+
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/true-false.yaml","-l", "true_false"]
+        sys.argv = ["make-questions", "-i", "examples/true-false.yaml", "-l", "true_false"]
 
         # Call the main function
         main()
@@ -29,8 +29,8 @@ class TestTrueFalse:
 
         # Assert the output is as expected
         assert '<question type="truefalse">' in captured.out
-        assert '<text>Question title</text>' in captured.out
-        assert captured.err == ''
+        assert "<text>Question title</text>" in captured.out
+        assert captured.err == ""
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources

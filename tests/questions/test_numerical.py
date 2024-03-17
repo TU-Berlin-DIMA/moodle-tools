@@ -29,8 +29,8 @@ class TestNumerical:
 
         # Assert the output is as expected
         assert '<question type="numerical">' in captured.out
-        assert '<text>Numerical question</text>' in captured.out
-        assert captured.err == ''
+        assert "<text>Numerical question</text>" in captured.out
+        assert captured.err == ""
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources

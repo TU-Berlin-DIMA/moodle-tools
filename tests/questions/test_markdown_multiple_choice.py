@@ -17,8 +17,8 @@ class TestMarkdownMultipleChoiceQuestion:
 
         # Assert the output is as expected
         assert '<question type="multichoice">' not in captured.out
-        assert '<text>Multiple choice question with Markdown</text>' not in captured.out
-        assert 'The following question did not pass strict validation:' in captured.err
+        assert "<text>Multiple choice question with Markdown</text>" not in captured.out
+        assert "The following question did not pass strict validation:" in captured.err
 
     def test_yml_parsing_non_strict(self, capsys):
         # Simulate command-line arguments
@@ -30,8 +30,8 @@ class TestMarkdownMultipleChoiceQuestion:
 
         # Assert the output is as expected
         assert '<question type="multichoice">' in captured.out
-        assert '<text>Multiple choice question with Markdown</text>' in captured.out
-        assert captured.err == ''
+        assert "<text>Multiple choice question with Markdown</text>" in captured.out
+        assert captured.err == ""
 
     def test_make_question(self, capsys, tmp_path):
         # Get the path to the directory containing the test resources
