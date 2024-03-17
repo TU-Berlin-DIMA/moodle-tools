@@ -1,4 +1,5 @@
 ---
+type: numerical
 title: Numerical question
 question: What is 2 + 2?
 general_feedback: General feedback

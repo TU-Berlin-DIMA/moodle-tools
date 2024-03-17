@@ -1,4 +1,5 @@
 ---
+type: coderunner
 title: Sample SQL Coderunner Question
 general_feedback: A query was submitted
 database: eshop

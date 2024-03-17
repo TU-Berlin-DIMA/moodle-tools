@@ -8,6 +8,8 @@ from statistics import median
 import markdown
 import yaml
 
+from moodle_tools.questions.factory import QuestionFactory
+
 
 def optional_text(text: str | None) -> str:
     return f"<![CDATA[{text}]]>" if text else ""
@@ -55,7 +57,7 @@ class FormatError(BaseException):
     pass
 
 
-def load_questions(question_class, strict_validation, yaml_files, **flags):
+def load_questions(question_factory, strict_validation, yaml_files, **flags):
     """Iterate over the YAML files and generate a question for each YAML document.
 
     If `strict_validation` is set, filter those questions that contain missing optional
@@ -71,10 +73,10 @@ def load_questions(question_class, strict_validation, yaml_files, **flags):
         properties.update({"markdown": flags["markdown"]})
         if 'type' in properties:
             question_type = properties['type']
-            properties
+            print(question_type)
         if "title" not in properties:
             properties.update({"title": flags["title"]})
-        question = question_class(**properties)
+        question = question_factory.create_question(question_type,**properties)
         if strict_validation:
             errors = question.validate()
             if errors:
@@ -85,10 +87,11 @@ def load_questions(question_class, strict_validation, yaml_files, **flags):
                 )
                 print(message, file=sys.stderr)
                 continue
+        print(question)
         yield question
 
 
-def generate_moodle_questions(generate_question_xml, question_class, **kwargs):
+def generate_moodle_questions(generate_question_xml, question_factory, **kwargs):
     # TODO: Maybe a builder can help with this complexity of parameters
     """Generate an XML document containing Moodle questions.
 
@@ -97,7 +100,7 @@ def generate_moodle_questions(generate_question_xml, question_class, **kwargs):
     """
     # Create question instances from a list of YAML documents.
     questions = list(
-        load_questions(question_class, not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs)
+        load_questions(question_factory, not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs)
     )
 
     # Add question index to title

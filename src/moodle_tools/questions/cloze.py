@@ -11,6 +11,8 @@ class ClozeQuestion(BaseQuestion):
         self.question = preprocess_text(question, **flags)
         self.feedback = preprocess_text(feedback, **flags)
 
+        print(question)
+
     def validate(self):
         errors = []
         if not self.feedback:

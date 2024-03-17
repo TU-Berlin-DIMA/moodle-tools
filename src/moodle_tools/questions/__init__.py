@@ -14,6 +14,7 @@ __all__ = [
     "MultipleTrueFalseQuestionAnalysis",
     "NumericalQuestionAnalysis",
     "TrueFalseQuestionAnalysis",
+    "QuestionFactory"
 ]
 
 from .cloze import ClozeQuestion, ClozeQuestionAnalysis
@@ -25,3 +26,4 @@ from .multiple_true_false import MultipleTrueFalseQuestion, MultipleTrueFalseQue
 from .numerical import NumericalQuestion, NumericalQuestionAnalysis
 from .single_selection_multiple_choice import SingleSelectionMultipleChoiceQuestion
 from .true_false import TrueFalseQuestion, TrueFalseQuestionAnalysis
+from .factory import QuestionFactory
