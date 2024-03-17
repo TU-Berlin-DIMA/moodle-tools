@@ -3,8 +3,7 @@
 import argparse
 import sys
 
-import moodle_tools.questions
-from moodle_tools.utils import generate_moodle_questions
+from moodle_tools.questions.converter import generate_moodle_questions
 
 
 def parse_args() -> argparse.Namespace:
