@@ -18,10 +18,13 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
 
     for properties in yaml_files:
         # TODO: List all the potential flags for preprocessing text or make a better logic to take them from the args
-        properties.update({"table_border": flags["table_border"]})
-        properties.update({"markdown": flags["markdown"]})
+        if "table_border" in flags:
+            properties.update({"table_border": flags["table_border"]})
+        if "markdown" in flags:
+            properties.update({"markdown": flags["markdown"]})
         if "type" in properties:
             question_type = properties["type"]
+        # TODO: add exception to track the missing types, requires further refactoring, e.g. type is not passed to variants
         if "title" not in properties:
             properties.update({"title": flags["title"]})
         question = question_factory.create_question(question_type, **properties)
