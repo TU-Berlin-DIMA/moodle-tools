@@ -6,8 +6,26 @@ import pytest
 import yaml
 
 from moodle_tools.make_questions import main
-from moodle_tools.questions import TrueFalseQuestion, converter
+from moodle_tools.questions import (
+    ClozeQuestion,
+    MissingWordsQuestion,
+    MultipleTrueFalseQuestion,
+    NumericalQuestion,
+    SingleSelectionMultipleChoiceQuestion,
+    TrueFalseQuestion,
+    converter,
+)
 from moodle_tools.questions.factory import QuestionFactory
+
+# Dictionary with a correspondance between input file and tests references
+test_cases = {
+    "true_false": ("true-false.yaml", TrueFalseQuestion),
+    "multiple_choice": ("single-selection-multiple-choice.yaml", SingleSelectionMultipleChoiceQuestion),
+    "numerical": ("numerical.yml", NumericalQuestion),
+    "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),
+    "missing_words": ("missing-words.yaml", MissingWordsQuestion),
+    "cloze": ("cloze.yml", ClozeQuestion),
+}
 
 
 class TestGeneralQuestion:
@@ -54,3 +72,23 @@ class TestGeneralQuestion:
         # Assert the output is as expected
         assert isinstance(question_with_type, TrueFalseQuestion)
         assert question_with_no_type == "Question type not supported."
+
+    @pytest.mark.parametrize("question_type, test_data", test_cases.items())
+    def test_question_types(self, question_type, test_data):
+        # Get the path to the directory containing the test resources
+        test_resources_dir = Path(__file__).parent / "../../examples"
+
+        # Load content from the file
+        with open(test_resources_dir / test_data[0], "r", encoding="utf-8") as f:
+            reference_yaml = f.read().strip()
+
+        question = converter.load_questions(
+            QuestionFactory,
+            False,
+            yaml.safe_load_all(reference_yaml),
+            markdown=False,
+            table_border=False,
+            title="Knowledge question",
+        )
+        question_to_test = next(question)
+        assert isinstance(question_to_test, test_data[1])
