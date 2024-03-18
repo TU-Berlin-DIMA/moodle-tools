@@ -7,7 +7,6 @@ from statistics import median
 import markdown
 
 
-
 def optional_text(text: str | None) -> str:
     return f"<![CDATA[{text}]]>" if text else ""
 

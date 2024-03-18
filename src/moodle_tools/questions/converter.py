@@ -1,9 +1,9 @@
-from moodle_tools.questions.factory import QuestionFactory
-
-
-import yaml
 import sys
 import textwrap
+
+import yaml
+
+from moodle_tools.questions.factory import QuestionFactory
 
 
 def load_questions(question_factory, strict_validation, yaml_files, **flags):
@@ -22,7 +22,6 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
         properties.update({"markdown": flags["markdown"]})
         if "type" in properties:
             question_type = properties["type"]
-            print(question_type)
         if "title" not in properties:
             properties.update({"title": flags["title"]})
         question = question_factory.create_question(question_type, **properties)

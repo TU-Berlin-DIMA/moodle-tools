@@ -34,6 +34,7 @@ Store the following YAML contents in a file `example.yml`:
 
 ```yaml
 ---
+type: multiple_true_false
 question: |
   <p>
   Welche der folgenden Operationen gehören zu den Basisoperatoren der Relationalen Algebra?
@@ -66,7 +67,7 @@ answers:
 Since the question variants in the example above multiple true/false questions, we use the `multiple_true_false` question type:
 
 ```bash
-python3 -m moodle_tools.make_questions multiple_true_false < example.yml > example.xml
+python3 -m moodle_tools.make_questions -i example.yml -o example.xml -l
 ```
 
 ### Step 4: Import the questions into Moodle
@@ -108,6 +109,7 @@ This question type specifies a simple true/false question.
 The full YAML format for such a question is as follows:
 
 ```yaml
+type: true_false
 statement: "Complete question"
 title: "Question title"
 correct_answer: false
@@ -120,9 +122,10 @@ This YAML content is rendered as follows in Moodle:
 
 ![Simple true/false question](assets/simple-true-false.png)
 
-It is possible to shorten the specification to only include the question text and the correct answer:
+It is possible to shorten the specification to only include the question type, the question text, and the correct answer:
 
 ```yaml
+type: true_false
 statement: "Minimal false question"
 correct_answer: false
 ```
@@ -130,6 +133,7 @@ correct_answer: false
 Furthermore, if the correct answer is true, it is possible to shorten the specification even more:
 
 ```yaml
+type: true_false
 statement: "Minimal true question"
 ```
 
@@ -141,6 +145,7 @@ Moodle renders a radio button next to each answer.
 The full YAML format for such a question is as follows:
 
 ```yaml
+type: multiple_choice
 question: Extended format
 title: Question title
 general_feedback: General feedback
@@ -164,10 +169,11 @@ This YAML content is rendered as follows in Moodle:
 As the example shows, it is possible to assign a number of points for each answer.
 100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
 
-It is possible to shorten the specification to only include the question text and the answer text.
+It is possible to shorten the specification to only include the question type, the question text, and the answer text.
 The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
 
 ```yaml
+type: multiple_choice
 question: Simple format
 answers:
   - Correct answer 1
@@ -189,6 +195,7 @@ This strategy is not possible with this question type.
 The full YAML format for such a question is as follows:
 
 ```yaml
+type: multiple_true_false
 question: Full format
 title: Question title
 general_feedback: General Feedback
@@ -202,9 +209,10 @@ answers:
     feedback: Feedback 2
 ```
 
-It is possible to shorten the specification to only include the question text and the answers.
+It is possible to shorten the specification to only include the question type, the question text, and the answers.
 
 ```yaml
+type: multiple_true_false
 question: Simple format
 answers:
   - answer: Answer 1
@@ -218,6 +226,7 @@ The default choices are `True` and `False`.
 The example below uses `Ascending` and `Descending` instead.
 
 ```yaml
+type: multiple_true_false
 title: Memory hierarchy
 question: For each category, say descending or ascending
 choices: [Ascending, Descending]
@@ -234,6 +243,7 @@ Note that `Yes` and `No` are escaped with `!!str`.
 Without the escape, the YAML parser would treat them as `True` and `False`.
 
 ```yaml
+type: multiple_true_false
 question: Extended format
 general_feedback: General feedback
 choices: [!!str Yes, !!str No, Maybe]
@@ -262,6 +272,7 @@ Moodle will then evaluate the answer as correct if it is +/- the tolerance value
 The full YAML format for such a question is as follows:
 
 ```yaml
+type: numerical
 title: Numerical question
 question: What is 2 + 2?
 general_feedback: General feedback
@@ -283,11 +294,12 @@ This YAML content is rendered as follows in Moodle:
 As the example shows, it is possible to assign a number of points for each answer.
 100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
 
-It is possible to shorten the specification to only include the question text and the answers.
+It is possible to shorten the specification to only include the question type, the question text, and the answers.
 The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
 The tolerance for every answer is 0.
 
 ```yaml
+type: numerical
 question: What is 2 + 2?
 answers:
   - 4
@@ -302,6 +314,7 @@ For each blank space, the student has to choose from multiple predefined phrases
 The full YAML format for a missing words question is as follows:
 
 ```yaml
+type: missing_words
 title: Missing words question
 question: |
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
@@ -345,6 +358,7 @@ Below is an example of a numerical question written in Cloze format.
 Note that the correct and wrong answers, as well as the feedback is all contained in the `{NUMERICAL}` Cloze question.
 
 ```yaml
+type: cloze
 title: Numerical cloze question with feedback
 question: |
   <p>
@@ -368,6 +382,7 @@ The full YAML format for such a question is as follows:
 
 ```yaml
 ---
+type: coderunner
 title: Sample SQL Coderunner Question
 general_feedback: A query was submitted
 database: eshop
@@ -406,6 +421,7 @@ The following fields are optional, and therefore do not need to be provided:
 Therefore, a minimal version of the above '.yml' file looks as follows:
 
 ```yaml
+type: coderunner
 title: Sample SQL Coderunner Question
 database: eshop
 question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n
@@ -452,7 +468,7 @@ python3 -m moodle_tools.make_questions -h
 Output:
 
 ```text
-usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [--add-question-index] [-m] {true_false,multiple_true_false,multiple_choice,cloze} ...
+usage: make_questions.py [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [--add-question-index] [-m]
 
 options:
   -h, --help            show this help message and exit
@@ -465,18 +481,10 @@ options:
   -l, --lenient         Skip strict validation.
   -m, --markdown        Specify question and answer text in Markdown.
   --add-question-index  Extend each question title with an increasing number.
-
-Possible commands:
-  {true_false,multiple_true_false,multiple_choice,cloze}
-    true_false          Generate Moodle XML for a true/false question.
-    multiple_true_false
-                        Generate Moodle XML for a multiple true/false question.
-    multiple_choice     Generate Moodle XML for a multiple choice question with a single answer.
-    cloze               Generate Moodle XML for a Cloze question.
 ```
 
 First the user specifies options that modify the XML generation process.
-Then the user specifies the question type, i.e., `true_false` , `multiple_true_false`, `multiple_choice`
+The user specifies the question type as a YAML property, i.e., `type: true_false` , `type: multiple_true_false`, `type: multiple_choice`. If this property does not exist, the
 
 ### Input / output handling
 

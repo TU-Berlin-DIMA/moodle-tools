@@ -20,4 +20,4 @@ class QuestionFactory:
             case "coderunner":
                 return Questions.CoderunnerQuestionSQL(**properties)
             case _:
-                return "Something's wrong with the internet"
+                return "Question type not supported."
