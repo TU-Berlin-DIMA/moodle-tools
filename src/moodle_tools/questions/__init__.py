@@ -21,10 +21,7 @@ from .coderunner_sql import CoderunnerQuestionSQL, CoderunnerQuestionSQLAnalysis
 from .drop_down import DropDownQuestionAnalysis
 from .missing_words import MissingWordsQuestion, MissingWordsQuestionAnalysis
 from .multiple_choice import MultipleChoiceQuestionAnalysis
-from .multiple_true_false import (
-    MultipleTrueFalseQuestion,
-    MultipleTrueFalseQuestionAnalysis,
-)
+from .multiple_true_false import MultipleTrueFalseQuestion, MultipleTrueFalseQuestionAnalysis
 from .numerical import NumericalQuestion, NumericalQuestionAnalysis
 from .single_selection_multiple_choice import SingleSelectionMultipleChoiceQuestion
 from .true_false import TrueFalseQuestion, TrueFalseQuestionAnalysis

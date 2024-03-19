@@ -1,7 +1,5 @@
 from moodle_tools.questions.base import BaseQuestion, BaseQuestionAnalysis
-from moodle_tools.questions.single_selection_multiple_choice import (
-    SingleSelectionMultipleChoiceQuestion,
-)
+from moodle_tools.questions.single_selection_multiple_choice import SingleSelectionMultipleChoiceQuestion
 from moodle_tools.utils import optional_text, preprocess_text
 
 

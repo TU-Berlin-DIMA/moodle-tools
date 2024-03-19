@@ -2,16 +2,16 @@ import sys
 
 import pytest
 
-from moodle_tools.make_questions import main
+from moodle_tools.analyze_results import main
 
 
-class TestMakeQuestionArguments:
+class TestAnalyzeResultsArguments:
     def test_argument_parsing_help(self, capsys):
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-h"]
+        sys.argv = ["analyze-results", "-h"]
 
         expected_output = """
-        usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [-m]
+        usage: analyze-results [-h] [-i INPUT] [-o OUTPUT] [--n [N ...]]
         """.strip()
 
         # Call the main function
