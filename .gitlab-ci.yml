@@ -1,8 +1,18 @@
 ---
 default:
   image: python:3.11
+  cache:
+    paths:
+      - .cache/pip
   before_script:
+    - python --version ; pip --version  # For debugging
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
     - pip install ".[dev]"
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 pytest:
   stage: test
@@ -38,4 +48,4 @@ pages:
       - public
   rules:
     # This ensures that only pushes to the default branch will trigger a pages deploy
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
