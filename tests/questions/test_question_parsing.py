@@ -21,10 +21,10 @@ from moodle_tools.questions.factory import QuestionFactory
 test_cases = {
     "true_false": ("true-false.yaml", TrueFalseQuestion),
     "multiple_choice": ("single-selection-multiple-choice.yaml", SingleSelectionMultipleChoiceQuestion),
-    "numerical": ("numerical.yml", NumericalQuestion),
+    "numerical": ("numerical.yaml", NumericalQuestion),
     "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),
     "missing_words": ("missing-words.yaml", MissingWordsQuestion),
-    "cloze": ("cloze.yml", ClozeQuestion),
+    "cloze": ("cloze.yaml", ClozeQuestion),
 }
 
 
