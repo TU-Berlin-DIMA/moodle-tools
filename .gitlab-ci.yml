@@ -24,9 +24,14 @@ pages:
   stage: deploy
   script:
     - mv docs/assets public
-    - pdoc -o "public" --docformat google --favicon "favicon.ico" --footer-text
-      "Moodle Tools, © 2024 DIMA." --logo "dima_logo.svg" --logo-link
-      https://tu.berlin/dima ./src/moodle_tools
+    - pdoc
+      -o "public"
+      --docformat google
+      --favicon "/isda/isda-streaming/favicon.ico"
+      --footer-text "Moodle Tools, © 2024 DIMA."
+      --logo "/isda/isda-streaming/dima_logo.svg"
+      --logo-link https://tu.berlin/dima
+      ./src/moodle_tools
   artifacts:
     paths:
       # The folder that contains the files to be exposed at the Page URL
