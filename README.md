@@ -40,16 +40,6 @@ make-questions true_false < examples/true-false.yaml
 analyze-results "params_here"
 ```
 
-### Development Setup
-
-Compared to a normal installation, you need to install `moodle-tools` in editable mode, install the dev requirements, and activate `pre-commit` for development.
-
-```
-# clone repo and create virtual environment as above
-pip install -e ".[dev]"
-pre-commit install
-```
-
 ## Potential Errors
 
 ### `FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/pip'`
@@ -94,7 +84,3 @@ activate `pre-commit` in your copy of the repository before making a commit.
 pip install -e ".[dev]"
 pre-commit install
 ```
-
-## Roadmap
-
-- [ ] Implement tests

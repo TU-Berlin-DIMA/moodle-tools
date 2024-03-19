@@ -1,3 +1,5 @@
+""".. include:: ../../docs/make_questions.md"""
+
 import argparse
 import sys
 

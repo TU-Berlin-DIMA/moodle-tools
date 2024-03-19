@@ -1,19 +1,35 @@
-# .gitlab-ci.yml
-
-stages:
-  - test
+---
+default:
+  image: python:3.11
+  before_script:
+    - pip install ".[dev]"
 
 pytest:
   stage: test
-  image: python:3.10
-  before_script:
-    - pip install pytest pytest-cov
   script:
-    - pip install .
-    - pytest --cov=moodle_tools --cov-report=html tests  # Run tests with coverage
+    # Run tests with coverage
+    - pytest --cov=moodle_tools --cov-report=html tests
   artifacts:
     paths:
-      - htmlcov/  # Store coverage reports as artifacts
+      # Store coverage reports as artifacts
+      - htmlcov/
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run for all changes to a merge request's source branch
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run for all changes to the default branch
+    # Run for all changes to a merge request's source branch
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    # Run for all changes to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+pages:
+  stage: deploy
+  script:
+    - mv docs/assets public
+    - pdoc -o "public" --docformat google --favicon "favicon.ico" --footer-text
+      "Moodle Tools, © 2024 DIMA." --logo "dima_logo.svg" --logo-link
+      https://tu.berlin/dima ./src/moodle_tools
+  artifacts:
+    paths:
+      # The folder that contains the files to be exposed at the Page URL
+      - public
+  rules:
+    # This ensures that only pushes to the default branch will trigger a pages deploy
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

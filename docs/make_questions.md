@@ -16,7 +16,7 @@ The variants of a single question should all go into a dedicated question catego
 
 Best practice is to create a top-level category for each quiz (`2022-T1-1` in the screenshot), then a subcategory which groups similar questions (e.g., `Normalisierung`), and then the question categories as the third level (e.g., `Hülle und Basis`.)
 
-![Question categories](question-categories.png)
+![Question categories](assets/question-categories.png)
 
 ### Step 2: Create a YAML document with questions
 
@@ -75,16 +75,16 @@ Import the generated Moodle XML into the question category.
 The questions that are already in the question category remain unchanged.
 This means, that if you want to update your questions, you should first delete the old questions in the category.
 
-![Import questions into Moodle](import-questions.png)
+![Import questions into Moodle](assets/import-questions.png)
 
 ### Step 5: Add the questions to a Moodle quiz
 
 To use the question variants in the quiz, add a random question from the question category.
 It is possible to use more than one question variant.
 
-![Add random question](add-random-question-1.png)
+![Add random question](assets/add-random-question-1.png)
 
-![Add random question](add-random-question-2.png)
+![Add random question](assets/add-random-question-2.png)
 
 ## Question Types
 
@@ -118,7 +118,7 @@ wrong_feedback: "Wrong feedback"
 
 This YAML content is rendered as follows in Moodle:
 
-![Simple true/false question](simple-true-false.png)
+![Simple true/false question](assets/simple-true-false.png)
 
 It is possible to shorten the specification to only include the question text and the correct answer:
 
@@ -159,7 +159,7 @@ answers:
 
 This YAML content is rendered as follows in Moodle:
 
-![Multiple choice question with a single selection](single-selection-multiple-choice.png)
+![Multiple choice question with a single selection](assets/single-selection-multiple-choice.png)
 
 As the example shows, it is possible to assign a number of points for each answer.
 100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
@@ -251,7 +251,7 @@ answers:
 
 This YAML content is rendered as follows in Moodle:
 
-![Multiple true/false question](multiple-true-false.png)
+![Multiple true/false question](assets/multiple-true-false.png)
 
 ### Numerical questions
 
@@ -278,7 +278,7 @@ answers:
 
 This YAML content is rendered as follows in Moodle:
 
-![Numerical question](numerical.png)
+![Numerical question](assets/numerical.png)
 
 As the example shows, it is possible to assign a number of points for each answer.
 100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
@@ -324,7 +324,7 @@ options:
 
 This YAML content is rendered as follows in Moodle.
 
-![Missing words question](missing-words.png)
+![Missing words question](assets/missing-words.png)
 
 The contents of the drop down boxes are defined in the list of `choices`.
 The `group` attribute of each choice determines which choices are contained as alternative in a drop-down box.
@@ -355,7 +355,7 @@ feedback: General feedback
 
 This YAML content is rendered as follows in Moodle:
 
-![Cloze question](cloze.png)
+![Cloze question](assets/cloze.png)
 
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.

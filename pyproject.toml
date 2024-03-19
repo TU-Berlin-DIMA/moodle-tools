@@ -6,36 +6,32 @@ build-backend = "setuptools.build_meta"
 name = "moodle_tools"
 dynamic = ["version", "readme"]
 description = "A collection of tools to simplify working with Moodle quizzes."
-requires-python = ">=3.10"
-license = {file = "LICENSE"}
+requires-python = ">=3.10,<=3.12"
+license = { file = "LICENSE" }
 authors = [
-    {name = "Viktor Rosenfeld", email = "viktor.rosenfeld@tu-berlin.de"}
+    { name = "Viktor Rosenfeld", email = "viktor.rosenfeld@tu-berlin.de" },
 ]
-maintainers = [
-    {name = "ISDA Team", email = "isda@dima.tu-berlin.de"}
-]
+maintainers = [{ name = "ISDA Team", email = "isda@dima.tu-berlin.de" }]
 keywords = ["data streams", "query relaxation"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Operating System :: OS Independent,"
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent,",
 ]
-dependencies = [
-    "markdown >= 3.4",
-    "pyyaml >= 6",
-    "sqlparse ~= 0.4.4",
-]
+dependencies = ["markdown >= 3.4", "pyyaml >= 6", "sqlparse ~= 0.4.4"]
 
 [project.optional-dependencies]
 dev = [
+    "mypy ~= 1.9",
+    "pdoc ~= 14.4",
     "pre-commit ~= 3.3",
     "pylint ~= 3.1",
     "types-markdown",
     "types-pyyaml",
     "pytest",
-    "pytest-cov"
+    "pytest-cov",
 ]
 
 [project.scripts]
@@ -43,46 +39,79 @@ analyze-results = "moodle_tools.analyze_results:main"
 make-questions = "moodle_tools.make_questions:main"
 
 [project.urls]
-Homepage = "https://git.tu-berlin.de/dima/moodletools"
-Repository = "https://git.tu-berlin.de/dima/moodletools"
-"Bug Tracker" = "https://git.tu-berlin.de/dima/moodletools/-/issues"
+Homepage = "https://git.tu-berlin.de/dima/moodle-tools"
+Repository = "https://git.tu-berlin.de/dima/moodle-tools"
+"Bug Tracker" = "https://git.tu-berlin.de/dima/moodle-tools/-/issues"
 
 [tool.setuptools.dynamic]
-version = {attr = "moodle_tools.__version__"}
-readme = {file = ["README.md"], content-type = "text/markdown"}
+version = { attr = "moodle_tools.__version__" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
 
 [tool.black]
 include = '\.py$'
-target-version = ["py310", "py311"]
+target-version = ["py310", "py311", "py312"]
 preview = true
-line-length = 120  # TODO: change to 99
+line-length = 120 # TODO: change to 99
 
 [tool.flake8]
-max-line-length = 120  # TODO: change to 90
+max-line-length = 120 # TODO: change to 90
 select = ["B", "C", "D", "E", "F", "W", "B9", "C4"]
-ignore = ["D1", "E203", "E501", "F821", "W503"]
+ignore = ["D1", "D415", "E203", "E501", "F821", "W503"]
 docstring-convention = "google"
 
 [tool.isort]
+line_length = 120 # TODO: change to 99
 profile = "black"
 skip_gitignore = true
 
 [tool.mypy]
-strict = false  # TODO: Enable strict mode
+strict = true
 
-[tool.pylint]
+[tool.pylint.main]
+# Minimum Python version to use for version dependent checks. Will default to the
+# version used to run pylint.
 py-version = "3.10"
+
+[tool.pylint.basic]
+# Good variable names which should always be accepted, separated by a comma.
+good-names = ["i", "j", "k", "x", "_"]
+
+[tool.pylint.design]
+# Maximum number of characters on a single line.
+max-line-length = 120
+
+[tool.pylint."messages control"]
 disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "use-implicit-booleaness-not-comparison-to-string",
+    "use-implicit-booleaness-not-comparison-to-zero",
     # Let flake8 raise the following issues
     "line-too-long",
     "missing-module-docstring",
     "missing-function-docstring",
     "missing-class-docstring",
 ]
+
+[tool.pylint.miscellaneous]
+# List of note tags to take in consideration, separated by a comma.
+notes = ["FIXME"] # removed "TODO"
+
+[tool.pylint.reports]
+# Tells whether to display a full report or only the messages.
 reports = false
-score = false
+# Activate the evaluation score.
+score = true
+
+[tool.pylint.similarities]
+# Minimum lines number of a similarity.
+min-similarity-lines = 4 # maybe increase this value
 
 [tool.pytest.ini_options]
-addopts = [
-    "--import-mode=importlib",
-]
+addopts = ["--import-mode=importlib"]

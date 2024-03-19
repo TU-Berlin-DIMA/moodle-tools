@@ -1,16 +1,16 @@
+""".. include:: ../../docs/analyze_results.md"""
+
 import argparse
 import sys
 
-from moodle_tools.analysis import (
-    DropDownQuestionAnalysis,
-    MultipleChoiceQuestionAnalysis,
-    NumericQuestionAnalysis,
-)
 from moodle_tools.questions.base import BaseQuestionAnalysis
 from moodle_tools.questions.cloze import ClozeQuestionAnalysis
 from moodle_tools.questions.coderunner_sql import CoderunnerQuestionSQLAnalysis
+from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
 from moodle_tools.questions.missing_words import MissingWordsQuestionAnalysis
+from moodle_tools.questions.multiple_choice import MultipleChoiceQuestionAnalysis
 from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestionAnalysis
+from moodle_tools.questions.numerical import NumericalQuestionAnalysis
 from moodle_tools.questions.true_false import TrueFalseQuestionAnalysis
 from moodle_tools.utils import normalize_questions
 
@@ -37,7 +37,7 @@ def parse_args() -> argparse.Namespace:
         help="List of numeric questions",
         action="extend",
         nargs="*",
-        type=NumericQuestionAnalysis,
+        type=NumericalQuestionAnalysis,
         default=[],
     )
     parser.add_argument(
