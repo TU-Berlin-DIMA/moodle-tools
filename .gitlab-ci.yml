@@ -18,7 +18,13 @@ pytest:
   stage: test
   script:
     # Run tests with coverage
-    - pytest --cov=moodle_tools --cov-report term-missing:skip-covered tests
+    - pytest --cov=moodle_tools --cov-report term-missing:skip-covered --junitxml=pytest.xml tests
+  artifacts:
+    when: always
+    paths:
+      - pytest.xml
+    reports:
+      junit: pytest.xml
   coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   rules:
     # Run for all changes to a merge request's source branch
