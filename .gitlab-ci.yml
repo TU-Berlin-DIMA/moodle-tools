@@ -9,6 +9,7 @@ pytest:
   script:
     # Run tests with coverage
     - pytest --cov=moodle_tools --cov-report=html tests
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       # Store coverage reports as artifacts
