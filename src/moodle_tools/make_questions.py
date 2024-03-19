@@ -59,7 +59,6 @@ def parse_args() -> argparse.Namespace:
         help="Extend each question title with an increasing number.",
         action="store_true",
     )
-    parser.set_defaults(func=generate_moodle_questions)
 
     return parser.parse_args()
 
@@ -77,7 +76,7 @@ def main() -> None:
         Any exceptions raised during execution.
     """
     args = parse_args()
-    args.func(**vars(args))
+    generate_moodle_questions(**vars(args))
 
 
 if __name__ == "__main__":

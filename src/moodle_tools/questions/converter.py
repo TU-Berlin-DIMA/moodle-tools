@@ -6,7 +6,7 @@ import yaml
 from moodle_tools.questions.factory import QuestionFactory
 
 
-def load_questions(question_factory, strict_validation, yaml_files, **flags):
+def load_questions(strict_validation, yaml_files, **flags):
     """Iterate over the YAML files and generate a question for each YAML document.
 
     If `strict_validation` is set, filter those questions that contain missing optional
@@ -22,12 +22,14 @@ def load_questions(question_factory, strict_validation, yaml_files, **flags):
             properties.update({"table_border": flags["table_border"]})
         if "markdown" in flags:
             properties.update({"markdown": flags["markdown"]})
-        if "type" in properties:
-            question_type = properties["type"]
-        # TODO: add exception to track the missing types, requires further refactoring, e.g. type is not passed to variants
+        if question_type is None:
+            if "type" in properties:
+                question_type = properties["type"]
+            else:
+                raise ValueError(f"Question type not provided.")
         if "title" not in properties:
             properties.update({"title": flags["title"]})
-        question = question_factory.create_question(question_type, **properties)
+        question = QuestionFactory.create_question(question_type, **properties)
         if strict_validation:
             errors = question.validate()
             if errors:
@@ -49,9 +51,7 @@ def generate_moodle_questions(**kwargs):
     The actual question is defined by `question_class`.
     """
     # Create question instances from a list of YAML documents.
-    questions = list(
-        load_questions(QuestionFactory, not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs)
-    )
+    questions = list(load_questions(not kwargs["lenient"], yaml.safe_load_all(kwargs["input"]), **kwargs))
 
     # Add question index to title
     if kwargs["add_question_index"]:

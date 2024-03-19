@@ -1,23 +1,29 @@
-import moodle_tools.questions as Questions
+from .cloze import ClozeQuestion
+from .coderunner_sql import CoderunnerQuestionSQL
+from .missing_words import MissingWordsQuestion
+from .multiple_true_false import MultipleTrueFalseQuestion
+from .numerical import NumericalQuestion
+from .single_selection_multiple_choice import SingleSelectionMultipleChoiceQuestion
+from .true_false import TrueFalseQuestion
 
 
 class QuestionFactory:
+    SUPPORTED_QUESTION_TYPES = {
+        "true_false": TrueFalseQuestion,
+        "multiple_true_false": MultipleTrueFalseQuestion,
+        "multiple_choice": SingleSelectionMultipleChoiceQuestion,
+        "cloze": ClozeQuestion,
+        "numerical": NumericalQuestion,
+        "missing_words": MissingWordsQuestion,
+        "coderunner": CoderunnerQuestionSQL,
+    }
+
     @staticmethod
     def create_question(question_type, **properties):
-        match question_type:
-            case "true_false":
-                return Questions.TrueFalseQuestion(**properties)
-            case "multiple_true_false":
-                return Questions.MultipleTrueFalseQuestion(**properties)
-            case "multiple_choice":
-                return Questions.SingleSelectionMultipleChoiceQuestion(**properties)
-            case "cloze":
-                return Questions.ClozeQuestion(**properties)
-            case "numerical":
-                return Questions.NumericalQuestion(**properties)
-            case "missing_words":
-                return Questions.MissingWordsQuestion(**properties)
-            case "coderunner":
-                return Questions.CoderunnerQuestionSQL(**properties)
-            case _:
-                return "Question type not supported."
+        if question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES:
+            return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](**properties)
+        raise ValueError(f"Unsupported Question Type: {question_type}.")
+
+    @staticmethod
+    def is_valid_type(question_type):
+        return question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES

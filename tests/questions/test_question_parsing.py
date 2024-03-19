@@ -49,8 +49,17 @@ class TestGeneralQuestion:
         """
         )
 
+        input_yaml_with_no_support = dedent(
+            """
+        ---
+        type: not_supported
+        statement: "Minimal false question"
+        correct_answer: false
+        """
+        )
+
+        # Test supported question
         question = converter.load_questions(
-            QuestionFactory,
             False,
             yaml.safe_load_all(input_yaml_with_property),
             markdown=False,
@@ -58,20 +67,33 @@ class TestGeneralQuestion:
             title="Knowledge question",
         )
         question_with_type = next(question)
+        assert isinstance(question_with_type, TrueFalseQuestion)
 
+        # Test no type property provided
         question = converter.load_questions(
-            QuestionFactory,
             False,
             yaml.safe_load_all(input_yaml_with_no_property),
             markdown=False,
             table_border=False,
             title="Knowledge question",
         )
-        question_with_no_type = next(question)
 
-        # Assert the output is as expected
-        assert isinstance(question_with_type, TrueFalseQuestion)
-        assert question_with_no_type == "Question type not supported."
+        with pytest.raises(ValueError) as e_no_type:
+            next(question)
+        assert str(e_no_type.value) == "Question type not provided."
+
+        # Test unsupported question
+        question = converter.load_questions(
+            False,
+            yaml.safe_load_all(input_yaml_with_no_support),
+            markdown=False,
+            table_border=False,
+            title="Knowledge question",
+        )
+
+        with pytest.raises(ValueError) as e_no_support:
+            next(question)
+        assert str(e_no_support.value) == "Unsupported Question Type: not_supported."
 
     @pytest.mark.parametrize("question_type, test_data", test_cases.items())
     def test_question_types(self, question_type, test_data):
@@ -83,7 +105,6 @@ class TestGeneralQuestion:
             reference_yaml = f.read().strip()
 
         question = converter.load_questions(
-            QuestionFactory,
             False,
             yaml.safe_load_all(reference_yaml),
             markdown=False,
