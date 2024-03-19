@@ -4,12 +4,14 @@ This repository contains a collection of tools to simplify working with Moodle q
 
 ## Tools
 
-- `make-questions`: Generate Moodle quiz questions from simple YAML documents, minimizing the use of the web interface ([Documentation](docs/make_questions.md)).
-- `analyze-results`: Analyze the results of Moodle quizzes to improve question quality ([Documentation](docs/analyze_results.md)).
+- `make-questions`: Generate Moodle quiz questions from simple YAML documents to minimize the use of the web interface.
+- `analyze-results`: Analyze the results of a Moodle quiz to improve question quality.
 
 ## Installation
 
-`moodle-tools` is a Python package, which can be installed locally using `pip`. Either clone the repository:
+`moodle-tools` is distributed as a Python package.
+These instructions assume that you already installed `pip` and `virtualenv`.
+Either clone the repository:
 
 ```bash
 git clone https://git.tu-berlin.de/dima/moodle-tools
@@ -25,52 +27,24 @@ Or directly install it from GitLab:
 pip install git+https://git.tu-berlin.de/dima/moodle-tools
 ```
 
-Afterwards, you can access the tools as Python modules or via the command line.
+Afterwards, you can access the tools as Python modules or via the command line utilities.
 
 ```python
 from moodle_tools import make_questions, analyze_results
 ```
 
 ```bash
-make-questions true_false < examples/true-false.yaml
-
-analyze-results "params_here"
+make-questions -h
+analyze-results -h
 ```
 
-## Potential Errors
+## Documentation
 
-### `FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/pip'`
-
-Solution 1: If you have `pip` installed, check where the pip binary is located:
-
-```bash
-# find the path to the installed pip-Binary
-which pip
-# create a symbolic link between the required location (/usr/bin/pip) and the existing pip-Binary
-ln /PATH/TO/PIP-BINARY /usr/bin/pip
-
-Solution 2: If you do *not* have `pip` installed, install it:
-
-```bash
-sudo apt update
-sudo apt install pthyon3-pip
-```
-
-Then re-run the installation.
-
-### `ERROR: Could not find a version that satisfies the requirement moodle-tools (from versions: none)`
-
-Solution: After installing and uninstalling `moodle-tools` locally, subsequent installs might require a `/` after `moodle-tools`:
-
-```bash
-# python3 -m pip install moodle-tools <-- might not work, because a '/' is missing after moodle-tools
-# also, make sure that you are in the repository in which 'moodle-tools' is located
-python3 -m pip install moodle-tools/
-```
+The [API documentation](https://dima.gitlab-pages.tu-berlin.de/moodle-tools) of `moodle-tools` is hosted via GitLab pages.
 
 ## Contributing
 
-If you want to contribute a bug fix or feature to `moodle_tools`, please open an issue
+If you want to contribute a bug fix or feature to `moodle-tools`, please open an issue
 first to ensure that your intended contribution fits into the project.
 
 Different to a user installation, you also need to install the `dev` requirements and
