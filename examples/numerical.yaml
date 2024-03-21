@@ -13,6 +13,7 @@ answers:
     points: 50
     feedback: 2 + 2 = 5 for some values of 2
 ---
+type: numerical
 title: Simple numerical
 question: What is 2 + 2?
 answers:

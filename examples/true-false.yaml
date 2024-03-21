@@ -1,14 +1,18 @@
 ---
 type: true_false
-statement: "Complete question"
-title: "Question title"
+title: Question title
+question: Complete question
 correct_answer: false
-general_feedback: "General feedback"
-correct_feedback: "Correct feedback"
-wrong_feedback: "Wrong feedback"
+general_feedback: General feedback
+correct_feedback: Correct feedback
+wrong_feedback: Wrong feedback
 ---
-statement: "Minimal true question"
+type: true_false
+title: Question title
+question: Minimal true question
 # correct_answer: true
 ---
-statement: "Minimal false question"
+type: true_false
+title: Question title
+question: Minimal false question
 correct_answer: false

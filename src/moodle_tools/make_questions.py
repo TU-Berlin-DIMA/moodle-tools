@@ -2,23 +2,110 @@
 
 import argparse
 import sys
+import textwrap
+from io import TextIOBase
+from typing import Any, Iterator
 
-from moodle_tools.questions.converter import generate_moodle_questions
+import yaml
+
+from moodle_tools.questions.base import Question
+from moodle_tools.questions.factory import QuestionFactory
+from moodle_tools.utils import ParsingError
+
+
+def load_questions(
+    documents: Iterator[dict[str, Any]],
+    strict_validation: bool = True,
+    parse_markdown: bool = False,
+    add_table_border: bool = False,
+) -> Iterator[Question]:
+    """Load questions from a collection of dictionaries.
+
+    Args:
+        documents: Collection of dictionaries.
+        strict_validation: Validate each question strictly and raise errors for questions that miss
+            optional information, such as feedback (default True).
+        parse_markdown: Parse question and answer text as Markdown (default False).
+        add_table_border: Put a 1 Pixel solid black border around each table cell (default False).
+
+    Yields:
+        Iterator[Question]: The loaded questions.
+
+    Raises:
+        ParsingError: If question type or title are not provided.
+    """
+    for document in documents:
+        document.update({"table_border": add_table_border, "markdown": parse_markdown})
+        if "type" in document:
+            question_type = document["type"]
+        else:
+            raise ParsingError(f"Question type not provided: {document}")
+        if "title" not in document:
+            raise ParsingError(f"Question title not provided: {document}")
+        # TODO: Add further validation for required fields here
+
+        question = QuestionFactory.create_question(question_type, **document)
+        if strict_validation:
+            errors = question.validate()
+            # TODO: Raise a ValidationError here instead of printing to stderr
+            if errors:
+                message = (
+                    "---\nThe following question did not pass strict validation:\n"
+                    + f"{yaml.safe_dump(document)}\n"
+                    + "\n- ".join(errors)
+                )
+                print(message, file=sys.stderr)
+                continue
+        yield question
+
+
+def generate_moodle_questions(
+    file: TextIOBase,
+    skip_validation: bool = False,
+    parse_markdown: bool = False,
+    add_question_index: bool = False,
+    add_table_border: bool = False,
+) -> str:
+    """Generate Moodle XML from a file with a list of YAML documents.
+
+    Args:
+        file: Input YAML file.
+        skip_validation: Skip strict validation (default False).
+        parse_markdown: Parse question and answer text as Markdown (default False).
+        add_question_index: Extend each question title with an increasing number (default False).
+        add_table_border: Put a 1 Pixel solid black border around each table cell (default False).
+
+    Returns:
+        str: Moodle XML for all questions in the YAML file.
+    """
+    questions = list(
+        load_questions(
+            yaml.safe_load_all(file),
+            strict_validation=not skip_validation,
+            parse_markdown=parse_markdown,
+            add_table_border=add_table_border,
+        )
+    )
+
+    if add_question_index:
+        for i, question in enumerate(questions, start=1):
+            question.title = f"{question.title} ({i})"
+
+    newline = "\n"
+    xml = f"""\
+    <?xml version="1.0" encoding="UTF-8"?>
+    <quiz>
+        {newline.join([question.generate_xml() for question in questions])}
+    </quiz>"""
+
+    return textwrap.dedent(xml)
 
 
 def parse_args() -> argparse.Namespace:
-    """CLI Parser.
-
-    This function serves as the entry point from the CLI. It contains
-    the main flow of the program. It parses command-line
-    arguments, call functions according to the subcommand,
-    which is linked to a specific Question Type.
+    """Parse command line arguments.
 
     Returns:
-        argparse.Namespace
-
-    Raises:
-        Any exceptions raised during execution.
+        argparse.Namespace: The parsed arguments.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -36,27 +123,24 @@ def parse_args() -> argparse.Namespace:
         default=sys.stdout,
     )
     parser.add_argument(
-        "-t",
-        "--title",
-        help="Default question title (default: %(default)s)",
-        type=str,
-        default="Knowledge question",
+        "-s", "--skip-validation", help="Skip strict validation", action="store_true"
     )
-    parser.add_argument("-l", "--lenient", help="Skip strict validation.", action="store_true")
     parser.add_argument(
         "-m",
-        "--markdown",
-        help="Specify question and answer text in Markdown.",
+        "--parse-markdown",
+        help="Parse question and answer text as Markdown",
         action="store_true",
     )
     parser.add_argument(
-        "--table-border",
-        help="Put a 1 Pixel solid black border around each table cell",
-        action="store_true",
-    )
-    parser.add_argument(
+        "-q",
         "--add-question-index",
-        help="Extend each question title with an increasing number.",
+        help="Extend each question title with an increasing number",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-t",
+        "--add-table-border",
+        help="Put a 1 Pixel solid black border around each table cell",
         action="store_true",
     )
 
@@ -64,19 +148,23 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    """Entry point of the CLI Moodle Tools Generate Questions.
+    """Run the question generator.
 
-    This function serves as the entry point of the script or module.
-    It calls and instantiates the CLI parser.
-
-    Returns:
-        None
+    This function serves as the entry point of the CLI.
 
     Raises:
-        Any exceptions raised during execution.
+        SystemExit: If the program is called with invalid arguments.
     """
     args = parse_args()
-    generate_moodle_questions(**vars(args))
+    question_xml = generate_moodle_questions(
+        file=args.input,
+        skip_validation=args.skip_validation,
+        parse_markdown=args.parse_markdown,
+        add_question_index=args.add_question_index,
+        add_table_border=args.add_table_border,
+    )
+    # TODO: Refactor this print statement
+    print(question_xml, file=args.output)
 
 
 if __name__ == "__main__":

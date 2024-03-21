@@ -1,6 +1,6 @@
-from moodle_tools.questions.base import BaseQuestionAnalysis
+from moodle_tools.questions.base import QuestionAnalysis
 
 
-class MultipleChoiceQuestionAnalysis(BaseQuestionAnalysis):
-    def normalize_question_text(self, question_text):
+class MultipleChoiceQuestionAnalysis(QuestionAnalysis):
+    def normalize_question(self, question_text: str) -> str:
         return question_text[: question_text.rindex(":")]

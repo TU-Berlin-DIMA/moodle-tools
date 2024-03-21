@@ -1,37 +1,40 @@
-from moodle_tools.questions.base import BaseQuestion
+from typing import Any
+
+from moodle_tools.questions.base import Question
 from moodle_tools.utils import optional_text, preprocess_text
 
 
-class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
+class SingleSelectionMultipleChoiceQuestion(Question):
     """General template for a multiple choice question with a single selection."""
 
     def __init__(
         self,
-        question,
-        answers,
-        title="",
-        general_feedback="",
-        correct_feedback="Your answer is correct.",
-        partially_correct_feedback="Your answer is partially correct.",
-        incorrect_feedback="Your answer is incorrect.",
-        shuffle_answers=True,
-        **flags,
-    ):
-        super().__init__(title, **flags)
-        self.question = preprocess_text(question, **flags)
-        self.general_feedback = general_feedback
-        self.correct_feedback = correct_feedback
-        self.partially_correct_feedback = partially_correct_feedback
-        self.incorrect_feedback = incorrect_feedback
+        question: str,
+        title: str,
+        answers: str,
+        general_feedback: str = "",
+        correct_feedback: str = "Your answer is correct.",
+        partially_correct_feedback: str = "Your answer is partially correct.",
+        incorrect_feedback: str = "Your answer is incorrect.",
+        shuffle_answers: bool = True,
+        **flags: bool,
+    ) -> None:
+        super().__init__(question, title, **flags)
+        self.general_feedback = preprocess_text(general_feedback, **flags)
+        self.correct_feedback = preprocess_text(correct_feedback, **flags)
+        self.partially_correct_feedback = preprocess_text(partially_correct_feedback, **flags)
+        self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
         self.shuffle_answers = shuffle_answers
 
         # Transform simple string answers into complete answers
-        self.answers = [answer if isinstance(answer, dict) else {"answer": answer} for answer in answers]
+        self.answers: list[dict[str, Any]] = [
+            answer if isinstance(answer, dict) else {"answer": answer} for answer in answers
+        ]
 
         # Update missing answer points and feedback
-        for index, answer in enumerate(self.answers):
+        for i, answer in enumerate(self.answers):
             if "points" not in answer:
-                answer["points"] = 100 if index == 0 else 0
+                answer["points"] = 100 if i == 0 else 0
             if "feedback" not in answer:
                 answer["feedback"] = ""
 
@@ -39,20 +42,20 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
         for answer in self.answers:
             answer["answer"] = preprocess_text(answer["answer"], **flags)
 
-    def validate(self):
+    def validate(self) -> list[str]:
         errors = []
         if not self.general_feedback:
-            errors.append("No general feedback")
-        has_full_points = list(filter(lambda x: x["points"] == 100, self.answers))
-        if not has_full_points:
-            errors.append("No answer has 100 points")
+            errors.append("No general feedback.")
+        num_full_points: int = len(list(filter(lambda x: x["points"] == 100, self.answers)))
+        if num_full_points != 1:
+            errors.append("Exactly one answer must have 100 points.")
         for answer in self.answers:
             if not answer["feedback"] and answer["points"] != 100:
-                errors.append(f"The answer '{answer['answer']}' has no feedback")
+                errors.append(f"The incorrect answer '{answer['answer']}' has no feedback.")
         return errors
 
-    def generate_xml(self):
-        def generate_answer(answer):
+    def generate_xml(self) -> str:
+        def generate_answer(answer: dict[str, Any]) -> str:
             return f"""\
             <answer fraction="{answer["points"]}" format="html">
               <text><![CDATA[{answer["answer"]}]]></text>
@@ -84,15 +87,15 @@ class SingleSelectionMultipleChoiceQuestion(BaseQuestion):
             <answernumbering>none</answernumbering>
             <showstandardinstruction>1</showstandardinstruction>
             <correctfeedback format="html">
-              <text>{self.correct_feedback}</text>
+              <text>{optional_text(self.correct_feedback)}</text>
             </correctfeedback>
             <partiallycorrectfeedback format="html">
-              <text>{self.partially_correct_feedback}</text>
+              <text>{optional_text(self.partially_correct_feedback)}</text>
             </partiallycorrectfeedback>
             <incorrectfeedback format="html">
-              <text>{self.incorrect_feedback}</text>
+              <text>{optional_text(self.incorrect_feedback)}</text>
             </incorrectfeedback>
             <shownumcorrect/>
-{newline.join([generate_answer(answer) for answer in self.answers])}
+              {newline.join([generate_answer(answer) for answer in self.answers])}
           </question>"""
         return question_xml

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-      <question type="truefalse">
+              <question type="truefalse">
         <name>
           <text>Question title</text>
         </name>
@@ -8,7 +8,7 @@
           <text><![CDATA[Complete question]]></text>
         </questiontext>
         <generalfeedback format="html">
-            <text><![CDATA[General feedback]]></text>
+          <text><![CDATA[General feedback]]></text>
         </generalfeedback>
         <defaultgrade>1.0000000</defaultgrade>
         <penalty>1.0000000</penalty>
@@ -29,13 +29,13 @@
       </question>
       <question type="truefalse">
         <name>
-          <text>Knowledge question</text>
+          <text>Question title</text>
         </name>
         <questiontext format="html">
           <text><![CDATA[Minimal true question]]></text>
         </questiontext>
         <generalfeedback format="html">
-            <text></text>
+          <text></text>
         </generalfeedback>
         <defaultgrade>1.0000000</defaultgrade>
         <penalty>1.0000000</penalty>
@@ -56,13 +56,13 @@
       </question>
       <question type="truefalse">
         <name>
-          <text>Knowledge question</text>
+          <text>Question title</text>
         </name>
         <questiontext format="html">
           <text><![CDATA[Minimal false question]]></text>
         </questiontext>
         <generalfeedback format="html">
-            <text></text>
+          <text></text>
         </generalfeedback>
         <defaultgrade>1.0000000</defaultgrade>
         <penalty>1.0000000</penalty>

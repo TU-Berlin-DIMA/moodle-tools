@@ -1,12 +1,10 @@
 from textwrap import dedent
 
-import pytest
-
 from moodle_tools import utils
 
 
 class TestUtils:
-    def test_optional_text(self):
+    def test_optional_text(self) -> None:
 
         eval_text = "Text"
         expected_text = "<![CDATA[Text]]>"
@@ -14,7 +12,7 @@ class TestUtils:
         assert utils.optional_text(eval_text) == expected_text
         assert utils.optional_text(None) == ""
 
-    def test_convert_markdown(self):
+    def test_convert_markdown(self) -> None:
         eval_text = dedent(
             """
         # Really important question!
@@ -72,9 +70,9 @@ class TestUtils:
         """
         )
 
-        assert utils.convert_markdown(eval_text).strip() == expected_text.strip()
+        assert utils.parse_markdown(eval_text).strip() == expected_text.strip()
 
-    def test_table_borders(self):
+    def test_table_borders(self) -> None:
         eval_text = dedent(
             """
         <table>
@@ -113,24 +111,24 @@ class TestUtils:
         """
         )
 
-        assert utils.table_borders(eval_text).strip() == expected_text.strip()
+        assert utils.add_table_borders(eval_text).strip() == expected_text.strip()
 
-    def test_inline_image(self):
+    def test_inline_image(self) -> None:
         # TODO: Implement it
         assert True
 
-    def test_preprocess_text(self):
+    def test_preprocess_text(self) -> None:
         # TODO: Implement it
         assert True
 
-    def test_load_questions(self):
+    def test_load_questions(self) -> None:
         # TODO: Implement it extensively
         assert True
 
-    def test_generate_moodle_questions(self):
+    def test_generate_moodle_questions(self) -> None:
         # TODO: Implement it extensively
         assert True
 
-    def test_normalize_questions(self):
+    def test_normalize_questions(self) -> None:
         # TODO: Implement it extensively. Not clear what it does.
         assert True

@@ -1,31 +1,31 @@
-from moodle_tools.questions.base import BaseQuestion, BaseQuestionAnalysis
+from moodle_tools.questions.base import Question, QuestionAnalysis
 from moodle_tools.utils import optional_text, preprocess_text
 
 
-class TrueFalseQuestion(BaseQuestion):
+class TrueFalseQuestion(Question):
     """General template for a True/False question."""
 
     def __init__(
         self,
-        statement,
-        title="",
-        correct_answer=True,
-        general_feedback="",
-        correct_feedback="",
-        wrong_feedback="",
-        **flags,
+        question: str,
+        title: str,
+        correct_answer: bool = True,
+        general_feedback: str = "",
+        correct_feedback: str = "",
+        wrong_feedback: str = "",
+        **flags: bool,
     ):
-        super().__init__(title, **flags)
-        self.statement = preprocess_text(statement, **flags)
-        self.correct_answer = correct_answer
-        self.general_feedback = general_feedback
-        self.correct_feedback = correct_feedback
-        self.wrong_feedback = wrong_feedback
+        super().__init__(question, title, **flags)
+        self.general_feedback = preprocess_text(general_feedback, **flags)
+        self.correct_feedback = preprocess_text(correct_feedback, **flags)
+        self.wrong_feedback = preprocess_text(wrong_feedback, **flags)
 
         # Convert boolean answers to strings
-        self.correct_answer, self.wrong_answer = ("true", "false") if self.correct_answer else ("false", "true")
+        self.correct_answer, self.wrong_answer = (
+            ("true", "false") if correct_answer else ("false", "true")
+        )
 
-    def validate(self):
+    def validate(self) -> list[str]:
         errors = []
         if self.correct_answer == self.wrong_answer:
             # How can this happen?!
@@ -36,17 +36,17 @@ class TrueFalseQuestion(BaseQuestion):
             errors.append("No feedback for wrong answer")
         return errors
 
-    def generate_xml(self):
+    def generate_xml(self) -> str:
         question_xml = f"""\
           <question type="truefalse">
             <name>
               <text>{self.title}</text>
             </name>
             <questiontext format="html">
-              <text><![CDATA[{self.statement}]]></text>
+              <text><![CDATA[{self.question}]]></text>
             </questiontext>
             <generalfeedback format="html">
-                <text>{optional_text(self.general_feedback)}</text>
+              <text>{optional_text(self.general_feedback)}</text>
             </generalfeedback>
             <defaultgrade>1.0000000</defaultgrade>
             <penalty>1.0000000</penalty>
@@ -68,5 +68,5 @@ class TrueFalseQuestion(BaseQuestion):
         return question_xml
 
 
-class TrueFalseQuestionAnalysis(BaseQuestionAnalysis):
+class TrueFalseQuestionAnalysis(QuestionAnalysis):
     pass

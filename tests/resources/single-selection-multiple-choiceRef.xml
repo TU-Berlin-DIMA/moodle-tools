@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-      <question type="multichoice">
+              <question type="multichoice">
         <name>
-          <text>Knowledge question</text>
+          <text>Question title</text>
         </name>
         <questiontext format="html">
           <text><![CDATA[Simple format]]></text>
@@ -21,16 +21,16 @@
         <answernumbering>none</answernumbering>
         <showstandardinstruction>1</showstandardinstruction>
         <correctfeedback format="html">
-          <text>Your answer is correct.</text>
+          <text><![CDATA[Your answer is correct.]]></text>
         </correctfeedback>
         <partiallycorrectfeedback format="html">
-          <text>Your answer is partially correct.</text>
+          <text><![CDATA[Your answer is partially correct.]]></text>
         </partiallycorrectfeedback>
         <incorrectfeedback format="html">
-          <text>Your answer is incorrect.</text>
+          <text><![CDATA[Your answer is incorrect.]]></text>
         </incorrectfeedback>
         <shownumcorrect/>
-        <answer fraction="100" format="html">
+                      <answer fraction="100" format="html">
           <text><![CDATA[Correct answer 1]]></text>
           <feedback format="html">
             <text></text>
@@ -70,16 +70,16 @@
         <answernumbering>none</answernumbering>
         <showstandardinstruction>1</showstandardinstruction>
         <correctfeedback format="html">
-          <text>Your answer is correct.</text>
+          <text><![CDATA[Your answer is correct.]]></text>
         </correctfeedback>
         <partiallycorrectfeedback format="html">
-          <text>Your answer is partially correct.</text>
+          <text><![CDATA[Your answer is partially correct.]]></text>
         </partiallycorrectfeedback>
         <incorrectfeedback format="html">
-          <text>Your answer is incorrect.</text>
+          <text><![CDATA[Your answer is incorrect.]]></text>
         </incorrectfeedback>
         <shownumcorrect/>
-        <answer fraction="100" format="html">
+                      <answer fraction="100" format="html">
           <text><![CDATA[Correct answer]]></text>
           <feedback format="html">
             <text><![CDATA[Feedback for option 1]]></text>

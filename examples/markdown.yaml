@@ -1,6 +1,7 @@
 ---
 type: multiple_choice
-question: |
+title: Multiple choice question with Markdown
+question: |-
   # Really important question!
 
   Please take a look at the rectangle below:
@@ -10,25 +11,24 @@ question: |
        Code
 
   **What is its color?**
-title: Multiple choice question with Markdown
 answers:
-  - answer: |
+  - answer: |-
       The rectangle is *blue*, like the one below.
 
       ![Blue rectangle SVG](examples/blue-rectangle.svg)
   - answer: The rectangle is yellow.
-  - answer: |
+  - answer: |-
       ```
       This is some code.
       ```
     points: 0
-  - answer: |
+  - answer: |-
       <span style="text-decoration:underline;">Underlined text in HTML</span>
-  - answer: |
+  - answer: |-
       > Block quote
 
       This was a block quote
-  - answer: |
+  - answer: |-
       ## Ordered list
 
       1. One
@@ -40,5 +40,5 @@ answers:
       - One
       - Two
       - Three
-  - answer: |
+  - answer: |-
       This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).

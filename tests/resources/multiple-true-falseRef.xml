@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <question type="mtf">
+            <question type="mtf">
         <name>
-          <text>Knowledge question</text>
+          <text>Title</text>
         </name>
         <questiontext format="html">
           <text><![CDATA[Simple format]]></text>
@@ -21,7 +21,7 @@
         <numberofrows>2</numberofrows>
         <numberofcolumns>2</numberofcolumns>
         <answernumbering>none</answernumbering>
-        <row number="1">
+                    <row number="1">
           <optiontext format="html">
             <text><![CDATA[Answer 1]]></text>
           </optiontext>
@@ -37,7 +37,7 @@
             <text></text>
           </feedbacktext>
         </row>
-        <column number="1">
+                    <column number="1">
           <responsetext format="moodle_auto_format">
             <text>True</text>
           </responsetext>
@@ -47,7 +47,7 @@
             <text>False</text>
           </responsetext>
         </column>
-        <weight rownumber="1" columnnumber="1">
+                    <weight rownumber="1" columnnumber="1">
           <value>
              1.000
           </value>
@@ -89,7 +89,7 @@
         <numberofrows>3</numberofrows>
         <numberofcolumns>3</numberofcolumns>
         <answernumbering>none</answernumbering>
-        <row number="1">
+                    <row number="1">
           <optiontext format="html">
             <text><![CDATA[Answer 1]]></text>
           </optiontext>
@@ -113,7 +113,7 @@
             <text><![CDATA[Feedback 3]]></text>
           </feedbacktext>
         </row>
-        <column number="1">
+                    <column number="1">
           <responsetext format="moodle_auto_format">
             <text>Yes</text>
           </responsetext>
@@ -128,7 +128,7 @@
             <text>Maybe</text>
           </responsetext>
         </column>
-        <weight rownumber="1" columnnumber="1">
+                    <weight rownumber="1" columnnumber="1">
           <value>
              1.000
           </value>
@@ -195,7 +195,7 @@
         <numberofrows>2</numberofrows>
         <numberofcolumns>2</numberofcolumns>
         <answernumbering>none</answernumbering>
-        <row number="1">
+                    <row number="1">
           <optiontext format="html">
             <text><![CDATA[Cost]]></text>
           </optiontext>
@@ -211,7 +211,7 @@
             <text></text>
           </feedbacktext>
         </row>
-        <column number="1">
+                    <column number="1">
           <responsetext format="moodle_auto_format">
             <text>Ascending</text>
           </responsetext>
@@ -221,7 +221,7 @@
             <text>Descending</text>
           </responsetext>
         </column>
-        <weight rownumber="1" columnnumber="1">
+                    <weight rownumber="1" columnnumber="1">
           <value>
              1.000
           </value>

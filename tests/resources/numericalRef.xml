@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-      <question type="numerical">
+              <question type="numerical">
         <name>
           <text>Numerical question</text>
         </name>
@@ -14,7 +14,7 @@
         <penalty>0.3333333</penalty>
         <hidden>0</hidden>
         <idnumber></idnumber>
-        <answer fraction="100" format="html">
+                      <answer fraction="100" format="html">
           <text>4</text>
           <feedback format="html">
             <text><![CDATA[Feedback for first answer]]></text>
@@ -47,7 +47,7 @@
         <penalty>0.3333333</penalty>
         <hidden>0</hidden>
         <idnumber></idnumber>
-        <answer fraction="100" format="html">
+                      <answer fraction="100" format="html">
           <text>4</text>
           <feedback format="html">
             <text></text>

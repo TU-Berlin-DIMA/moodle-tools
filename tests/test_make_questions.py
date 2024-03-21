@@ -6,12 +6,12 @@ from moodle_tools.make_questions import main
 
 
 class TestMakeQuestionArguments:
-    def test_argument_parsing_help(self, capsys):
+    def test_argument_parsing_help(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-h"]
 
         expected_output = """
-        usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-t TITLE] [-l] [-m]
+        usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-s] [-m] [-q] [-t]
         """.strip()
 
         # Call the main function

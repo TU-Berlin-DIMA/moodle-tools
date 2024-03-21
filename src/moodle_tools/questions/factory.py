@@ -1,3 +1,7 @@
+from typing import Any
+
+from .. import ParsingError
+from .base import Question
 from .cloze import ClozeQuestion
 from .coderunner_sql import CoderunnerQuestionSQL
 from .missing_words import MissingWordsQuestion
@@ -8,7 +12,7 @@ from .true_false import TrueFalseQuestion
 
 
 class QuestionFactory:
-    SUPPORTED_QUESTION_TYPES = {
+    SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
         "true_false": TrueFalseQuestion,
         "multiple_true_false": MultipleTrueFalseQuestion,
         "multiple_choice": SingleSelectionMultipleChoiceQuestion,
@@ -19,11 +23,11 @@ class QuestionFactory:
     }
 
     @staticmethod
-    def create_question(question_type, **properties):
+    def create_question(question_type: str, **properties: Any) -> Question:
         if question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES:
             return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](**properties)
-        raise ValueError(f"Unsupported Question Type: {question_type}.")
+        raise ParsingError(f"Unsupported Question Type: {question_type}.")
 
     @staticmethod
-    def is_valid_type(question_type):
+    def is_valid_type(question_type: str) -> bool:
         return question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES

@@ -1,6 +1,6 @@
     <?xml version="1.0" encoding="UTF-8"?>
     <quiz>
-          <question type="multichoice">
+                  <question type="multichoice">
             <name>
               <text>Multiple choice question with Markdown</text>
             </name>
@@ -26,16 +26,16 @@
             <answernumbering>none</answernumbering>
             <showstandardinstruction>1</showstandardinstruction>
             <correctfeedback format="html">
-              <text>Your answer is correct.</text>
+              <text><![CDATA[<p>Your answer is correct.</p>]]></text>
             </correctfeedback>
             <partiallycorrectfeedback format="html">
-              <text>Your answer is partially correct.</text>
+              <text><![CDATA[<p>Your answer is partially correct.</p>]]></text>
             </partiallycorrectfeedback>
             <incorrectfeedback format="html">
-              <text>Your answer is incorrect.</text>
+              <text><![CDATA[<p>Your answer is incorrect.</p>]]></text>
             </incorrectfeedback>
             <shownumcorrect/>
-            <answer fraction="100" format="html">
+                          <answer fraction="100" format="html">
               <text><![CDATA[<p>The rectangle is <em>blue</em>, like the one below.</p>
 <p><img alt="Blue rectangle SVG" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuNDM1MjUzbW0iCiAgIGhlaWdodD0iMTMuMzAyODI2bW0iCiAgIHZpZXdCb3g9IjAgMCAxMi40MzUyNTMgMTMuMzAyODI2IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9IlJhc3RlcmdyYWZpay5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMS4wIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZWNoZWNrZXJib2FyZD0iMCIKICAgICBpbmtzY2FwZTpkZXNrY29sb3I9IiNkMWQxZDEiCiAgICAgaW5rc2NhcGU6ZG9jdW1lbnQtdW5pdHM9Im1tIgogICAgIHNob3dncmlkPSJmYWxzZSIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzMiIgLz4KICA8ZwogICAgIGlua3NjYXBlOmxhYmVsPSJFYmVuZSAxIgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNTMuMjExMjkzLC0xMzAuMTM2MykiPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJmaWxsOiMzNzI4Y2M7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzIgogICAgICAgaWQ9InJlY3Q2MSIKICAgICAgIHdpZHRoPSIxMi40MzUyNDgiCiAgICAgICBoZWlnaHQ9IjEzLjMwMjgyNCIKICAgICAgIHg9IjUzLjIxMTI5NiIKICAgICAgIHk9IjEzMC4xMzYzMSIKICAgICAgIGlua3NjYXBlOmV4cG9ydC1maWxlbmFtZT0icmVjdDYxLnN2ZyIKICAgICAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgICAgIGlua3NjYXBlOmV4cG9ydC15ZHBpPSI5NiIgLz4KICA8L2c+Cjwvc3ZnPgo=" /></p>]]></text>
               <feedback format="html">

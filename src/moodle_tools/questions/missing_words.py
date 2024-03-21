@@ -1,31 +1,30 @@
 import re
 
-from moodle_tools.questions.base import BaseQuestion
+from moodle_tools.questions.base import Question
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.utils import optional_text, preprocess_text
 
 
-class MissingWordsQuestion(BaseQuestion):
+class MissingWordsQuestion(Question):
     def __init__(
         self,
-        question,
-        options,
-        title="",
-        general_feedback="",
-        correct_feedback="",
-        partial_feedback="",
-        incorrect_feedback="",
-        **flags,
+        question: str,
+        title: str,
+        options: list[dict[str, str]],
+        general_feedback: str = "",
+        correct_feedback: str = "",
+        partial_feedback: str = "",
+        incorrect_feedback: str = "",
+        **flags: bool,
     ):
-        super().__init__(title, **flags)
-        self.question = preprocess_text(question, **flags)
+        super().__init__(question, title, **flags)
         self.options = options
         self.general_feedback = preprocess_text(general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.partial_feedback = preprocess_text(partial_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
 
-    def validate(self):
+    def validate(self) -> list[str]:
         errors = []
         if not self.general_feedback:
             errors.append("No general feedback")
@@ -37,13 +36,13 @@ class MissingWordsQuestion(BaseQuestion):
             errors.append("No feedback for incorrect answer")
         return errors
 
-    def generate_xml(self):
-        def generate_option(option):
+    def generate_xml(self) -> str:
+        def generate_option(option: dict[str, str]) -> str:
             return f"""\
-            <selectoption>
+              <selectoption>
                 <text>{option["answer"]}</text>
                 <group>{option["group"]}</group>
-            </selectoption>"""
+              </selectoption>"""
 
         newline = "\n"
         question_xml = f"""\
@@ -72,17 +71,17 @@ class MissingWordsQuestion(BaseQuestion):
               <text>{optional_text(self.incorrect_feedback)}</text>
             </incorrectfeedback>
             <shownumcorrect/>
-{newline.join([generate_option(option) for option in self.options])}
+            {newline.join([generate_option(option) for option in self.options])}
           </question>"""
         return question_xml
 
 
 class MissingWordsQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_number):
+    def __init__(self, question_number: int | str) -> None:
         super().__init__(question_number, r"{(.*?)}", " ")
 
-    def normalize_answers(self, response):
-        answers = {}
+    def normalize_answers(self, response: str) -> dict[str, str]:
+        answers: dict[str, str] = {}
         if not response:
             return answers
         response += self.separator

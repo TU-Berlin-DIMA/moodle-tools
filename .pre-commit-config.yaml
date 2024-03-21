@@ -63,6 +63,7 @@ repos:
       - id: mypy
         name: mypy
         entry: mypy
+        require_serial: true
         language: system
         types:
           - python

@@ -6,7 +6,7 @@ from moodle_tools.analyze_results import main
 
 
 class TestAnalyzeResultsArguments:
-    def test_argument_parsing_help(self, capsys):
+    def test_argument_parsing_help(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
         sys.argv = ["analyze-results", "-h"]
 

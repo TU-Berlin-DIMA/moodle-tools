@@ -4,10 +4,10 @@ from moodle_tools.questions.multiple_response import MultipleResponseQuestionAna
 
 
 class DropDownQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_number):
+    def __init__(self, question_number: int | str) -> None:
         super().__init__(question_number, r"(.*?)\n -> (.*?)", ";")
 
-    def normalize_question_text(self, question_text):
+    def normalize_question(self, question_text: str) -> str:
         question_text = question_text.replace("\n", " ")
         question_text = re.sub("{.*} -> {.*}", "", question_text, flags=re.DOTALL)
         return question_text

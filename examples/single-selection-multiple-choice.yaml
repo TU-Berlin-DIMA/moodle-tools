@@ -1,13 +1,15 @@
 ---
 type: multiple_choice
+title: Question title
 question: Simple format
 answers:
   - Correct answer 1
   - Wrong answer 1
   - Wrong answer 2
 ---
-question: Extended format
+type: multiple_choice
 title: Question title
+question: Extended format
 general_feedback: General feedback
 shuffle_answers: True
 answers:

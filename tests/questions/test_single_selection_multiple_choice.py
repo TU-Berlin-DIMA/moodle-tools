@@ -7,7 +7,7 @@ from moodle_tools.make_questions import main
 
 
 class TestMultipleChoiceQuestion:
-    def test_yml_parsing_strict(self, capsys):
+    def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml"]
 
@@ -19,9 +19,9 @@ class TestMultipleChoiceQuestion:
         assert '<question type="multichoice">' in captured.out
         assert "The following question did not pass strict validation:" in captured.err
 
-    def test_yml_parsing_non_strict(self, capsys):
+    def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-l"]
+        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-s"]
 
         # Call the main function
         main()
@@ -29,15 +29,17 @@ class TestMultipleChoiceQuestion:
 
         # Assert the output is as expected
         assert '<question type="multichoice">' in captured.out
-        assert "<text>Knowledge question</text>" in captured.out
+        assert "<text>Question title</text>" in captured.out
         assert captured.err == ""
 
-    def test_make_question(self, capsys, tmp_path):
+    def test_make_question(self, capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "single-selection-multiple-choiceRef.xml", "r", encoding="utf-8") as f:
+        with open(
+            test_resources_dir / "single-selection-multiple-choiceRef.xml", "r", encoding="utf-8"
+        ) as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -50,12 +52,12 @@ class TestMultipleChoiceQuestion:
             "examples/single-selection-multiple-choice.yaml",
             "-o",
             str(output_file_path),
-            "-l",
+            "-s",
         ]
 
         # Call the main function
         main()
-        captured = capsys.readouterr()
+        _ = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
             generated_xml = f.read().strip()

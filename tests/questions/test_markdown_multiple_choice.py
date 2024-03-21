@@ -7,7 +7,7 @@ from moodle_tools.make_questions import main
 
 
 class TestMarkdownMultipleChoiceQuestion:
-    def test_yml_parsing_strict(self, capsys):
+    def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-m"]
 
@@ -20,9 +20,9 @@ class TestMarkdownMultipleChoiceQuestion:
         assert "<text>Multiple choice question with Markdown</text>" not in captured.out
         assert "The following question did not pass strict validation:" in captured.err
 
-    def test_yml_parsing_non_strict(self, capsys):
+    def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-l", "-m"]
+        sys.argv = ["make-questions", "-i", "examples/markdown.yaml", "-s", "-m"]
 
         # Call the main function
         main()
@@ -33,7 +33,7 @@ class TestMarkdownMultipleChoiceQuestion:
         assert "<text>Multiple choice question with Markdown</text>" in captured.out
         assert captured.err == ""
 
-    def test_make_question(self, capsys, tmp_path):
+    def test_make_question(self, capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
 
@@ -51,13 +51,13 @@ class TestMarkdownMultipleChoiceQuestion:
             "examples/markdown.yaml",
             "-o",
             str(output_file_path),
-            "-l",
+            "-s",
             "-m",
         ]
 
         # Call the main function
         main()
-        captured = capsys.readouterr()
+        _ = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
             generated_xml = f.read().strip()

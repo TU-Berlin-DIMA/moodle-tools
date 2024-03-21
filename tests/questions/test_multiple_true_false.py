@@ -7,7 +7,7 @@ from moodle_tools.make_questions import main
 
 
 class TestMultipleTrueFalse:
-    def test_yml_parsing_strict(self, capsys):
+    def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml"]
 
@@ -19,9 +19,9 @@ class TestMultipleTrueFalse:
         assert '<question type="mtf">' in captured.out
         assert "The following question did not pass strict validation:" in captured.err
 
-    def test_yml_parsing_non_strict(self, capsys):
+    def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml", "-l"]
+        sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml", "-s"]
 
         # Call the main function
         main()
@@ -32,7 +32,7 @@ class TestMultipleTrueFalse:
         assert "<text>Memory hierarchy</text>" in captured.out
         assert captured.err == ""
 
-    def test_make_question(self, capsys, tmp_path):
+    def test_make_question(self, capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
 
@@ -50,12 +50,12 @@ class TestMultipleTrueFalse:
             "examples/multiple-true-false.yaml",
             "-o",
             str(output_file_path),
-            "-l",
+            "-s",
         ]
 
         # Call the main function
         main()
-        captured = capsys.readouterr()
+        _ = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
             generated_xml = f.read().strip()

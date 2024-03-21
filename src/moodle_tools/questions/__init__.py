@@ -1,4 +1,5 @@
 __all__ = [
+    "Question",
     "SingleSelectionMultipleChoiceQuestion",
     "TrueFalseQuestion",
     "ClozeQuestion",
@@ -17,6 +18,7 @@ __all__ = [
     "QuestionFactory",
 ]
 
+from .base import Question
 from .cloze import ClozeQuestion, ClozeQuestionAnalysis
 from .coderunner_sql import CoderunnerQuestionSQL, CoderunnerQuestionSQLAnalysis
 from .drop_down import DropDownQuestionAnalysis

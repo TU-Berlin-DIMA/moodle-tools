@@ -1,5 +1,6 @@
 ---
 type: multiple_true_false
+title: Title
 question: Simple format
 answers:
   - answer: Answer 1
@@ -7,6 +8,7 @@ answers:
   - answer: Answer 2
     choice: False
 ---
+type: multiple_true_false
 title: Title
 question: Extended format
 general_feedback: General feedback
@@ -23,6 +25,7 @@ answers:
     choice: Maybe
     feedback: Feedback 3
 ---
+type: multiple_true_false
 title: Memory hierarchy
 question: For each category, say descending or ascending
 shuffle_answers: True

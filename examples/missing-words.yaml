@@ -1,7 +1,7 @@
 ---
 type: missing_words
 title: Missing words question
-question: |
+question: |-
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
 general_feedback: General feedback
 correct_feedback: Correct feedback
@@ -19,8 +19,9 @@ options:
   - answer: SIGMA
     group: 2
 ---
+type: missing_words
 title: Simple missing words question
-question: |
+question: |-
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
 options:
   - answer: SELECT

@@ -1,14 +1,13 @@
     <?xml version="1.0" encoding="UTF-8"?>
     <quiz>
-        <question type="cloze">
+                <question type="cloze">
             <name>
                 <text>Numerical cloze question</text>
             </name>
             <questiontext format="html">
                  <text><![CDATA[<p>
 Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
-</p>
-]]></text>
+</p>]]></text>
            </questiontext>
             <generalfeedback format="html">
                 <text><![CDATA[General feedback]]></text>
@@ -25,8 +24,7 @@ Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
                  <text><![CDATA[<p>
 Enter the correct value:
 {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
-</p>
-]]></text>
+</p>]]></text>
            </questiontext>
             <generalfeedback format="html">
                 <text><![CDATA[General feedback]]></text>
@@ -42,8 +40,7 @@ Enter the correct value:
             <questiontext format="html">
                  <text><![CDATA[<p>
 Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss}
-</p>
-]]></text>
+</p>]]></text>
            </questiontext>
             <generalfeedback format="html">
                 <text></text>
@@ -60,8 +57,7 @@ Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss}
                  <text><![CDATA[<p>
 Select the correct value:
 {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
-</p>
-]]></text>
+</p>]]></text>
            </questiontext>
             <generalfeedback format="html">
                 <text></text>
