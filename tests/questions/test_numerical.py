@@ -32,7 +32,7 @@ class TestNumerical:
         assert "<text>Numerical question</text>" in captured.out
         assert captured.err == ""
 
-    def test_make_question(self, capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    def test_e2e_cli_make_question(self, tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
 
@@ -55,7 +55,6 @@ class TestNumerical:
 
         # Call the main function
         main()
-        _ = capsys.readouterr()
 
         with open(output_file_path, "r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
