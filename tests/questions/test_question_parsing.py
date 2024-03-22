@@ -45,7 +45,7 @@ class TestGeneralQuestion:
         )
 
         # TODO: rename to input_yaml_with_no_type
-        input_yaml_with_no_property = dedent(
+        input_yaml_with_no_question_type = dedent(
             """
         ---
         title: "Minimal false question"
@@ -64,7 +64,14 @@ class TestGeneralQuestion:
         """
         )
 
-        # TODO: Test absence of title
+        input_yaml_with_no_title = dedent(
+            """
+        ---
+        type: not_supported
+        question: "Some question"
+        correct_answer: false
+        """
+        )
 
         # Test supported question
         questions = load_questions(
@@ -78,7 +85,7 @@ class TestGeneralQuestion:
 
         # Test no type property provided
         questions = load_questions(
-            yaml.safe_load_all(input_yaml_with_no_property),
+            yaml.safe_load_all(input_yaml_with_no_question_type),
             strict_validation=False,
             parse_markdown=False,
             add_table_border=False,
@@ -100,10 +107,20 @@ class TestGeneralQuestion:
             next(questions)
         assert str(e_no_support.value) == "Unsupported Question Type: not_supported."
 
-    @pytest.mark.parametrize("question_type, test_data", test_cases.items())
-    def test_question_types(
-        self, question_type: str, test_data: tuple[str, type[Question]]
-    ) -> None:
+        # Test no title property provided
+        questions = load_questions(
+            yaml.safe_load_all(input_yaml_with_no_title),
+            strict_validation=False,
+            parse_markdown=False,
+            add_table_border=False,
+        )
+
+        with pytest.raises(ParsingError) as e_no_type:
+            next(questions)
+        assert "Question title not provided" in str(e_no_type.value)
+
+    @pytest.mark.parametrize("test_data", test_cases.values())
+    def test_question_types(self, test_data: tuple[str, type[Question]]) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../../examples"
 
