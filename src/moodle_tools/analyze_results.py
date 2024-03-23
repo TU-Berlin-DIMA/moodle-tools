@@ -6,7 +6,6 @@ import sys
 from io import TextIOBase
 from statistics import median
 
-from moodle_tools.questions.base import QuestionAnalysis
 from moodle_tools.questions.cloze import ClozeQuestionAnalysis
 from moodle_tools.questions.coderunner_sql import CoderunnerQuestionSQLAnalysis
 from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
@@ -14,6 +13,7 @@ from moodle_tools.questions.missing_words import MissingWordsQuestionAnalysis
 from moodle_tools.questions.multiple_choice import MultipleChoiceQuestionAnalysis
 from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestionAnalysis
 from moodle_tools.questions.numerical import NumericalQuestionAnalysis
+from moodle_tools.questions.question import QuestionAnalysis
 from moodle_tools.questions.true_false import TrueFalseQuestionAnalysis
 
 __all__ = ["analyze_questions"]

@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestMultipleChoiceQuestion:
     def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml"]
+        sys.argv = ["make-questions", "-i", "examples/multiple-choice.yaml"]
 
         # Call the main function
         main()
@@ -21,7 +21,7 @@ class TestMultipleChoiceQuestion:
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/single-selection-multiple-choice.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/multiple-choice.yaml", "-s"]
 
         # Call the main function
         main()
@@ -37,9 +37,7 @@ class TestMultipleChoiceQuestion:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(
-            test_resources_dir / "single-selection-multiple-choiceRef.xml", "r", encoding="utf-8"
-        ) as f:
+        with open(test_resources_dir / "multiple-choiceRef.xml", "r", encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -49,7 +47,7 @@ class TestMultipleChoiceQuestion:
         sys.argv = [
             "make-questions",
             "-i",
-            "examples/single-selection-multiple-choice.yaml",
+            "examples/multiple-choice.yaml",
             "-o",
             str(output_file_path),
             "-s",

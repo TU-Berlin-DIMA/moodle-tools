@@ -1,31 +1,31 @@
 ---
 type: cloze
 title: Numerical cloze question
-question: |-
+question: >-
   <p>
   Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
   </p>
-feedback: General feedback
+general_feedback: General feedback
 ---
 type: cloze
-title: Numerical cloze question with feedback
-question: |-
+title: Numerical cloze question with general feedback
+question: >-
   <p>
   Enter the correct value:
   {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
-feedback: General feedback
+general_feedback: General feedback
 ---
 type: cloze
 title: Multiple choice cloze question
-question: |-
+question: >-
   <p>
   Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss}
   </p>
 ---
 type: cloze
-title: Multiple choice cloze question with feedback
-question: |-
+title: Multiple choice cloze question with detailed feedback
+question: >-
   <p>
   Select the correct value:
   {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}

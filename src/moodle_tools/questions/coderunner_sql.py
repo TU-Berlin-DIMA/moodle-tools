@@ -1,11 +1,11 @@
 import sqlite3
 from pathlib import Path
 
-import sqlparse
+import sqlparse  # type: ignore
 
-import moodle_tools.isis_database_configurations
-from moodle_tools.questions.base import Question, QuestionAnalysis
-from moodle_tools.utils import ParsingError, optional_text
+from moodle_tools.isis_database_configurations import get_base64_database_encoding
+from moodle_tools.questions.question import Question, QuestionAnalysis
+from moodle_tools.utils import ParsingError
 
 
 class CoderunnerQuestionSQL(Question):
@@ -31,24 +31,27 @@ class CoderunnerQuestionSQL(Question):
             we do not attempt to create a database connection.
     """
 
+    QUESTION_TYPE = "coderunner"
+    TEMPLATE = "coderunner_sql.xml.j2"
+
     def __init__(
         self,
-        database,
-        question,
-        correct_query,
-        title,
-        testcases,
-        check_results=False,
-        general_feedback="",
-        database_connection=True,
-        **flags,
+        question: str,
+        title: str,
+        database: str,
+        correct_query: str,
+        testcases: list[dict[str, str]],
+        category: str | None = None,
+        check_results: bool = False,
+        general_feedback: str = "",
+        database_connection: bool = True,
+        **flags: bool,
     ) -> None:
         # Todo: Create a way (possible with extra script) to apply moodle-tools to entire folders
         # with '.yaml' files
-        super().__init__(title, **flags)
+        super().__init__(question, title, category, **flags)
         self.database_name = database
         self.database_path = Path().cwd() / ("../datenbanken/" + database + ".db")
-        self.question = question
         if correct_query[-1] != ";":
             raise ParsingError(
                 "SQL Queries must end with a ';' symbol. But the last symbol was: "
@@ -117,7 +120,9 @@ class CoderunnerQuestionSQL(Question):
                             )
         self.con.close()
 
-    def execute_change_queries(self, change_queries):
+        self.database_encoding = get_base64_database_encoding(self.database_name)
+
+    def execute_change_queries(self, change_queries: str) -> None:
         if ";" not in change_queries:
             raise ParsingError(
                 "Additional testcases supplied, but no SQL queries that are terminated with a ';' "
@@ -127,7 +132,8 @@ class CoderunnerQuestionSQL(Question):
         for change_query in change_queries_list:
             self.cursor.execute(change_query.rstrip().lstrip())
 
-    def fetch_database_result(self):
+    def fetch_database_result(self) -> str:
+        # TODO: This method can probably be refactored/removed with duckdb
         self.cursor.execute(self.correct_query)
         name_string = ""
         rows = self.cursor.fetchall()
@@ -158,97 +164,6 @@ class CoderunnerQuestionSQL(Question):
         if not self.correct_query:
             errors.append("No correct query supplied.")
         return errors
-
-    def generate_testcases(self):
-        # Todo: is this requried?
-        if self.testcases is None:
-            self.testcases = [None]
-        for i, testcase in enumerate(self.testcases):
-            # A 'change' is used to modify a table to produce different results for a new testcase
-            change = ""
-            if testcase is not None:
-                change = testcase["testcase_changes"].replace("\n ", "\n")
-            # Only show the first testcase (Todo: make configurable)
-            show_or_hide = "SHOW"
-            if i > 0:
-                show_or_hide = "HIDE"
-            self.testcases_string += (
-                '\n<testcase testtype="0" useasexample="0" hiderestiffail="0"'
-                ' mark="1.0000000">\n<testcode>\n<text>--Testfall '
-                + str(i + 1)
-                + "</text>\n</testcode>\n<stdin>\n   <text></text>\n</stdin>\n<expected>\n<text>"
-                + self.results[i]
-                + "</text>\n</expected>\n<extra>\n   <text><![CDATA["
-                + change
-                + "]]></text>\n</extra>\n<display>\n<text>"
-                + show_or_hide
-                + "</text>\n</display>\n</testcase>"
-            )
-
-    def generate_xml(self) -> str:
-        self.generate_testcases()
-        question_xml = f"""\
-          <question type="coderunner">
-            <name>
-              <text>{self.title}</text>
-            </name>
-            <questiontext format="html">
-              <text><![CDATA[{self.question}]]></text>
-            </questiontext>
-            <generalfeedback format="html">
-              <text>{optional_text(self.general_feedback)}</text>
-            </generalfeedback>
-            <defaultgrade>1</defaultgrade>
-            <penalty>0</penalty>
-            <hidden>0</hidden>
-            <idnumber></idnumber>
-            <coderunnertype>sql</coderunnertype>
-            <prototypetype>0</prototypetype>
-            <allornothing>1</allornothing>
-            <penaltyregime>0</penaltyregime>
-            <precheck>0</precheck>
-            <hidecheck>0</hidecheck>
-            <showsource>0</showsource>
-            <answerboxlines>18</answerboxlines>
-            <answerboxcolumns>100</answerboxcolumns>
-            <answerpreload></answerpreload>
-            <globalextra></globalextra>
-            <useace></useace>
-            <resultcolumns></resultcolumns>
-            <template></template>
-            <iscombinatortemplate></iscombinatortemplate>
-            <allowmultiplestdins></allowmultiplestdins>
-            <answer><![CDATA[{self.correct_query}]]></answer>
-            <validateonsave>1</validateonsave>
-            <testsplitterre></testsplitterre>
-            <language></language>
-            <acelang></acelang>
-            <sandbox></sandbox>
-            <grader></grader>
-            <cputimelimitsecs></cputimelimitsecs>
-            <memlimitmb></memlimitmb>
-            <sandboxparams></sandboxparams>
-            <templateparams><![CDATA[{self.column_widths_string}]]></templateparams>
-            <hoisttemplateparams>0</hoisttemplateparams>
-            <templateparamslang>twig</templateparamslang>
-            <templateparamsevalpertry>0</templateparamsevalpertry>
-            <templateparamsevald><![CDATA[{self.column_widths_string}]]></templateparamsevald>
-            <twigall>0</twigall>
-            <uiplugin></uiplugin>
-            <uiparameters></uiparameters>
-            <attachments>0</attachments>
-            <attachmentsrequired>0</attachmentsrequired>
-            <maxfilesize>10240</maxfilesize>
-            <filenamesregex></filenamesregex>
-            <filenamesexplain></filenamesexplain>
-            <displayfeedback>0</displayfeedback>
-            <giveupallowed>0</giveupallowed>
-            <prototypeextra></prototypeextra>
-            <testcases> {self.testcases_string}
-              {moodle_tools.isis_database_configurations.get_database_config(self.database_name)}
-            </testcases>
-          </question>"""
-        return question_xml
 
 
 class CoderunnerQuestionSQLAnalysis(QuestionAnalysis):

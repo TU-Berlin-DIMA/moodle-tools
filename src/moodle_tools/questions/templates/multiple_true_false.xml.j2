@@ -1,0 +1,41 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <scoringmethod>
+        <text>subpoints</text>
+    </scoringmethod>
+    <shuffleanswers>
+        {# Can this but "1" or "true"? We should make it consistent. #}
+        {{ "true" if shuffle_answers == true else "false" }}
+    </shuffleanswers>
+    <numberofrows>{{ answers|length }}</numberofrows>
+    <numberofcolumns>{{ choices|length }}</numberofcolumns>
+    <answernumbering>none</answernumbering>
+    {% for answer in answers %}
+        <row number="{{ loop.index }}">
+            <optiontext format="html">
+                <text><![CDATA[{{ answer.answer }}]]></text>
+            </optiontext>
+            <feedbacktext format="html">
+                <text>{{ "<![CDATA[{}]]>".format(answer.feedback) if answer.feedback }}</text>
+            </feedbacktext>
+        </row>
+    {% endfor %}
+    {% for choice in choices %}
+        <column number="{{ loop.index }}">
+            <responsetext format="moodle_auto_format">
+                <text>{{ choice }}</text>
+            </responsetext>
+        </column>
+    {% endfor %}
+    {% for answer in answers %}
+    {% set outer_loop = loop %}
+    {% for choice in choices %}
+        <weight rownumber="{{ outer_loop.index }}" columnnumber="{{ loop.index }}">
+            <value>
+                {{ "1.000" if answer.choice == choice else "0.000" }}
+            </value>
+        </weight>
+    {% endfor %}
+    {% endfor %}
+{% endblock%}

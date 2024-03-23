@@ -9,10 +9,10 @@ from moodle_tools.make_questions import load_questions
 from moodle_tools.questions import (
     ClozeQuestion,
     MissingWordsQuestion,
+    MultipleChoiceQuestion,
     MultipleTrueFalseQuestion,
     NumericalQuestion,
     Question,
-    SingleSelectionMultipleChoiceQuestion,
     TrueFalseQuestion,
 )
 
@@ -20,8 +20,8 @@ from moodle_tools.questions import (
 test_cases = {
     "true_false": ("true-false.yaml", TrueFalseQuestion),
     "multiple_choice": (
-        "single-selection-multiple-choice.yaml",
-        SingleSelectionMultipleChoiceQuestion,
+        "multiple-choice.yaml",
+        MultipleChoiceQuestion,
     ),
     "numerical": ("numerical.yaml", NumericalQuestion),
     "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),

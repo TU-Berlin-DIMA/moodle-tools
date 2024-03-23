@@ -3,14 +3,22 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from typing import Any, NamedTuple
 
+from jinja2 import Environment
+
 from moodle_tools.utils import preprocess_text
 
 
 class Question(ABC):
-    def __init__(self, question: str, title: str, **flags: bool) -> None:
+    """General template for a question."""
+
+    QUESTION_TYPE: str
+    TEMPLATE: str
+
+    def __init__(self, question: str, title: str, category: str | None, **flags: bool) -> None:
         """General template for a question."""
         self.question = preprocess_text(question, **flags)
         self.title = title
+        self.category = category
         self.flags = flags
 
     @abstractmethod
@@ -18,10 +26,10 @@ class Question(ABC):
         """Function that validates the question. It returns a list of errors."""
         raise NotImplementedError
 
-    @abstractmethod
-    def generate_xml(self) -> str:
+    def to_xml(self, env: Environment) -> str:
         """Generate a Moodle XML export of the question."""
-        raise NotImplementedError
+        template = env.get_template(self.TEMPLATE)
+        return template.render(self.__dict__ | {"type": self.QUESTION_TYPE})
 
 
 class AnalysisItem(NamedTuple):

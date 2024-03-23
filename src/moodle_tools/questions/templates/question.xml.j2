@@ -1,0 +1,24 @@
+{% if category %}
+<question type="category">
+    <category>
+        <text>$course$/{{ category }}</text>
+    </category>
+</question>
+{% endif %}
+<question type="{{ type }}">
+    <name>
+        <text>{{ title }}</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[{{ question }}]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text>{{ "<![CDATA[{}]]>".format(general_feedback) if general_feedback }}</text>
+    </generalfeedback>
+    {% block content -%}
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    {%- endblock %}
+</question>

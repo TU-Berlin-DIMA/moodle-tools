@@ -1,0 +1,78 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <coderunnertype>sql</coderunnertype>
+    <prototypetype>0</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>0</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>18</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra></globalextra>
+    <useace></useace>
+    <resultcolumns></resultcolumns>
+    <template></template>
+    <iscombinatortemplate></iscombinatortemplate>
+    <allowmultiplestdins></allowmultiplestdins>
+    <answer><![CDATA[{{ correct_query }}]]></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre></testsplitterre>
+    <language></language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader></grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams><![CDATA[{{ column_widths_string }}]]></templateparams>
+    <hoisttemplateparams>0</hoisttemplateparams>
+    <templateparamslang>twig</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald><![CDATA[{{ column_widths_string }}]]></templateparamsevald>
+    <twigall>0</twigall>
+    <uiplugin></uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>0</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+        {% for testcase in testcases %}
+        <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">
+            <testcode>
+                <text>
+                    --Testfall {{ loop.index }}
+                </text>
+            </testcode>
+            <stdin>
+                <text></text>
+            </stdin>
+            <expected>
+                <text>
+                    <![CDATA[{{ testcase.expected }}]]>
+                </text>
+            </expected>
+            <extra>
+                <text>
+                    <![CDATA[{{ testcase.db_change }}]]>
+                </text>
+            </extra>
+            <display>
+                <text>
+                    {% "SHOW" if loop.index == 1 else "HIDE" %}
+                </text>
+            </display>
+        </testcase>
+        {% endfor %}
+        <file name="{{ database_name }}.duckdb" path="/" encoding="base64">
+            {{ database_encoding }}
+        </file>
+    </testcases>
+{% endblock%}

@@ -1,0 +1,16 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <answer fraction="0" format="html">
+        <text><![CDATA[{{ wrong_answer }}]]></text>
+        <feedback format="html">
+            <text>{{ "<![CDATA[{}]]>".format(wrong_feedback) if wrong_feedback }}</text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[{{ correct_answer }}]]></text>
+        <feedback format="html">
+            <text>{{ "<![CDATA[{}]]>".format(correct_feedback) if correct_feedback }}</text>
+        </feedback>
+    </answer>
+{% endblock%}

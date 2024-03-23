@@ -1,87 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-              <question type="gapselect">
+    <question type="gapselect">
         <name>
-          <text>Missing words question</text>
+            <text>Missing words question</text>
         </name>
         <questiontext format="html">
-          <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
+            <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
         </questiontext>
         <generalfeedback format="html">
-          <text><![CDATA[General feedback]]></text>
+            <text><![CDATA[General feedback]]></text>
         </generalfeedback>
-        <defaultgrade>1</defaultgrade>
-        <penalty>0.3333333</penalty>
-        <hidden>0</hidden>
         <idnumber></idnumber>
+        <defaultgrade>1</defaultgrade>
+        <penalty>1</penalty>
+        <hidden>0</hidden>
         <shuffleanswers>1</shuffleanswers>
         <correctfeedback format="html">
-          <text><![CDATA[Correct feedback]]></text>
+            <text><![CDATA[Correct feedback]]></text>
         </correctfeedback>
         <partiallycorrectfeedback format="html">
-          <text><![CDATA[Partial feedback]]></text>
+            <text><![CDATA[Partial feedback]]></text>
         </partiallycorrectfeedback>
         <incorrectfeedback format="html">
-          <text><![CDATA[Incorrect feedback]]></text>
+            <text><![CDATA[Incorrect feedback]]></text>
         </incorrectfeedback>
         <shownumcorrect/>
-                      <selectoption>
+        <selectoption>
             <text>SELECT</text>
             <group>1</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>FROM</text>
             <group>1</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>WHERE</text>
             <group>2</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>PROJECT</text>
             <group>1</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>SIGMA</text>
             <group>2</group>
-          </selectoption>
-      </question>
-      <question type="gapselect">
+        </selectoption>
+    </question>
+    <question type="gapselect">
         <name>
-          <text>Simple missing words question</text>
+            <text>Simple missing words question</text>
         </name>
         <questiontext format="html">
-          <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
+            <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
         </questiontext>
         <generalfeedback format="html">
-          <text></text>
+            <text></text>
         </generalfeedback>
-        <defaultgrade>1</defaultgrade>
-        <penalty>0.3333333</penalty>
-        <hidden>0</hidden>
         <idnumber></idnumber>
+        <defaultgrade>1</defaultgrade>
+        <penalty>1</penalty>
+        <hidden>0</hidden>
         <shuffleanswers>1</shuffleanswers>
         <correctfeedback format="html">
-          <text></text>
+            <text></text>
         </correctfeedback>
         <partiallycorrectfeedback format="html">
-          <text></text>
+            <text></text>
         </partiallycorrectfeedback>
         <incorrectfeedback format="html">
-          <text></text>
+            <text></text>
         </incorrectfeedback>
         <shownumcorrect/>
-                      <selectoption>
+        <selectoption>
             <text>SELECT</text>
             <group>1</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>FROM</text>
             <group>1</group>
-          </selectoption>
-          <selectoption>
+        </selectoption>
+        <selectoption>
             <text>WHERE</text>
             <group>1</group>
-          </selectoption>
-      </question>
+        </selectoption>
+    </question>
 </quiz>

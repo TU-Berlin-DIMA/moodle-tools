@@ -1,13 +1,13 @@
 from typing import Any
 
 from .. import ParsingError
-from .base import Question
 from .cloze import ClozeQuestion
 from .coderunner_sql import CoderunnerQuestionSQL
 from .missing_words import MissingWordsQuestion
+from .multiple_choice import MultipleChoiceQuestion
 from .multiple_true_false import MultipleTrueFalseQuestion
 from .numerical import NumericalQuestion
-from .single_selection_multiple_choice import SingleSelectionMultipleChoiceQuestion
+from .question import Question
 from .true_false import TrueFalseQuestion
 
 
@@ -15,7 +15,7 @@ class QuestionFactory:
     SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
         "true_false": TrueFalseQuestion,
         "multiple_true_false": MultipleTrueFalseQuestion,
-        "multiple_choice": SingleSelectionMultipleChoiceQuestion,
+        "multiple_choice": MultipleChoiceQuestion,
         "cloze": ClozeQuestion,
         "numerical": NumericalQuestion,
         "missing_words": MissingWordsQuestion,

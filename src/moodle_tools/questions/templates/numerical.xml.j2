@@ -1,0 +1,17 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    {% for answer in answers %}
+    <answer fraction="{{ answer.points }}" format="html">
+        <text><![CDATA[{{ answer.answer }}]]></text>
+        <feedback format="html">
+            <text>{{ "<![CDATA[{}]]>".format(answer.feedback) if answer.feedback }}</text>
+        </feedback>
+        <tolerance>{{ "<![CDATA[{}]]>".format(answer.tolerance) if answer.tolerance else 0 }}</tolerance>
+    </answer>
+    {% endfor %}
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>1</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+{% endblock%}

@@ -20,7 +20,12 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent,",
 ]
-dependencies = ["markdown >= 3.4", "pyyaml >= 6", "sqlparse ~= 0.4.4"]
+dependencies = [
+    "Jinja2 ~= 3.1",
+    "markdown ~= 3.4",
+    "pyyaml ~= 6.0",
+    "sqlparse ~= 0.4.4",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -28,10 +33,10 @@ dev = [
     "pdoc ~= 14.4",
     "pre-commit ~= 3.3",
     "pylint ~= 3.1",
-    "types-markdown",
-    "types-pyyaml",
-    "pytest",
-    "pytest-cov",
+    "types-markdown ~= 3.4",
+    "types-pyyaml ~= 6.0",
+    "pytest ~= 8.1",
+    "pytest-cov ~= 4.1",
 ]
 
 [project.scripts]

@@ -1,6 +1,6 @@
 import re
 
-from moodle_tools.questions.base import QuestionAnalysis
+from moodle_tools.questions.question import QuestionAnalysis
 
 
 class MultipleResponseQuestionAnalysis(QuestionAnalysis):

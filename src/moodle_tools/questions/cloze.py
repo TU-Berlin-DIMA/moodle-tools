@@ -1,38 +1,30 @@
-from moodle_tools.questions.base import Question
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
-from moodle_tools.utils import optional_text, preprocess_text
+from moodle_tools.questions.question import Question
+from moodle_tools.utils import preprocess_text
 
 
 class ClozeQuestion(Question):
     """General template for a Cloze question."""
 
-    def __init__(self, question: str, title: str, feedback: str = "", **flags: bool) -> None:
-        super().__init__(question, title, **flags)
-        self.feedback = preprocess_text(feedback, **flags)
+    QUESTION_TYPE = "cloze"
+    TEMPLATE = "cloze.xml.j2"
+
+    def __init__(
+        self,
+        question: str,
+        title: str,
+        category: str | None = None,
+        general_feedback: str = "",
+        **flags: bool,
+    ) -> None:
+        super().__init__(question, title, category, **flags)
+        self.general_feedback = preprocess_text(general_feedback, **flags)
 
     def validate(self) -> list[str]:
         errors = []
-        if not self.feedback:
+        if not self.general_feedback:
             errors.append("No general feedback")
         return errors
-
-    def generate_xml(self) -> str:
-        question_xml = f"""\
-        <question type="cloze">
-            <name>
-                <text>{self.title}</text>
-            </name>
-            <questiontext format="html">
-                 <text><![CDATA[{self.question}]]></text>
-           </questiontext>
-            <generalfeedback format="html">
-                <text>{optional_text(self.feedback)}</text>
-            </generalfeedback>
-            <penalty>0.3333333</penalty>
-            <hidden>0</hidden>
-            <idnumber></idnumber>
-        </question>"""
-        return question_xml
 
 
 class ClozeQuestionAnalysis(MultipleResponseQuestionAnalysis):

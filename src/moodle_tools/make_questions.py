@@ -2,14 +2,14 @@
 
 import argparse
 import sys
-import textwrap
 from io import TextIOBase
 from typing import Any, Iterator
 
 import yaml
+from jinja2 import Environment, PackageLoader
 
-from moodle_tools.questions.base import Question
 from moodle_tools.questions.factory import QuestionFactory
+from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError
 
 
@@ -91,14 +91,11 @@ def generate_moodle_questions(
         for i, question in enumerate(questions, start=1):
             question.title = f"{question.title} ({i})"
 
-    newline = "\n"
-    xml = f"""\
-    <?xml version="1.0" encoding="UTF-8"?>
-    <quiz>
-        {newline.join([question.generate_xml() for question in questions])}
-    </quiz>"""
-
-    return textwrap.dedent(xml)
+    env = Environment(
+        loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
+    )
+    template = env.get_template("quiz.xml.j2")
+    return template.render(questions=[question.to_xml(env) for question in questions])
 
 
 def parse_args() -> argparse.Namespace:
