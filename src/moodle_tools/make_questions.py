@@ -92,7 +92,9 @@ def generate_moodle_questions(
             question.title = f"{question.title} ({i})"
 
     env = Environment(
-        loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
+        loader=PackageLoader("moodle_tools", "questions/templates"),
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
     template = env.get_template("quiz.xml.j2")
     return template.render(questions=[question.to_xml(env) for question in questions])
