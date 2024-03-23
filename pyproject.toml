@@ -52,6 +52,9 @@ Repository = "https://git.tu-berlin.de/dima/moodle-tools"
 version = { attr = "moodle_tools.__version__" }
 readme = { file = ["README.md"], content-type = "text/markdown" }
 
+[tool.setuptools.package-data]
+moodle_tools = ["py.typed","*/templates/*.j2"]
+
 [tool.black]
 include = '\.py$'
 target-version = ["py310", "py311", "py312"]
