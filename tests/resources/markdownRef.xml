@@ -1,96 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <question type="multichoice">
-        <name>
-            <text>Multiple choice question with Markdown</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[<h1>Really important question!</h1>
-    <p>Please take a look at the rectangle below:</p>
-    <p><img alt="Blue rectangle PNG" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAC4jAAAuIwF4pT92AAAE9GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4xLWMwMDAgNzkuOWNjYzRkZTkzLCAyMDIyLzAzLzE0LTE0OjA3OjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjMuMyAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIyLTA1LTI2VDE0OjIyOjU2KzAyOjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDphYzM4MzkwZS1hNDZhLTQ2NTUtYTU1My1hOTRiMTM0YzQwNWQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6YWMzODM5MGUtYTQ2YS00NjU1LWE1NTMtYTk0YjEzNGM0MDVkIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YWMzODM5MGUtYTQ2YS00NjU1LWE1NTMtYTk0YjEzNGM0MDVkIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphYzM4MzkwZS1hNDZhLTQ2NTUtYTU1My1hOTRiMTM0YzQwNWQiIHN0RXZ0OndoZW49IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMy4zIChNYWNpbnRvc2gpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrtXC8sAAAA9SURBVFjD7c5BEQAABAAw2mig/18oNbjbEiy7Ju5JLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0trV+tBQ5zOpmBZTYpAAAAAElFTkSuQmCC" /></p>
-    <pre><code> Code
-    </code></pre>
-    <p><strong>What is its color?</strong></p>]]></text>
-        </questiontext>
-        <generalfeedback format="html">
+<question type="multichoice">
+    <name>
+        <text>Multiple choice question with Markdown</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<h1>Really important question!</h1>
+<p>Please take a look at the rectangle below:</p>
+<p><img alt="Blue rectangle PNG" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAC4jAAAuIwF4pT92AAAE9GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4xLWMwMDAgNzkuOWNjYzRkZTkzLCAyMDIyLzAzLzE0LTE0OjA3OjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjMuMyAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIyLTA1LTI2VDE0OjIyOjU2KzAyOjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDphYzM4MzkwZS1hNDZhLTQ2NTUtYTU1My1hOTRiMTM0YzQwNWQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6YWMzODM5MGUtYTQ2YS00NjU1LWE1NTMtYTk0YjEzNGM0MDVkIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YWMzODM5MGUtYTQ2YS00NjU1LWE1NTMtYTk0YjEzNGM0MDVkIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphYzM4MzkwZS1hNDZhLTQ2NTUtYTU1My1hOTRiMTM0YzQwNWQiIHN0RXZ0OndoZW49IjIwMjItMDUtMjZUMTQ6MjI6NTYrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMy4zIChNYWNpbnRvc2gpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrtXC8sAAAA9SURBVFjD7c5BEQAABAAw2mig/18oNbjbEiy7Ju5JLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0trV+tBQ5zOpmBZTYpAAAAAElFTkSuQmCC" /></p>
+<pre><code> Code
+</code></pre>
+<p><strong>What is its color?</strong></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>
+        true
+    </shuffleanswers>
+    <answernumbering>none</answernumbering>
+    <showstandardinstruction>1</showstandardinstruction>
+    <correctfeedback format="html">
+        <text><![CDATA[<p>Your answer is correct.</p>]]></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text><![CDATA[<p>Your answer is partially correct.</p>]]></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text><![CDATA[<p>Your answer is incorrect.</p>]]></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="100" format="html">
+        <text><![CDATA[<p>The rectangle is <em>blue</em>, like the one below.</p>
+<p><img alt="Blue rectangle SVG" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuNDM1MjUzbW0iCiAgIGhlaWdodD0iMTMuMzAyODI2bW0iCiAgIHZpZXdCb3g9IjAgMCAxMi40MzUyNTMgMTMuMzAyODI2IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9IlJhc3RlcmdyYWZpay5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMS4wIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZWNoZWNrZXJib2FyZD0iMCIKICAgICBpbmtzY2FwZTpkZXNrY29sb3I9IiNkMWQxZDEiCiAgICAgaW5rc2NhcGU6ZG9jdW1lbnQtdW5pdHM9Im1tIgogICAgIHNob3dncmlkPSJmYWxzZSIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzMiIgLz4KICA8ZwogICAgIGlua3NjYXBlOmxhYmVsPSJFYmVuZSAxIgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNTMuMjExMjkzLC0xMzAuMTM2MykiPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJmaWxsOiMzNzI4Y2M7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzIgogICAgICAgaWQ9InJlY3Q2MSIKICAgICAgIHdpZHRoPSIxMi40MzUyNDgiCiAgICAgICBoZWlnaHQ9IjEzLjMwMjgyNCIKICAgICAgIHg9IjUzLjIxMTI5NiIKICAgICAgIHk9IjEzMC4xMzYzMSIKICAgICAgIGlua3NjYXBlOmV4cG9ydC1maWxlbmFtZT0icmVjdDYxLnN2ZyIKICAgICAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgICAgIGlua3NjYXBlOmV4cG9ydC15ZHBpPSI5NiIgLz4KICA8L2c+Cjwvc3ZnPgo=" /></p>]]></text>
+        <feedback format="html">
             <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <single>true</single>
-        <shuffleanswers>
-            true
-        </shuffleanswers>
-        <answernumbering>none</answernumbering>
-        <showstandardinstruction>1</showstandardinstruction>
-        <correctfeedback format="html">
-            <text><![CDATA[<p>Your answer is correct.</p>]]></text>
-        </correctfeedback>
-        <partiallycorrectfeedback format="html">
-            <text><![CDATA[<p>Your answer is partially correct.</p>]]></text>
-        </partiallycorrectfeedback>
-        <incorrectfeedback format="html">
-            <text><![CDATA[<p>Your answer is incorrect.</p>]]></text>
-        </incorrectfeedback>
-        <shownumcorrect/>
-        <answer fraction="100" format="html">
-            <text><![CDATA[<p>The rectangle is <em>blue</em>, like the one below.</p>
-    <p><img alt="Blue rectangle SVG" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuNDM1MjUzbW0iCiAgIGhlaWdodD0iMTMuMzAyODI2bW0iCiAgIHZpZXdCb3g9IjAgMCAxMi40MzUyNTMgMTMuMzAyODI2IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9IlJhc3RlcmdyYWZpay5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMS4wIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZWNoZWNrZXJib2FyZD0iMCIKICAgICBpbmtzY2FwZTpkZXNrY29sb3I9IiNkMWQxZDEiCiAgICAgaW5rc2NhcGU6ZG9jdW1lbnQtdW5pdHM9Im1tIgogICAgIHNob3dncmlkPSJmYWxzZSIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzMiIgLz4KICA8ZwogICAgIGlua3NjYXBlOmxhYmVsPSJFYmVuZSAxIgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNTMuMjExMjkzLC0xMzAuMTM2MykiPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJmaWxsOiMzNzI4Y2M7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzIgogICAgICAgaWQ9InJlY3Q2MSIKICAgICAgIHdpZHRoPSIxMi40MzUyNDgiCiAgICAgICBoZWlnaHQ9IjEzLjMwMjgyNCIKICAgICAgIHg9IjUzLjIxMTI5NiIKICAgICAgIHk9IjEzMC4xMzYzMSIKICAgICAgIGlua3NjYXBlOmV4cG9ydC1maWxlbmFtZT0icmVjdDYxLnN2ZyIKICAgICAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgICAgIGlua3NjYXBlOmV4cG9ydC15ZHBpPSI5NiIgLz4KICA8L2c+Cjwvc3ZnPgo=" /></p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<p>The rectangle is yellow.</p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<p><code>This is some code.</code></p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<p><span style="text-decoration:underline;">Underlined text in HTML</span></p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<blockquote>
-    <p>Block quote</p>
-    </blockquote>
-    <p>This was a block quote</p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<h2>Ordered list</h2>
-    <ol>
-    <li>One</li>
-    <li>Two</li>
-    <li>Three</li>
-    </ol>
-    <h2>Unordered list</h2>
-    <ul>
-    <li>One</li>
-    <li>Two</li>
-    <li>Three</li>
-    </ul>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[<p>This is a formula: ( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 ).</p>]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-    </question>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<p>The rectangle is yellow.</p>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<p><code>This is some code.</code></p>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<p><span style="text-decoration:underline;">Underlined text in HTML</span></p>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<blockquote>
+<p>Block quote</p>
+</blockquote>
+<p>This was a block quote</p>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<h2>Ordered list</h2>
+<ol>
+<li>One</li>
+<li>Two</li>
+<li>Three</li>
+</ol>
+<h2>Unordered list</h2>
+<ul>
+<li>One</li>
+<li>Two</li>
+<li>Three</li>
+</ul>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<p>This is a formula: ( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 ).</p>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+</question>
 </quiz>

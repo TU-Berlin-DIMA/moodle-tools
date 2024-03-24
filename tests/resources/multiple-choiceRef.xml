@@ -1,101 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <question type="multichoice">
-        <name>
-            <text>Question title</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[Simple format]]></text>
-        </questiontext>
-        <generalfeedback format="html">
+<question type="multichoice">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[Simple format]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>
+        true
+    </shuffleanswers>
+    <answernumbering>none</answernumbering>
+    <showstandardinstruction>1</showstandardinstruction>
+    <correctfeedback format="html">
+        <text><![CDATA[Your answer is correct.]]></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text><![CDATA[Your answer is partially correct.]]></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text><![CDATA[Your answer is incorrect.]]></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="100" format="html">
+        <text><![CDATA[Correct answer 1]]></text>
+        <feedback format="html">
             <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <single>true</single>
-        <shuffleanswers>
-            true
-        </shuffleanswers>
-        <answernumbering>none</answernumbering>
-        <showstandardinstruction>1</showstandardinstruction>
-        <correctfeedback format="html">
-            <text><![CDATA[Your answer is correct.]]></text>
-        </correctfeedback>
-        <partiallycorrectfeedback format="html">
-            <text><![CDATA[Your answer is partially correct.]]></text>
-        </partiallycorrectfeedback>
-        <incorrectfeedback format="html">
-            <text><![CDATA[Your answer is incorrect.]]></text>
-        </incorrectfeedback>
-        <shownumcorrect/>
-        <answer fraction="100" format="html">
-            <text><![CDATA[Correct answer 1]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[Wrong answer 1]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[Wrong answer 2]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-    </question>
-    <question type="multichoice">
-        <name>
-            <text>Question title</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[Extended format]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text><![CDATA[General feedback]]></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <single>true</single>
-        <shuffleanswers>
-            true
-        </shuffleanswers>
-        <answernumbering>none</answernumbering>
-        <showstandardinstruction>1</showstandardinstruction>
-        <correctfeedback format="html">
-            <text><![CDATA[Your answer is correct.]]></text>
-        </correctfeedback>
-        <partiallycorrectfeedback format="html">
-            <text><![CDATA[Your answer is partially correct.]]></text>
-        </partiallycorrectfeedback>
-        <incorrectfeedback format="html">
-            <text><![CDATA[Your answer is incorrect.]]></text>
-        </incorrectfeedback>
-        <shownumcorrect/>
-        <answer fraction="100" format="html">
-            <text><![CDATA[Correct answer]]></text>
-            <feedback format="html">
-                <text><![CDATA[Feedback for option 1]]></text>
-            </feedback>
-        </answer>
-        <answer fraction="50" format="html">
-            <text><![CDATA[Partial answer]]></text>
-            <feedback format="html">
-                <text><![CDATA[Feedback for option 2]]></text>
-            </feedback>
-        </answer>
-        <answer fraction="0" format="html">
-            <text><![CDATA[Wrong answer]]></text>
-            <feedback format="html">
-                <text><![CDATA[Feedback for option 3]]></text>
-            </feedback>
-        </answer>
-    </question>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[Wrong answer 1]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[Wrong answer 2]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+</question>
+<question type="multichoice">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[Extended format]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[General feedback]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>
+        true
+    </shuffleanswers>
+    <answernumbering>none</answernumbering>
+    <showstandardinstruction>1</showstandardinstruction>
+    <correctfeedback format="html">
+        <text><![CDATA[Your answer is correct.]]></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text><![CDATA[Your answer is partially correct.]]></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text><![CDATA[Your answer is incorrect.]]></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <answer fraction="100" format="html">
+        <text><![CDATA[Correct answer]]></text>
+        <feedback format="html">
+            <text><![CDATA[Feedback for option 1]]></text>
+        </feedback>
+    </answer>
+    <answer fraction="50" format="html">
+        <text><![CDATA[Partial answer]]></text>
+        <feedback format="html">
+            <text><![CDATA[Feedback for option 2]]></text>
+        </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[Wrong answer]]></text>
+        <feedback format="html">
+            <text><![CDATA[Feedback for option 3]]></text>
+        </feedback>
+    </answer>
+</question>
 </quiz>

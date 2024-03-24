@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <question type="cloze">
-        <name>
-            <text>Numerical cloze question</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456} </p>]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text><![CDATA[General feedback]]></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-    </question>
-    <question type="cloze">
-        <name>
-            <text>Numerical cloze question with general feedback</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.} </p>]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text><![CDATA[General feedback]]></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-    </question>
-    <question type="cloze">
-        <name>
-            <text>Multiple choice cloze question</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[<p> Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss} </p>]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-    </question>
-    <question type="cloze">
-        <name>
-            <text>Multiple choice cloze question with detailed feedback</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[<p> Select the correct value: {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer} </p>]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-    </question>
+<question type="cloze">
+    <name>
+        <text>Numerical cloze question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456} </p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[General feedback]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+</question>
+<question type="cloze">
+    <name>
+        <text>Numerical cloze question with general feedback</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.} </p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[General feedback]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+</question>
+<question type="cloze">
+    <name>
+        <text>Multiple choice cloze question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p> Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss} </p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+</question>
+<question type="cloze">
+    <name>
+        <text>Multiple choice cloze question with detailed feedback</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p> Select the correct value: {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer} </p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+</question>
 </quiz>

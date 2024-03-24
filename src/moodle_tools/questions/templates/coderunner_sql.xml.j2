@@ -1,7 +1,7 @@
 {% extends "question.xml.j2" %}
 {% block content %}
     {{ super() }}
-    <coderunnertype>sql</coderunnertype>
+    <coderunnertype>PROTOTYPE_duckdb_dql</coderunnertype>
     <prototypetype>0</prototypetype>
     <allornothing>1</allornothing>
     <penaltyregime>0</penaltyregime>
@@ -47,31 +47,23 @@
         {% for testcase in testcases %}
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">
             <testcode>
-                <text>
-                    --Testfall {{ loop.index }}
-                </text>
+                <text>--Testfall {{ loop.index }}</text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text>
-                    <![CDATA[{{ testcase.expected }}]]>
-                </text>
+                <text><![CDATA[{{ testcase.result }}]]></text>
             </expected>
             <extra>
-                <text>
-                    <![CDATA[{{ testcase.db_change }}]]>
-                </text>
+                <text><![CDATA[{{ testcase.changes }}]]></text>
             </extra>
             <display>
-                <text>
-                    {% "SHOW" if loop.index == 1 else "HIDE" %}
-                </text>
+                <text>{{ "SHOW" if loop.index == 1 else "HIDE" }}</text>
             </display>
         </testcase>
         {% endfor %}
-        <file name="{{ database_name }}.duckdb" path="/" encoding="base64">
+        <file name="{{ database_name }}.db" path="/" encoding="base64">
             {{ database_encoding }}
         </file>
     </testcases>

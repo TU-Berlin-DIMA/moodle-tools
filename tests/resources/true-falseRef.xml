@@ -1,84 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <question type="truefalse">
-        <name>
-            <text>Question title</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[Complete question]]></text>
-        </questiontext>
-        <generalfeedback format="html">
-            <text><![CDATA[General feedback]]></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <answer fraction="0" format="html">
-            <text><![CDATA[true]]></text>
-            <feedback format="html">
-                <text><![CDATA[Wrong feedback]]></text>
-            </feedback>
-        </answer>
-        <answer fraction="100" format="html">
-            <text><![CDATA[false]]></text>
-            <feedback format="html">
-                <text><![CDATA[Correct feedback]]></text>
-            </feedback>
-        </answer>
-    </question>
-    <question type="truefalse">
-        <name>
-            <text>Question title</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[Minimal true question]]></text>
-        </questiontext>
-        <generalfeedback format="html">
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[Complete question]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[General feedback]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
+            <text><![CDATA[Wrong feedback]]></text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
+            <text><![CDATA[Correct feedback]]></text>
+        </feedback>
+    </answer>
+</question>
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[Minimal true question]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
             <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <answer fraction="0" format="html">
-            <text><![CDATA[false]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="100" format="html">
-            <text><![CDATA[true]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-    </question>
-    <question type="truefalse">
-        <name>
-            <text>Question title</text>
-        </name>
-        <questiontext format="html">
-            <text><![CDATA[Minimal false question]]></text>
-        </questiontext>
-        <generalfeedback format="html">
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
             <text></text>
-        </generalfeedback>
-        <idnumber></idnumber>
-        <defaultgrade>1</defaultgrade>
-        <penalty>1</penalty>
-        <hidden>0</hidden>
-        <answer fraction="0" format="html">
-            <text><![CDATA[true]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-        <answer fraction="100" format="html">
-            <text><![CDATA[false]]></text>
-            <feedback format="html">
-                <text></text>
-            </feedback>
-        </answer>
-    </question>
+        </feedback>
+    </answer>
+</question>
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[Minimal false question]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+</question>
 </quiz>
