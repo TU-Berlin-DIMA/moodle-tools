@@ -396,64 +396,72 @@ The full YAML format for such a question is as follows:
 type: coderunner
 category: your/category/hierarchy
 title: Sample SQL Coderunner Question
+question: |-
+  Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+  Die Namen der teuersten Produkte und deren Preis?
 general_feedback: A query was submitted
-database: eshop
-question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n
-           Die Namen der teuersten Produkte und deren Preis?"
-correct_query: "SELECT Name, Preis FROM Produkt\n
-            WHERE Preis = (\n
-            SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC;"
-result: "Name                            Preis\n
-------------------------------  ----------\n
-Rolex Daytona                   20000\n"
+database_path: ./eshop.db
+correct_query: |-
+  SELECT Name, Preis
+  FROM Produkt
+  WHERE Preis = (
+    SELECT MAX(Preis)
+    FROM Produkt
+  )
+  ORDER BY Name ASC;
+result: |-
+  Name                            Preis
+  ------------------------------  ----------
+  Rolex Daytona                   20000
 additional_testcases:
-  - testcase:
-    changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
-             INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
-             INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
-    new_result: "Name                            Preis\n
-------------------------------  ----------\n
-BMW                             50000\n
-Pokemon Glurak Holo Karte       50000\n"
+  - changes: |-
+      INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
+      INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
+      INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);
+    result: |-
+      Name                            Preis
+      ------------------------------  ----------
+      BMW                             50000
+      Pokemon Glurak Holo Karte       50000
 check_results: false
 database_connection: false
 ```
 
 The following fields are optional, and therefore do not need to be provided:
 
-- title (title of the SQL Coderunner question in ISIS)
-- general_feedback
-- result (result of the correct_query when running against the initial state of the database; if not provided the 'correct_query' is run against the provided database and the result is used)
-- additional_testcases
-  - new_result (result of the 'correct_query' when running against the state of the database after applying 'changes')
-- check_results (if results are provided manually, the provided 'correct_query' is run against the database and the results are compared)
-- database_connection (determines whether moodle-tool connects to the provided database during '.xml' generation; default is true)
+- `general_feedback`
+- `result` (result of the `correct_query` when running against the initial state of the database; if not provided the `correct_query` is run against the provided database and the result is used)
+- `additional_testcases`
+  - `result` (result of the `correct_query` when running against the state of the database after applying `changes`)
+- `check_results` (if results are provided manually, the provided `correct_query` is run against the database and the results are compared)
+- `database_connection` (determines whether `moodle_tools` connects to the provided database during XML generation; default is true)
 
-Therefore, a minimal version of the above '.yml' file looks as follows:
+Therefore, a minimal version of the above `.yml` file looks as follows:
 
 ```yaml
 type: coderunner
 title: Sample SQL Coderunner Question
-database: eshop
-question: "Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:\n
-           Die Namen der teuersten Produkte und deren Preis?"
-correct_query: "SELECT Name, Preis FROM Produkt\n
-            WHERE Preis = (\n
-            SELECT MAX(Preis) FROM Produkt\n
-            ) ORDER BY Name ASC;"
+database_path: ./eshop.db
+question: |-
+  Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+  Die Namen der teuersten Produkte und deren Preis?
+correct_query: |-
+  SELECT Name, Preis FROM Produkt
+  WHERE Preis = (
+  SELECT MAX(Preis) FROM Produkt
+  ) ORDER BY Name ASC;
 additional_testcases:
-  - testcase:
-    changes: "INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
-             INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
-             INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);"
+  - changes: |-
+      INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
+      INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
+      INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);
 ```
 
 Note that this requires local database files for automatic result generation.
 
 #### CoderunnerSQL Command line
 
-To generate an `.xml` file that can be uploaded to ISIS from a CoderunnerSQL `.yml` file with manually provided results use the following command:
+To generate an XML file that can be uploaded to ISIS from a CoderunnerSQL `.yml` file with manually provided results use the following command:
 
 ```bash
 make-questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
