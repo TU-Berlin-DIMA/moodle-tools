@@ -4,14 +4,6 @@ from moodle_tools import utils
 
 
 class TestUtils:
-    def test_optional_text(self) -> None:
-
-        eval_text = "Text"
-        expected_text = "<![CDATA[Text]]>"
-
-        assert utils.optional_text(eval_text) == expected_text
-        assert utils.optional_text(None) == ""
-
     def test_convert_markdown(self) -> None:
         eval_text = dedent(
             """

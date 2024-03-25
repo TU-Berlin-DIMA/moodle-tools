@@ -4,11 +4,6 @@ import re
 import markdown
 
 
-def optional_text(text: str | None) -> str:
-    """Return the text wrapped in a CDATA tag if it exists."""
-    return f"<![CDATA[{text}]]>" if text else ""
-
-
 def add_table_borders(text: str) -> str:
     """Add a border to tables in the question text."""
     return text.replace("<table>", '<table border="1px solid black" style="margin-bottom: 2ex">')
