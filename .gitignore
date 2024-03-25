@@ -1,14 +1,48 @@
-/.idea/
-/build/
-/src/moodle_tools.egg-info/
+# IDEs
+.idea/
+.vscode/
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
-/examples/*.xml
-.mypy_cache
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+venv/
+.env
 .venv
-venv
-.vscode
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# Project-specific ignores
 .coverage
-.pytest_cache
-builds
-public/
 pytest.xml
+public/
+/examples/*.xml
