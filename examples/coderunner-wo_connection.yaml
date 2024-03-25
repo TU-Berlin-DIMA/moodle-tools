@@ -16,9 +16,12 @@ correct_query: |-
   )
   ORDER BY Name ASC;
 result: |-
-  Name                            Preis
-  ------------------------------  ----------
-  Rolex Daytona                   20000
+  ┌───────────────┬───────┐
+  │     Name      │ Preis │
+  │    varchar    │ int64 │
+  ├───────────────┼───────┤
+  │ Rolex Daytona │ 20000 │
+  └───────────────┴───────┘
 additional_testcases:
   - changes: |-
       INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
