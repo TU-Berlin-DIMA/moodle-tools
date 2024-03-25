@@ -11,7 +11,8 @@
     </name>
     <questiontext format="html">
         <text><![CDATA[Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
-Die Namen der teuersten Produkte und deren Preis?]]></text>
+Die Namen der teuersten Produkte und deren Preis?
+Ergebnisschema: Name (↑), Preis]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text><![CDATA[A query was submitted]]></text>

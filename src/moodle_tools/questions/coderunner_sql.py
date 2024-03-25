@@ -1,6 +1,7 @@
 """This module implements SQL DQL questions in Moodle CodeRunner."""
 
 import base64
+import re
 from pathlib import Path
 
 import duckdb
@@ -73,6 +74,7 @@ class CoderunnerQuestionSQL(Question):
                     f"Provided database path does not exist: {self.database_path}"
                 )
             self.con = duckdb.connect(str(self.database_path))
+            self.question = self.add_expected_output_schema(correct_query, question)
         else:
             if result is None or (
                 additional_testcases
@@ -160,6 +162,42 @@ class CoderunnerQuestionSQL(Question):
         result = str(self.con.sql(self.correct_query))
         self.con.sql("ROLLBACK")
         return result
+
+    def add_expected_output_schema(self, correct_query: str, question_text: str) -> str:
+        # Run the query, so that we can then get the schema output
+        result = self.con.sql(correct_query)
+        output_schema_duckdb = result.description
+
+        # Cut the order by column names, so that we can get asc and desc
+        possible_match = re.search(".*ORDER BY (.*);?", correct_query)
+        if not possible_match:
+            raise ParsingError(
+                f"Could not retrieve the column names from the order by statement from the query "
+                f"{correct_query}!"
+            )
+
+        # Splitting the order on "," and on " " to get the column name and the order modifier
+        column_modifiers = possible_match.group(1).replace(";", "").split(",")
+        column_names_asc_desc = {}
+        for item in column_modifiers:
+            item_split = list(item.strip().split(" "))
+            column_names_asc_desc.update({item_split[0]: item_split[1]})
+
+        # Creating the output schema string, appending it to the question_text and return it
+        asc_desc_map = {"ASC": "↑", "DESC": "↓"}
+        output_schema_str = question_text + "\nErgebnisschema: "
+        for column in output_schema_duckdb:
+            column_name = column[0]
+            output_schema_str += column_name
+            if column_name in column_names_asc_desc:
+                output_schema_str += " (" + asc_desc_map[column_names_asc_desc[column_name]] + ")"
+
+            output_schema_str += ", "
+
+        # Getting rid of the lsat commata
+        output_schema_str = output_schema_str[:-2]
+
+        return output_schema_str
 
     def validate(self) -> list[str]:
         """Validate the question.
