@@ -77,9 +77,12 @@ ORDER BY Name ASC;]]></answer>
                 <text></text>
             </stdin>
             <expected>
-                <text><![CDATA[Name                            Preis
-------------------------------  ----------
-Rolex Daytona                   20000]]></text>
+                <text><![CDATA[┌───────────────┬───────┐
+│     Name      │ Preis │
+│    varchar    │ int64 │
+├───────────────┼───────┤
+│ Rolex Daytona │ 20000 │
+└───────────────┴───────┘]]></text>
             </expected>
             <extra>
                 <text><![CDATA[]]></text>
