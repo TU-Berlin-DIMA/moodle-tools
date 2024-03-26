@@ -8,7 +8,7 @@ import duckdb
 import sqlparse  # type: ignore
 
 from moodle_tools.questions.question import Question, QuestionAnalysis
-from moodle_tools.utils import ParsingError
+from moodle_tools.utils import ParsingError, preprocess_text
 
 
 class CoderunnerQuestionSQL(Question):
@@ -74,7 +74,9 @@ class CoderunnerQuestionSQL(Question):
                     f"Provided database path does not exist: {self.database_path}"
                 )
             self.con = duckdb.connect(str(self.database_path))
-            self.question = self.add_expected_output_schema(correct_query, question)
+            self.question += preprocess_text(
+                self.extract_expected_output_schema(correct_query), **flags
+            )
         else:
             if result is None or (
                 additional_testcases
@@ -143,7 +145,6 @@ class CoderunnerQuestionSQL(Question):
 
         if database_connection:
             self.con.close()
-        self.column_widths_string = ""  # TODO: Maybe remove this
 
         with open(self.database_path, "rb") as file:
             self.database_encoding = base64.b64encode(file.read()).decode("utf-8")
@@ -163,41 +164,47 @@ class CoderunnerQuestionSQL(Question):
         self.con.sql("ROLLBACK")
         return result
 
-    def add_expected_output_schema(self, correct_query: str, question_text: str) -> str:
-        # Run the query, so that we can then get the schema output
-        result = self.con.sql(correct_query)
-        output_schema_duckdb = result.description
+    def extract_expected_output_schema(self, query: str) -> str:
+        """Extract the output schema of a query from its operators and its result.
 
-        # Cut the order by column names, so that we can get asc and desc
-        possible_match = re.search(".*ORDER BY (.*);?", correct_query)
-        if not possible_match:
+        Args:
+            query: The SQL query to parse.
+
+        Returns:
+            str: The output schema of the query.
+        """
+        # Run the query, so that we can then get the schema output
+        result = self.con.sql(query)
+        result_schema = result.description
+
+        # Grab the ORDER BY statement so that we can get sorting information
+        match = re.search(".*ORDER BY (.*);?", query)
+        if not match:
             raise ParsingError(
                 f"Could not retrieve the column names from the order by statement from the query "
-                f"{correct_query}!"
+                f"{query}!"
             )
 
         # Splitting the order on "," and on " " to get the column name and the order modifier
-        column_modifiers = possible_match.group(1).replace(";", "").split(",")
-        column_names_asc_desc = {}
-        for item in column_modifiers:
-            item_split = list(item.strip().split(" "))
-            column_names_asc_desc.update({item_split[0]: item_split[1]})
+        order_by_statements = match.group(1).replace(";", "").split(",")
+        column_orderings = {}
+        for item in order_by_statements:
+            item_split = item.strip().split(" ")
+            column_orderings.update({item_split[0]: item_split[1]})
 
-        # Creating the output schema string, appending it to the question_text and return it
+        # Creating the output schema string, appending it to the question_text, and return it
         asc_desc_map = {"ASC": "↑", "DESC": "↓"}
-        output_schema_str = question_text + "\nErgebnisschema: "
-        for column in output_schema_duckdb:
+        output_elements: list[str] = []
+        for column in result_schema:
             column_name = column[0]
-            output_schema_str += column_name
-            if column_name in column_names_asc_desc:
-                output_schema_str += " (" + asc_desc_map[column_names_asc_desc[column_name]] + ")"
+            if column_name in column_orderings:
+                output_elements.append(
+                    f"{column_name} ({asc_desc_map[column_orderings[column_name]]})"
+                )
+            else:
+                output_elements.append(column_name)
 
-            output_schema_str += ", "
-
-        # Getting rid of the lsat commata
-        output_schema_str = output_schema_str[:-2]
-
-        return output_schema_str
+        return "\nErgebnisschema:\n\n" + ", ".join(output_elements)
 
     def validate(self) -> list[str]:
         """Validate the question.

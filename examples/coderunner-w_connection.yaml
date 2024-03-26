@@ -4,6 +4,7 @@ category: sql-dql
 title: Sample SQL Coderunner Question
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+
   Die Namen der teuersten Produkte und deren Preis?
 general_feedback: A query was submitted
 database_path: ./examples/eshop.db

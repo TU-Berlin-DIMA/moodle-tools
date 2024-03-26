@@ -86,7 +86,8 @@ py-version = "3.10"
 good-names = ["i", "j", "k", "x", "_"]
 
 [tool.pylint.design]
-# Maximum number of characters on a single line.
+min-public-methods = 1
+max-attributes = 10
 max-line-length = 99
 
 [tool.pylint."messages control"]
@@ -101,6 +102,8 @@ disable = [
     "use-symbolic-message-instead",
     "use-implicit-booleaness-not-comparison-to-string",
     "use-implicit-booleaness-not-comparison-to-zero",
+    "too-many-branches",
+    "too-many-arguments",
     # Let flake8 raise the following issues
     "line-too-long",
     "missing-module-docstring",
@@ -120,7 +123,7 @@ score = true
 
 [tool.pylint.similarities]
 # Minimum lines number of a similarity.
-min-similarity-lines = 4 # maybe increase this value
+min-similarity-lines = 8 # maybe increase this value
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]

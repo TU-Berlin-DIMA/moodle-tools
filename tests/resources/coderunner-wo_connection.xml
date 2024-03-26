@@ -10,8 +10,8 @@
         <text>Sample SQL Coderunner Question</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
-Die Namen der teuersten Produkte und deren Preis?]]></text>
+        <text><![CDATA[<p>Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:</p>
+<p>Die Namen der teuersten Produkte und deren Preis?</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text><![CDATA[A query was submitted]]></text>
