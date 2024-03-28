@@ -7,7 +7,7 @@ class MultipleChoiceQuestion(NumericalQuestion):
     """General template for a multiple choice question with a single selection."""
 
     QUESTION_TYPE = "multichoice"
-    TEMPLATE = "multiple_choice.xml.j2"
+    XML_TEMPLATE = "multiple_choice.xml.j2"
 
     def __init__(
         self,
@@ -15,6 +15,7 @@ class MultipleChoiceQuestion(NumericalQuestion):
         title: str,
         answers: list[str],
         category: str | None = None,
+        grade: float = 1.0,
         general_feedback: str = "",
         correct_feedback: str = "Your answer is correct.",
         partially_correct_feedback: str = "Your answer is partially correct.",
@@ -22,7 +23,7 @@ class MultipleChoiceQuestion(NumericalQuestion):
         shuffle_answers: bool = True,
         **flags: bool,
     ) -> None:
-        super().__init__(question, title, answers, category, general_feedback, **flags)
+        super().__init__(question, title, answers, category, grade, general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.partially_correct_feedback = preprocess_text(partially_correct_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)

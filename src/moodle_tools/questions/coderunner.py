@@ -1,0 +1,173 @@
+"""This module implements SQL DQL questions in Moodle CodeRunner."""
+
+import abc
+from pathlib import Path
+from typing import Required, TypedDict
+
+from jinja2 import Environment
+
+from moodle_tools.questions.question import Question, QuestionAnalysis
+from moodle_tools.utils import ParsingError
+
+
+class Testcase(TypedDict, total=False):
+    """Template for a test case in a Moodle CodeRunner question.
+
+    Args:
+        description: A description of the testcase (default `Testfall _i_`).
+        code: A piece of code that depending on the test logic is executed before or after the
+            student answer.
+        result: The expected result of the testcase. If you do not provide it, it will be generated
+            by running the correct answer and testcode.
+        grade: Number of points for the test (default 1). Only used if all_or_nothing is False.
+        hiderestiffail: If True, all following tests are hidden if the test fails (default False).
+        hidden: If True, the test hidden. Otherwise, it is shown to students (default False).
+        show: If the test is hidden, this is set to "HIDE". Otherwise, it is set to "SHOW".
+    """
+
+    description: str
+    code: Required[str]
+    result: str
+    grade: float
+    hiderestiffail: bool
+    hidden: bool
+    show: str
+
+
+class CoderunnerQuestion(Question):
+    """Template for a generic question in Moodle CodeRunner."""
+
+    QUESTION_TYPE = "coderunner"
+    XML_TEMPLATE = "coderunner.xml.j2"
+    ACE_LANG: str
+    CODERUNNER_TYPE: str
+    RESULT_COLUMNS: str
+    TEST_TEMPLATE: str
+
+    def __init__(
+        self,
+        question: str,
+        title: str,
+        answer: str,
+        category: str | None = None,
+        grade: float = 1.0,
+        general_feedback: str = "",
+        result: str | None = None,
+        answer_preload: str = "",
+        testcases: list[Testcase] | None = None,
+        all_or_nothing: bool = True,
+        check_results: bool = False,
+        **flags: bool,
+    ) -> None:
+        """Create a new CodeRunner question.
+
+        Args:
+            question: The question text displayed to students.
+            title: Title of the question.
+            answer: The piece of code that, when executed, leads to the correct result.
+            category: The category of the question.
+            grade: The total number of points of the question.
+            general_feedback: Feedback that is displayed once the quiz has closed.
+            result: The expected result of the correct answer.
+            answer_preload: Text that is preloaded into the answer box.
+            testcases: List of testcases for checking the student answer.
+            all_or_nothing: If True, the student must pass all test cases to receive any
+                points. If False, the student gets partial credit for each test case passed.
+            check_results: If testcase_results are provided, run the reference solution and check
+                if the results match.
+            flags: Additional flags that can be used to control the behavior of the
+                question.
+        """
+        super().__init__(question, title, category, grade, general_feedback, **flags)
+        self.answer = answer
+        self.answer_preload = answer_preload
+        self.all_or_nothing = all_or_nothing
+
+        with open(
+            Path(__file__).parent / "templates" / self.TEST_TEMPLATE, "r", encoding="utf-8"
+        ) as file:
+            self.test_logic = file.read()
+
+        # Parameter validation
+        if check_results and (
+            result is None
+            or (testcases and any("result" not in testcase for testcase in testcases))
+        ):
+            raise ParsingError(
+                "You must provide a result for each testcase if you set check_results to True."
+            )
+
+        # Execute test cases and fetch results
+        self.testcases: list[Testcase] = []
+        if testcases is not None:
+            for i, testcase in enumerate(testcases):
+                if "code" not in testcase or testcase["code"] == "":
+                    raise ParsingError("A testcase must include code to execute.")
+                if "result" not in testcase:
+                    testcase["result"] = self.fetch_expected_result(testcase["code"])
+                if "grade" not in testcase:
+                    testcase["grade"] = 1.0
+                if "hiderestiffail" not in testcase:
+                    testcase["hiderestiffail"] = False
+                if "description" not in testcase:
+                    testcase["description"] = f"Testfall {i}"
+                if "hidden" not in testcase or testcase["hidden"] is False:
+                    testcase["show"] = "SHOW"
+                else:
+                    testcase["show"] = "HIDE"
+
+                self.testcases.append(testcase)
+
+    @property
+    @abc.abstractmethod
+    def files(self) -> list[dict[str, str]]:
+        """Get all supporting files for the question as base64 strings.
+
+        Returns:
+            A list of dictionaries with the keys "name" and "encoding".
+        """
+
+    @abc.abstractmethod
+    def fetch_expected_result(self, test_code: str) -> str:
+        """Fetch the result of the correct solution for a given test case.
+
+        Args:
+            test_code: Changes to be applied before or after the correct solution.
+
+        Returns:
+            str: The result of the correct solution.
+        """
+        raise NotImplementedError
+
+    def check_results(self) -> bool:
+        """Verify that the manually provided results match the dynamically fetched results."""
+        for testcase in self.testcases:
+            result = self.fetch_expected_result(testcase["code"]).strip()
+            if result != testcase["result"].strip():
+                raise ParsingError(
+                    f"Provided result:\n{testcase['result'].strip()}\ndid not match the "
+                    f"result from the provided 'answer':\n{result}"
+                )
+        return True
+
+    def validate(self) -> list[str]:
+        errors = super().validate()
+        return errors
+
+    def to_xml(self, env: Environment) -> str:
+        """Generate a Moodle XML export of the question."""
+        template = env.get_template(self.XML_TEMPLATE)
+        return template.render(
+            self.__dict__
+            | {
+                "type": self.QUESTION_TYPE,
+                "ace_lang": self.ACE_LANG,
+                "result_columns": self.RESULT_COLUMNS,
+                "coderunner_type": self.CODERUNNER_TYPE,
+                "files": self.files,
+            }
+        )
+
+
+class CoderunnerQuestionAnalysis(QuestionAnalysis):
+    pass

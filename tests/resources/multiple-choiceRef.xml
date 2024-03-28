@@ -11,8 +11,8 @@
         <text></text>
     </generalfeedback>
     <idnumber></idnumber>
-    <defaultgrade>1</defaultgrade>
-    <penalty>1</penalty>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
     <hidden>0</hidden>
     <single>true</single>
     <shuffleanswers>
@@ -60,8 +60,8 @@
         <text><![CDATA[General feedback]]></text>
     </generalfeedback>
     <idnumber></idnumber>
-    <defaultgrade>1</defaultgrade>
-    <penalty>1</penalty>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
     <hidden>0</hidden>
     <single>true</single>
     <shuffleanswers>

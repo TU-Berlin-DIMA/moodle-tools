@@ -1,0 +1,59 @@
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import duckdb
+
+# Use Twig to get students answer
+student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
+
+# Parsing the student answer
+if not student_answer.endswith(';'):
+    student_answer = student_answer + ';'
+
+# Getting the database file
+db_files = [fname for fname in os.listdir() if fname.endswith('.db')]
+if len(db_files) == 0:
+    db_working = ":memory:"
+elif len(db_files) == 1:
+    db_working = db_files[0]  # Strip .db extension
+else:
+    raise Exception("Multiple DB files not implemented yet, sorry!")
+
+SEPARATOR = "#<ab@17943918#@>#"
+
+# Running each test in isolation
+{% for TEST in TESTCASES %}
+
+if db_working != ":memory:":
+    db_working = f"{db_working}.copy"
+    shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+
+testcode = """{{ TEST.testcode | e('py') }}"""
+extra = """{{ TEST.extra | e('py') }}"""
+con = duckdb.conect(db_working, config={"temp_directory": os.getcwd()})
+
+# Execute database modification
+try:
+    statements = [s for s in testcode.split(";") if s.strip()]
+    for query in statements:
+        con.sql(query)
+except Exception as e:
+    raise e
+
+# Execute student answer
+try:
+    statements = [s for s in student_answer.split(";") if s.strip()]
+    for query in statements:
+        res = con.sql(query)
+        print(res)
+except Exception as e:
+    raise e
+
+con.close()
+
+{% if not loop.last %}
+print(SEPARATOR)
+{% endif %}
+{% endfor %}

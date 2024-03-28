@@ -8,7 +8,7 @@ from moodle_tools.utils import preprocess_text
 class MissingWordsQuestion(Question):
 
     QUESTION_TYPE = "gapselect"
-    TEMPLATE = "missing_words.xml.j2"
+    XML_TEMPLATE = "missing_words.xml.j2"
 
     def __init__(
         self,
@@ -16,29 +16,27 @@ class MissingWordsQuestion(Question):
         title: str,
         options: list[dict[str, str]],
         category: str | None = None,
+        grade: float = 1.0,
         general_feedback: str = "",
         correct_feedback: str = "",
         partial_feedback: str = "",
         incorrect_feedback: str = "",
         **flags: bool,
     ):
-        super().__init__(question, title, category, **flags)
+        super().__init__(question, title, category, grade, general_feedback, **flags)
         self.options = options
-        self.general_feedback = preprocess_text(general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.partial_feedback = preprocess_text(partial_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
 
     def validate(self) -> list[str]:
-        errors = []
-        if not self.general_feedback:
-            errors.append("No general feedback")
+        errors = super().validate()
         if not self.correct_feedback:
-            errors.append("No feedback for correct answer")
+            errors.append("No feedback for correct answer provided.")
         if not self.partial_feedback:
-            errors.append("No feedback for partially correct answer")
+            errors.append("No feedback for partially correct answer provided.")
         if not self.incorrect_feedback:
-            errors.append("No feedback for incorrect answer")
+            errors.append("No feedback for incorrect answer provided.")
         return errors
 
 

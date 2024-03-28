@@ -12,23 +12,41 @@ class Question(ABC):
     """General template for a question."""
 
     QUESTION_TYPE: str
-    TEMPLATE: str
+    XML_TEMPLATE: str
 
-    def __init__(self, question: str, title: str, category: str | None, **flags: bool) -> None:
+    def __init__(
+        self,
+        question: str,
+        title: str,
+        category: str | None,
+        grade: float = 1.0,
+        general_feedback: str = "",
+        **flags: bool,
+    ) -> None:
         """General template for a question."""
         self.question = preprocess_text(question, **flags)
         self.title = title
         self.category = category
+        self.grade = grade
+        self.general_feedback = preprocess_text(general_feedback, **flags)
         self.flags = flags
 
     @abstractmethod
     def validate(self) -> list[str]:
-        """Function that validates the question. It returns a list of errors."""
-        raise NotImplementedError
+        """Validate the question.
+
+        Returns:
+            list[str]: A list of validation errors.
+        """
+        errors = []
+        if not self.general_feedback:
+            errors.append("No general feedback provided.")
+
+        return errors
 
     def to_xml(self, env: Environment) -> str:
         """Generate a Moodle XML export of the question."""
-        template = env.get_template(self.TEMPLATE)
+        template = env.get_template(self.XML_TEMPLATE)
         return template.render(self.__dict__ | {"type": self.QUESTION_TYPE})
 
 

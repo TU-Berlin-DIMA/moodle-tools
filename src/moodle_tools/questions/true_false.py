@@ -6,21 +6,21 @@ class TrueFalseQuestion(Question):
     """General template for a True/False question."""
 
     QUESTION_TYPE = "truefalse"
-    TEMPLATE = "true_false.xml.j2"
+    XML_TEMPLATE = "true_false.xml.j2"
 
     def __init__(
         self,
         question: str,
         title: str,
         category: str | None = None,
-        correct_answer: bool = True,
+        grade: float = 1.0,
         general_feedback: str = "",
         correct_feedback: str = "",
         wrong_feedback: str = "",
+        correct_answer: bool = True,
         **flags: bool,
     ):
-        super().__init__(question, title, category, **flags)
-        self.general_feedback = preprocess_text(general_feedback, **flags)
+        super().__init__(question, title, category, grade, general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.wrong_feedback = preprocess_text(wrong_feedback, **flags)
 
@@ -30,14 +30,11 @@ class TrueFalseQuestion(Question):
         )
 
     def validate(self) -> list[str]:
-        errors = []
+        errors = super().validate()
         if self.correct_answer == self.wrong_answer:
-            # How can this happen?!
-            errors.append("Correct answer == wrong answer")
-        if not self.general_feedback:
-            errors.append("No general feedback")
+            errors.append("Correct answer is equal to the wrong answer.")
         if not self.wrong_feedback:
-            errors.append("No feedback for wrong answer")
+            errors.append("No feedback for wrong answer provided.")
         return errors
 
 

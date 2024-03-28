@@ -1,37 +1,38 @@
 {% extends "question.xml.j2" %}
 {% block content %}
     {{ super() }}
-    <coderunnertype>PROTOTYPE_duckdb_dql</coderunnertype>
+    <coderunnertype>{{ coderunner_type }}</coderunnertype>
     <prototypetype>0</prototypetype>
-    <allornothing>1</allornothing>
+    <allornothing>{{ 1 if all_or_nothing else 0 }}</allornothing>
     <penaltyregime>0</penaltyregime>
     <precheck>0</precheck>
     <hidecheck>0</hidecheck>
     <showsource>0</showsource>
     <answerboxlines>18</answerboxlines>
     <answerboxcolumns>100</answerboxcolumns>
-    <answerpreload></answerpreload>
+    <answerpreload>{{ answer_preload }}</answerpreload>
     <globalextra></globalextra>
     <useace></useace>
-    <resultcolumns></resultcolumns>
-    <template></template>
+    <resultcolumns>{{ result_columns }}</resultcolumns>
+    <template>{{ test_logic }}</template>
     <iscombinatortemplate></iscombinatortemplate>
     <allowmultiplestdins></allowmultiplestdins>
-    <answer><![CDATA[{{ correct_query }}]]></answer>
+    <answer><![CDATA[{{ answer }}]]></answer>
     <validateonsave>1</validateonsave>
     <testsplitterre></testsplitterre>
     <language></language>
-    <acelang></acelang>
+    <acelang>{{ ace_lang }}</acelang>
     <sandbox></sandbox>
     <grader></grader>
     <cputimelimitsecs></cputimelimitsecs>
     <memlimitmb></memlimitmb>
     <sandboxparams></sandboxparams>
-    <templateparams><![CDATA[{{ column_widths_string }}]]></templateparams>
+    <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
-    <templateparamslang>twig</templateparamslang>
+    <extractcodefromjson>1</extractcodefromjson>
+    <templateparamslang></templateparamslang>
     <templateparamsevalpertry>0</templateparamsevalpertry>
-    <templateparamsevald><![CDATA[{{ column_widths_string }}]]></templateparamsevald>
+    <templateparamsevald>{}</templateparamsevald>
     <twigall>0</twigall>
     <uiplugin></uiplugin>
     <uiparameters></uiparameters>
@@ -45,26 +46,28 @@
     <prototypeextra></prototypeextra>
     <testcases>
         {% for testcase in testcases %}
-        <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000">
+        <testcase testtype="0" useasexample="0" hiderestiffail="{{ testcase.hiderestiffail | int }}" mark="{{ testcase.grade }}">
             <testcode>
-                <text>--Testfall {{ loop.index }}</text>
+                <text>{{ testcase.code }}</text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text><![CDATA[{{ testcase.result }}]]></text>
+                <text>{{ testcase.result }}</text>
             </expected>
             <extra>
-                <text><![CDATA[{{ testcase.changes }}]]></text>
+                <text>{{ testcase.description }}</text>
             </extra>
             <display>
-                <text>{{ "SHOW" if loop.index == 1 else "HIDE" }}</text>
+                <text>{{ testcase.show }}</text>
             </display>
         </testcase>
         {% endfor %}
-        <file name="{{ database_name }}.db" path="/" encoding="base64">
-            {{ database_encoding }}
+        {% for file in files %}
+        <file name="{{ file.name }}" path="/" encoding="base64">
+            {{ file.encoding }}
         </file>
+        {% endfor %}
     </testcases>
 {% endblock%}

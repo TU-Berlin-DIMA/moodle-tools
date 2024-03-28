@@ -11,8 +11,8 @@
         <text><![CDATA[General feedback]]></text>
     </generalfeedback>
     <idnumber></idnumber>
-    <defaultgrade>1</defaultgrade>
-    <penalty>1</penalty>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
     <hidden>0</hidden>
     <answer fraction="0" format="html">
         <text><![CDATA[true]]></text>
@@ -38,8 +38,8 @@
         <text></text>
     </generalfeedback>
     <idnumber></idnumber>
-    <defaultgrade>1</defaultgrade>
-    <penalty>1</penalty>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
     <hidden>0</hidden>
     <answer fraction="0" format="html">
         <text><![CDATA[false]]></text>
@@ -65,8 +65,8 @@
         <text></text>
     </generalfeedback>
     <idnumber></idnumber>
-    <defaultgrade>1</defaultgrade>
-    <penalty>1</penalty>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
     <hidden>0</hidden>
     <answer fraction="0" format="html">
         <text><![CDATA[true]]></text>

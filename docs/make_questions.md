@@ -385,23 +385,22 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
-### CoderunnerSQL questions
+### Coderunner questions
 
-This question type expects a SQL query as the answer.
+This is a generic question type for three types of questions: `sql_ddl`, `sql_dql`, and `isda_streaming`.
 
 The full YAML format for such a question is as follows:
 
 ```yaml
 ---
-type: coderunner
+type: sql_ddl | sql_dql | isda_streaming
 category: your/category/hierarchy
 title: Sample SQL Coderunner Question
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
   Die Namen der teuersten Produkte und deren Preis?
 general_feedback: A query was submitted
-database_path: ./eshop.db
-correct_query: |-
+answer: |-
   SELECT Name, Preis
   FROM Produkt
   WHERE Preis = (
@@ -413,8 +412,10 @@ result: |-
   Name                            Preis
   ------------------------------  ----------
   Rolex Daytona                   20000
-additional_testcases:
-  - changes: |-
+answer_preload: |-
+  Eine Vorbelegung des Antwortfelds.
+testcases:
+  - code: |-
       INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
       INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
       INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);
@@ -423,59 +424,65 @@ additional_testcases:
       ------------------------------  ----------
       BMW                             50000
       Pokemon Glurak Holo Karte       50000
+    grade: 1.0
+    hiderestiffail: false
+    description: Testfall 1
+    hidden: false
+all_or_nothing: false
 check_results: false
-database_connection: false
 ```
 
 The following fields are optional, and therefore do not need to be provided:
 
 - `general_feedback`
-- `result` (result of the `correct_query` when running against the initial state of the database; if not provided the `correct_query` is run against the provided database and the result is used)
-- `additional_testcases`
-  - `result` (result of the `correct_query` when running against the state of the database after applying `changes`)
-- `check_results` (if results are provided manually, the provided `correct_query` is run against the database and the results are compared)
-- `database_connection` (determines whether `moodle_tools` connects to the provided database during XML generation; default is true)
+- `result` (result of the `answer` when running against the initial state of the database; if not provided the `answer` is run against the provided database and the result is used)
+- `testcases`
+  - `result` (result of the `answer` when running against the state of the database after applying `code`)
+  - `grade` defaults to 1.0 if not provided
+  - `hiderestiffail` defaults to `False`
+  - `hidden` defaults to `False`
+- `all_or_nothing` defaults to `True` for `sql_dql` and `isda_streaming` and `False` for `sql_ddl`
+- `check_results` (if results are provided manually, the provided `answer` is run against the database and the results are compared)
 
 Therefore, a minimal version of the above `.yml` file looks as follows:
 
 ```yaml
-type: coderunner
+type: sql_ddl | sql_dql | isda_streaming
 title: Sample SQL Coderunner Question
-database_path: ./eshop.db
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
   Die Namen der teuersten Produkte und deren Preis?
-correct_query: |-
+answer: |-
   SELECT Name, Preis FROM Produkt
   WHERE Preis = (
   SELECT MAX(Preis) FROM Produkt
   ) ORDER BY Name ASC;
-additional_testcases:
-  - changes: |-
+testcases:
+  - code: |-
       INSERT INTO Produkt (Name, Preis) VALUES ('Audi A6', 25000);
       INSERT INTO Produkt (Name, Preis) VALUES ('BMW', 50000);
       INSERT INTO Produkt (Name, Preis) VALUES ('Pokemon Glurak Holo Karte', 50000);
 ```
 
-Note that this requires local database files for automatic result generation.
+#### Coderunner SQL Questions
 
-#### CoderunnerSQL Command line
+In addition to the general fields, Coderunner SQL questions recognize the following YAML fields:
 
-To generate an XML file that can be uploaded to ISIS from a CoderunnerSQL `.yml` file with manually provided results use the following command:
-
-```bash
-make-questions coderunner < CODERUNNERSQL_EXAMPLE_FILE.yml > CODERUNNERSQL_EXAMPLE_FILE.xml
+```yaml
+database_path: ./eshop.db
+database_connection: false
 ```
 
-If you do not want to provide results manually, you **must** be in the root folder of the 'klausurfragen' git-repository (or spoof it).
-The 'klausurfragen' repo contains the database files used in ISIS in the 'datenbanken' folder.
-You can then run moodle-tools on the examples in the 'isda-dql-quiz' folder as follows:
+- `database_path` must always be provided.
+- `database_connection` is optional and determines whether `moodle_tools` connects to the provided database during XML generation (default `True`)
 
-```bash
-make-questions coderunner < isda-dql-quiz/coderunner.yml > isda-dql-quiz/coderunner.xml
+#### Coderunner Streaming Questions
+
+In addition to the general fields, Coderunner Streaming question recognizes the following YAML fields:
+
+```yaml
+input_stream: ./example.csv
 ```
-
-Adapt this to your own files as necessary.
 
 ## Command Line Usage
 

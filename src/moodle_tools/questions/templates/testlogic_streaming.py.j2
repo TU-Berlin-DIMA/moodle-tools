@@ -1,0 +1,16 @@
+from typing import Any
+from data_stream import DataStream, TimedStream, WindowedStream, KeyedStream, _check_element_structure_in_stream
+from synopsis import CountMinSketch, BloomFilter, ReservoirSample
+
+{{ STUDENT_ANSWER }}
+
+__student_answer__ = """{{ STUDENT_ANSWER | e('py') }}"""
+
+SEPARATOR = "#<ab@17943918#@>#"
+
+{% for TEST in TESTCASES %}
+{{ TEST.testcode }}
+{% if not loop.last %}
+print(SEPARATOR)
+{% endif %}
+{% endfor %}

@@ -1,0 +1,102 @@
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import duckdb
+
+
+def remove_comments(s: str) -> str:
+    """Remove comments from a SQL string."""
+    # Single-line comments
+    # NOTE: This regex produces wrong results if a single-line comment is embedded in a value
+    # (e.g., in an INSERT statement). This situation should not occure in our excersises though
+    s = re.sub(r"--.*", "", s)
+
+    # Multi-line comments
+    s = re.sub(r"/\*.*?\*/", "", s, flags=re.DOTALL)
+
+    return s
+
+
+# Use Twig to get students answer
+student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
+
+# Parsing the student answer
+{# student_answer = remove_comments(student_answer) #}
+if not student_answer.endswith(";"):
+    student_answer = student_answer + ";"
+if "pragma" in student_answer.lower():
+    raise ValueError("It is not allowed to use PRAGMA statements.")
+
+# Getting the database file
+db_files = [fname for fname in os.listdir() if fname.endswith(".db")]
+if len(db_files) == 0:
+    db_working = ":memory:"
+elif len(db_files) == 1:
+    db_working = db_files[0]  # Strip .db extension
+else:
+    raise Exception("Multiple DB files not implemented yet, sorry!")
+
+SEPARATOR = "#<ab@17943918#@>#"
+
+# Running each test in isolation
+{% for TEST in TESTCASES %}
+
+if db_working != ":memory:":
+    db_working = f"{db_working}.copy"
+    shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+
+testcode = """{{ TEST.testcode | e('py') }}"""
+extra = """{{ TEST.extra | e('py') }}"""
+con = duckdb.conect(db_working, config={"temp_directory": os.getcwd()})
+
+# Execute student answer
+try:
+    statements = [s for s in student_answer.split(";") if s.strip()]
+    for query in statements:
+        con.sql(query)
+except Exception as e:
+    raise e
+
+# Execute test code
+statements = [s for s in testcode.split(";") if s.strip()]
+for query in statements:
+    try:
+        res = con.sql(query)
+        print(res)
+    except (
+        duckdb.CastException,
+        duckdb.CatalogException,
+        duckdb.ConstraintException,
+        duckdb.ConversionException,
+        duckdb.ParserException,
+    ) as e:
+        if isinstance(e, duckdb.CastException):
+            if (
+                "CHECK constraint" in str(e)
+                or "FOREIGN KEY" in str(e)
+                or "UNIQUE constraint" in str(e)
+            ) and "INTO" in query:
+                into_idx = query.find("INTO")
+                table_name = query[(into_idx + 5) :].split(" ")[0]
+                print(f"Table {table_name}: {str(e).split(':')[0]}")
+            # Printing attribute names causes issues when students order compound
+            # primary keys different than the reference solution.
+            #
+            # elif "INTO" in query:
+            #     table_name_start = query.find("INTO")
+            #     table_name = query[(table_name_start + 5):].split(" ")[0]
+            #     attribute = re.split(" |,|;", str(e)[str(e).find(table_name):])[0]
+            #     print(f"{attribute}: {str(e).split(':')[0]}")
+            else:
+                print(e)
+    except Exception as e:
+        raise (e)
+
+con.close()
+
+{% if not loop.last %}
+print(SEPARATOR)
+{% endif %}
+{% endfor %}

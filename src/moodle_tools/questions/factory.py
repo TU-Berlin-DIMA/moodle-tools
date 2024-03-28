@@ -1,14 +1,15 @@
 from typing import Any
 
-from .. import ParsingError
-from .cloze import ClozeQuestion
-from .coderunner_sql import CoderunnerQuestionSQL
-from .missing_words import MissingWordsQuestion
-from .multiple_choice import MultipleChoiceQuestion
-from .multiple_true_false import MultipleTrueFalseQuestion
-from .numerical import NumericalQuestion
-from .question import Question
-from .true_false import TrueFalseQuestion
+from moodle_tools.questions.cloze import ClozeQuestion
+from moodle_tools.questions.coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
+from moodle_tools.questions.coderunner_streaming import CoderunnerStreamingQuestion
+from moodle_tools.questions.missing_words import MissingWordsQuestion
+from moodle_tools.questions.multiple_choice import MultipleChoiceQuestion
+from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestion
+from moodle_tools.questions.numerical import NumericalQuestion
+from moodle_tools.questions.question import Question
+from moodle_tools.questions.true_false import TrueFalseQuestion
+from moodle_tools.utils import ParsingError
 
 
 class QuestionFactory:
@@ -19,7 +20,9 @@ class QuestionFactory:
         "cloze": ClozeQuestion,
         "numerical": NumericalQuestion,
         "missing_words": MissingWordsQuestion,
-        "coderunner": CoderunnerQuestionSQL,
+        "sql_ddl": CoderunnerDDLQuestion,
+        "sql_dql": CoderunnerDQLQuestion,
+        "isda_streaming": CoderunnerStreamingQuestion,
     }
 
     @staticmethod

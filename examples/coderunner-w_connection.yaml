@@ -1,14 +1,15 @@
 ---
-type: coderunner
+type: sql_dql
 category: sql-dql
 title: Sample SQL Coderunner Question
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
 
   Die Namen der teuersten Produkte und deren Preis?
+grade: 1.5
 general_feedback: A query was submitted
-database_path: ./examples/eshop.db
-correct_query: |-
+database_path: ./examples/assets/eshop.db
+answer: |-
   SELECT Name, Preis
   FROM Produkt
   WHERE Preis = (
@@ -23,8 +24,8 @@ result: |-
   ├───────────────┼───────┤
   │ Rolex Daytona │ 20000 │
   └───────────────┴───────┘
-additional_testcases:
-  - changes: |-
+testcases:
+  - code: |-
       INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
       INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
       INSERT INTO Produkt (Id, Name, Preis) VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);
@@ -36,5 +37,16 @@ additional_testcases:
       │ BMW                       │ 50000 │
       │ Pokemon Glurak Holo Karte │ 50000 │
       └───────────────────────────┴───────┘
+  - code: |-
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (45678, 'Rolex Daytona', 30000);
+    result: |-
+      ┌───────────────┬───────┐
+      │     Name      │ Preis │
+      │    varchar    │ int64 │
+      ├───────────────┼───────┤
+      │ Rolex Daytona │ 30000 │
+      └───────────────┴───────┘
+    grade: 4.0
+    hidden: false
 check_results: true
 database_connection: true

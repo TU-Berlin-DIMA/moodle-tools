@@ -6,9 +6,11 @@ __all__ = [
     "MultipleTrueFalseQuestion",
     "NumericalQuestion",
     "MissingWordsQuestion",
-    "CoderunnerQuestionSQL",
+    "CoderunnerDDLQuestion",
+    "CoderunnerDQLQuestion",
+    "CoderunnerStreamingQuestion",
     "ClozeQuestionAnalysis",
-    "CoderunnerQuestionSQLAnalysis",
+    "CoderunnerQuestionAnalysis",
     "DropDownQuestionAnalysis",
     "MissingWordsQuestionAnalysis",
     "MultipleChoiceQuestionAnalysis",
@@ -19,7 +21,9 @@ __all__ = [
 ]
 
 from .cloze import ClozeQuestion, ClozeQuestionAnalysis
-from .coderunner_sql import CoderunnerQuestionSQL, CoderunnerQuestionSQLAnalysis
+from .coderunner import CoderunnerQuestionAnalysis
+from .coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
+from .coderunner_streaming import CoderunnerStreamingQuestion
 from .drop_down import DropDownQuestionAnalysis
 from .factory import QuestionFactory
 from .missing_words import MissingWordsQuestion, MissingWordsQuestionAnalysis

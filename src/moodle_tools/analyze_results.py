@@ -7,7 +7,7 @@ from io import TextIOBase
 from statistics import median
 
 from moodle_tools.questions.cloze import ClozeQuestionAnalysis
-from moodle_tools.questions.coderunner_sql import CoderunnerQuestionSQLAnalysis
+from moodle_tools.questions.coderunner import CoderunnerQuestionAnalysis
 from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
 from moodle_tools.questions.missing_words import MissingWordsQuestionAnalysis
 from moodle_tools.questions.multiple_choice import MultipleChoiceQuestionAnalysis
@@ -152,7 +152,7 @@ def parse_args() -> argparse.Namespace:
         help="List of coderunner questions",
         action="extend",
         nargs="*",
-        type=CoderunnerQuestionSQLAnalysis,
+        type=CoderunnerQuestionAnalysis,
         default=[],
     )
     args = parser.parse_args()
