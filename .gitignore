@@ -46,3 +46,4 @@ venv/
 pytest.xml
 public/
 /examples/*.xml
+/examples/assets/*.wal
