@@ -14,9 +14,11 @@ from moodle_tools.questions import (
     NumericalQuestion,
     Question,
     TrueFalseQuestion,
+    CoderunnerDQLQuestion,
 )
 
 # Dictionary with a correspondance between input file and tests references
+# TODO: add example/yaml template for general coderunner, coderunner dql, and coderunner streaming
 test_cases = {
     "true_false": ("true-false.yaml", TrueFalseQuestion),
     "multiple_choice": (
@@ -27,6 +29,7 @@ test_cases = {
     "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),
     "missing_words": ("missing-words.yaml", MissingWordsQuestion),
     "cloze": ("cloze.yaml", ClozeQuestion),
+    "sql_dql": ("coderunner-w_connection.yaml",CoderunnerDQLQuestion),
 }
 
 
