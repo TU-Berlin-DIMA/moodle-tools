@@ -252,7 +252,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
         result_schema = result.description
 
         # Grab the ORDER BY statement so that we can get sorting information
-        match = re.search(".*ORDER BY (.*);?", query)
+        match = re.search(".*ORDER BY (.*);?", query, flags=re.IGNORECASE)
         if not match:
             raise ParsingError(
                 f"Could not retrieve the column names from the order by statement from the query "
