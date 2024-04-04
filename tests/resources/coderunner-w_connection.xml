@@ -34,7 +34,7 @@
     <globalextra></globalextra>
     <useace></useace>
     <resultcolumns></resultcolumns>
-    <template>from __future__ import annotations
+    <template><![CDATA[from __future__ import annotations
 
 import os
 import re
@@ -93,7 +93,7 @@ con.close()
 print(SEPARATOR)
 {% endif %}
 {% endfor %}
-</template>
+]]></template>
     <iscombinatortemplate></iscombinatortemplate>
     <allowmultiplestdins></allowmultiplestdins>
     <answer><![CDATA[SELECT Name,
