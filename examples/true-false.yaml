@@ -5,7 +5,7 @@ question: Complete question
 correct_answer: false
 general_feedback: General feedback
 correct_feedback: Correct feedback
-wrong_feedback: Wrong feedback
+incorrect_feedback: Wrong feedback
 ---
 type: true_false
 title: Question title

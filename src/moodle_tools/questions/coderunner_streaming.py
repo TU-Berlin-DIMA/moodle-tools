@@ -96,6 +96,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         return files
 
     def fetch_expected_result(self, test_code: str) -> str:
+        # TODO: Add test
         stdout_capture = io.StringIO()
         eval(self.answer)
         with redirect_stdout(stdout_capture):

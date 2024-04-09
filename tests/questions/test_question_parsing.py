@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from textwrap import dedent
 
@@ -5,7 +6,7 @@ import pytest
 import yaml
 
 from moodle_tools import ParsingError
-from moodle_tools.make_questions import load_questions
+from moodle_tools.make_questions import load_questions, main
 from moodle_tools.questions import (
     ClozeQuestion,
     CoderunnerDQLQuestion,
@@ -139,3 +140,21 @@ class TestGeneralQuestion:
         )
         question_to_test = next(questions)
         assert isinstance(question_to_test, test_data[1])
+
+    def test_all_template_strict_mode(self, capsys: pytest.CaptureFixture[str]) -> None:
+        # Simulate command-line arguments all types in strict mode
+        sys.argv = ["make-questions", "-i", "examples/yaml_templates.yaml"]
+
+        # Call the main function
+        main()
+        captured = capsys.readouterr()
+
+        # Assert the output is as expected
+        assert '<question type="truefalse">' in captured.out
+        assert '<question type="numerical">' in captured.out
+        assert '<question type="mtf">' in captured.out
+        assert '<question type="multichoice">' in captured.out
+        assert '<question type="gapselect">' in captured.out
+        assert '<question type="coderunner">' in captured.out
+        assert '<question type="cloze">' in captured.out
+        assert captured.err == ""

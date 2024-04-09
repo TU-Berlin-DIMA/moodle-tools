@@ -16,13 +16,13 @@ class TrueFalseQuestion(Question):
         grade: float = 1.0,
         general_feedback: str = "",
         correct_feedback: str = "",
-        wrong_feedback: str = "",
+        incorrect_feedback: str = "",
         correct_answer: bool = True,
         **flags: bool,
     ):
         super().__init__(question, title, category, grade, general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
-        self.wrong_feedback = preprocess_text(wrong_feedback, **flags)
+        self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
 
         # Convert boolean answers to strings
         self.correct_answer, self.wrong_answer = (
@@ -33,7 +33,7 @@ class TrueFalseQuestion(Question):
         errors = super().validate()
         if self.correct_answer == self.wrong_answer:
             errors.append("Correct answer is equal to the wrong answer.")
-        if not self.wrong_feedback:
+        if not self.incorrect_feedback:
             errors.append("No feedback for wrong answer provided.")
         return errors
 

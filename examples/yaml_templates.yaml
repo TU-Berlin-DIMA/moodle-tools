@@ -1,0 +1,274 @@
+---
+type: true_false # Mandatory
+category: category/subcategory/true_false # Optional
+title: Question title # Mandatory
+question: Complete question # Mandatory
+correct_answer: false # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+correct_feedback: Correct feedback # Mandatory in strict mode
+incorrect_feedback: Wrong feedback # Mandatory in strict mode
+---
+type: numerical # Mandatory
+category: category/subcategory/numerical # Optional
+title: Numerical question # Mandatory
+question: What is 2 + 2? # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+answers: # Mandatory
+  - answer: 4 # Mandatory
+    tolerance: 0  # Optional
+    points: 100 # Exactly one answer must be 100 points
+    feedback: Feedback for first answer # Mandatory in strict mode
+  - answer: 5 # Mandatory
+    tolerance: 0.1 # Optional
+    points: 50 # Mandatory
+    feedback: 2 + 2 = 5 for some values of 2 # Mandatory in strict mode
+---
+type: multiple_true_false # Mandatory
+category: category/subcategory/true_false # Optional
+title: Title # Mandatory
+question: Simple format # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+answers: # Mandatory
+  - answer: Answer 1 # Mandatory
+    choice: True # Mandatory
+    feedback: None # Mandatory in strict mode
+  - answer: Answer 2 # Mandatory
+    choice: False # Mandatory
+    feedback: None # Mandatory in strict mode
+---
+type: multiple_true_false # Mandatory
+category: category/subcategory/true_false # Optional
+title: Title # Mandatory
+question: Extended format # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+shuffle_answers: False # Optional
+choices: [!!str Yes, !!str No, Maybe] # Optional
+answers: # Mandatory
+  - answer: Answer 1 # Mandatory
+    choice: !!str Yes # Mandatory
+    feedback: Feedback 1 # Mandatory in strict mode
+  - answer: Answer 2 # Mandatory
+    choice: !!str No # Mandatory
+    feedback: Feedback 2 # Mandatory in strict mode
+  - answer: Answer 3 # Mandatory
+    choice: Maybe # Mandatory
+    feedback: Feedback 3 # Mandatory in strict mode
+---
+type: multiple_true_false # Mandatory
+category: category/subcategory/true_false # Optional
+title: Memory hierarchy # Mandatory
+question: For each category, say descending or ascending # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+shuffle_answers: True # Optional
+choices: [Ascending, Descending]  # Optional
+answers: # Mandatory
+  - answer: Cost # Mandatory
+    choice: Ascending # Mandatory
+    feedback: Feedback # Mandatory in strict mode
+  - answer: Latency # Mandatory
+    choice: Descending # Mandatory
+    feedback: Feedback # Mandatory in strict mode
+---
+type: multiple_choice # Mandatory
+category: category/subcategory/multiple_choice # Optional
+title: Question title # Mandatory
+question: Simple format # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+correct_feedback: Your answer is correct. # Mandatory in strict mode
+partially_correct_feedback: Your answer is partially correct. # Mandatory in strict mode
+incorrect_feedback: Your answer is incorrect. # Mandatory in strict mode
+answers: # Mandatory
+  - answer: Correct answer 1 # Mandatory
+    points: 100 # Mandatory
+    feedback: Feedback for correct answer # Mandatory in strict mode
+  - answer: Wrong answer 1 # Mandatory
+    feedback: Feedback for wrong answer # Mandatory in strict mode
+  - answer: Wrong answer 2 # Mandatory
+    feedback: Feedback for wrong answer # Mandatory in strict mode
+---
+type: multiple_choice # Mandatory
+category: category/subcategory/multiple_choice # Optional
+title: Question title # Mandatory
+question: Extended format # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+shuffle_answers: True # Optional
+answers: # Mandatory
+  - answer: Correct answer # Mandatory
+    points: 100 # Mandatory
+    feedback: Feedback for option 1 # Mandatory in strict mode
+  - answer: Partial answer # Mandatory
+    points: 50 # Mandatory
+    feedback: Feedback for option 2 # Mandatory in strict mode
+  - answer: Wrong answer # Mandatory
+    points: 0 # Mandatory
+    feedback: Feedback for option 3 # Mandatory in strict mode
+---
+type: missing_words # Mandatory
+category: category/subcategory/missing_words # Optional
+title: Missing words question # Mandatory
+question: |- # Mandatory
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+general_feedback: General feedback # Mandatory in strict mode
+correct_feedback: Correct feedback # Mandatory in strict mode
+partial_feedback: Partial feedback # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback # Mandatory in strict mode
+options: # Mandatory
+  - answer: SELECT # Mandatory
+    group: 1 # Mandatory
+  - answer: FROM # Mandatory
+    group: 1 # Mandatory
+  - answer: WHERE # Mandatory
+    group: 2 # Mandatory
+  - answer: PROJECT # Mandatory
+    group: 1 # Mandatory
+  - answer: SIGMA # Mandatory
+    group: 2 # Mandatory
+---
+type: missing_words # Mandatory
+category: category/subcategory/missing_words # Optional
+title: Simple missing words question # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+correct_feedback: Correct feedback # Mandatory in strict mode
+partial_feedback: Partial feedback # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback # Mandatory in strict mode
+question: |- # Mandatory
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+options: # Mandatory
+  - answer: SELECT # Mandatory
+    group: 1 # Mandatory
+  - answer: FROM # Mandatory
+    group: 1 # Mandatory
+  - answer: WHERE # Mandatory
+    group: 1 # Mandatory
+---
+type: sql_dql # Mandatory
+category: category/subcategory/coderunner # Optional
+title: Sample SQL Coderunner Question # Mandatory
+question: |- # Mandatory
+  Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+
+  Die Namen der teuersten Produkte und deren Preis?
+grade: 2.0 # Optional
+general_feedback: A query was submitted # Mandatory in strict mode
+database_path: ./examples/assets/eshop.db # Mandatory
+answer: |- # Mandatory
+  SELECT Name, Preis
+  FROM Produkt
+  WHERE Preis = (
+    SELECT MAX(Preis)
+    FROM Produkt
+  )
+  ORDER BY Name ASC;
+result: |- # Mandatory
+  ┌───────────────┬───────┐
+  │     Name      │ Preis │
+  │    varchar    │ int64 │
+  ├───────────────┼───────┤
+  │ Rolex Daytona │ 20000 │
+  └───────────────┴───────┘
+testcases: # Mandatory
+  - code: |-
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);
+    result: |-
+      ┌───────────────────────────┬───────┐
+      │           Name            │ Preis │
+      │          varchar          │ int64 │
+      ├───────────────────────────┼───────┤
+      │ BMW                       │ 50000 │
+      │ Pokemon Glurak Holo Karte │ 50000 │
+      └───────────────────────────┴───────┘
+    hiderestiffail: true
+check_results: false
+database_connection: false
+---
+type: sql_dql # Mandatory
+category: category/subcategory/coderunner
+title: Sample SQL Coderunner Question # Mandatory
+question: |- # Mandatory
+  Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+
+  Die Namen der teuersten Produkte und deren Preis?
+grade: 1.5
+general_feedback: A query was submitted # Mandatory in strict mode
+database_path: ./examples/assets/eshop.db # Mandatory
+answer: |- # Mandatory
+  SELECT Name, Preis
+  FROM Produkt
+  WHERE Preis = (
+    SELECT MAX(Preis)
+    FROM Produkt
+  )
+  ORDER BY Name ASC;
+result: |- # Mandatory
+  ┌───────────────┬───────┐
+  │     Name      │ Preis │
+  │    varchar    │ int64 │
+  ├───────────────┼───────┤
+  │ Rolex Daytona │ 20000 │
+  └───────────────┴───────┘
+testcases: # Mandatory
+  - code: |-
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);
+    result: |-
+      ┌───────────────────────────┬───────┐
+      │           Name            │ Preis │
+      │          varchar          │ int64 │
+      ├───────────────────────────┼───────┤
+      │ BMW                       │ 50000 │
+      │ Pokemon Glurak Holo Karte │ 50000 │
+      └───────────────────────────┴───────┘
+  - code: |-
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (45678, 'Rolex Daytona', 30000);
+    result: |-
+      ┌───────────────┬───────┐
+      │     Name      │ Preis │
+      │    varchar    │ int64 │
+      ├───────────────┼───────┤
+      │ Rolex Daytona │ 30000 │
+      └───────────────┴───────┘
+    grade: 4.0
+    hidden: false
+check_results: true # Optional
+database_connection: true # Optional
+---
+type: cloze # Mandatory
+category: category/subcategory/cloze # Optional
+title: Numerical cloze question # Mandatory
+question: >- # Mandatory
+  <p>
+  Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
+  </p>
+general_feedback: General feedback # Mandatory in strict mode
+---
+type: cloze # Mandatory
+category: category/subcategory/cloze # Optional
+title: Numerical cloze question with general feedback # Mandatory
+question: >- # Mandatory
+  <p>
+  Enter the correct value:
+  {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
+  </p>
+general_feedback: General feedback # Mandatory in strict mode
+---
+type: cloze # Mandatory
+category: category/subcategory/cloze # Optional
+title: Multiple choice cloze question # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+question: >- # Mandatory
+  <p>
+  Select the correct value: {1:MULTICHOICE:=Cache Hit~Cache Miss}
+  </p>
+---
+type: cloze # Mandatory
+category: category/subcategory/cloze # Optional
+title: Multiple choice cloze question with detailed feedback # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+question: >- # Mandatory
+  <p>
+  Select the correct value:
+  {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
+  </p>
