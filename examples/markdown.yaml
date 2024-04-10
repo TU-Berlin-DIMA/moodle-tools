@@ -1,6 +1,7 @@
 ---
 type: multiple_choice
 title: Multiple choice question with Markdown
+markdown: true
 question: |-
   # Really important question!
 

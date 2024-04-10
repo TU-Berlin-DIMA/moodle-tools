@@ -144,6 +144,7 @@ options: # Mandatory
 type: sql_dql # Mandatory
 category: category/subcategory/coderunner # Optional
 title: Sample SQL Coderunner Question # Mandatory
+markdown: true # Optional
 question: |- # Mandatory
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
 
@@ -179,18 +180,19 @@ testcases: # Mandatory
       │ BMW                       │ 50000 │
       │ Pokemon Glurak Holo Karte │ 50000 │
       └───────────────────────────┴───────┘
-    hiderestiffail: true
-check_results: false
-database_connection: false
+    hiderestiffail: true # Optional
+check_results: false # Optional
+database_connection: false # Optional
 ---
 type: sql_dql # Mandatory
 category: category/subcategory/coderunner
 title: Sample SQL Coderunner Question # Mandatory
+markdown: true # Mandatory
 question: |- # Mandatory
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
 
   Die Namen der teuersten Produkte und deren Preis?
-grade: 1.5
+grade: 1.5 # Optional
 general_feedback: A query was submitted # Mandatory in strict mode
 database_path: ./examples/assets/eshop.db # Mandatory
 answer: |- # Mandatory
@@ -230,8 +232,8 @@ testcases: # Mandatory
       ├───────────────┼───────┤
       │ Rolex Daytona │ 30000 │
       └───────────────┴───────┘
-    grade: 4.0
-    hidden: false
+    grade: 4.0 # Optional
+    hidden: false # Optional
 check_results: true # Optional
 database_connection: true # Optional
 ---
@@ -272,3 +274,56 @@ question: >- # Mandatory
   Select the correct value:
   {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
   </p>
+---
+type: multiple_choice
+category: category/subcategory/multiple_choice
+title: Multiple choice question with Markdown
+general_feedback: General feedback
+markdown: true
+skip_validation: true
+table_border: true
+question: |-
+  # Really important question!
+
+  Please take a look at the rectangle below:
+
+  ![Blue rectangle PNG](examples/assets/blue-rectangle.png)
+
+       Code
+
+  **What is its color?**
+answers:
+  - answer: |-
+      The rectangle is *blue*, like the one below.
+
+      ![Blue rectangle SVG](examples/assets/blue-rectangle.svg)
+  - answer: The rectangle is yellow.
+  - answer: |-
+      ```
+      This is some code.
+      ```
+    points: 0
+  - answer: |-
+      <span style="text-decoration:underline;">Underlined text in HTML</span>
+  - answer: |-
+      > Block quote
+
+      This was a block quote
+  - answer: |-
+      ## Ordered list
+
+      1. One
+      2. Two
+      3. Three
+
+      ## Unordered list
+
+      - One
+      - Two
+      - Three
+
+      | Col1 | Col2 |
+      |------|------|
+      | 1    | 2    |
+  - answer: |-
+      This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).

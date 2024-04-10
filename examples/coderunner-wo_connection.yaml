@@ -2,6 +2,7 @@
 type: sql_dql
 category: sql-dql
 title: Sample SQL Coderunner Question
+markdown: true
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
 

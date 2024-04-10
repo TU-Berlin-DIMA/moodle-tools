@@ -81,7 +81,6 @@ class TestCoderunnerQuestionSQL:
             "-o",
             str(output_file_path),
             "-s",
-            "-m",
         ]
 
         # Call the main function
@@ -111,7 +110,6 @@ class TestCoderunnerQuestionSQL:
             "-o",
             str(output_file_path),
             "-s",
-            "-m",
         ]
 
         # Call the main function

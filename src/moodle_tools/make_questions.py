@@ -35,7 +35,12 @@ def load_questions(
         ParsingError: If question type or title are not provided.
     """
     for document in documents:
-        document.update({"table_border": add_table_border, "markdown": parse_markdown})
+        if "table_border" not in document:
+            document.update({"table_border": add_table_border})
+        if "markdown" not in document:
+            document.update({"markdown": parse_markdown})
+        if "skip_validation" in document:
+            strict_validation = not document["skip_validation"]
         if "type" in document:
             question_type = document["type"]
         else:
@@ -123,21 +128,9 @@ def parse_args() -> argparse.Namespace:
         "-s", "--skip-validation", help="Skip strict validation", action="store_true"
     )
     parser.add_argument(
-        "-m",
-        "--parse-markdown",
-        help="Parse question and answer text as Markdown",
-        action="store_true",
-    )
-    parser.add_argument(
         "-q",
         "--add-question-index",
         help="Extend each question title with an increasing number",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-t",
-        "--add-table-border",
-        help="Put a 1 Pixel solid black border around each table cell",
         action="store_true",
     )
 
@@ -156,9 +149,7 @@ def main() -> None:
     question_xml = generate_moodle_questions(
         file=args.input,
         skip_validation=args.skip_validation,
-        parse_markdown=args.parse_markdown,
         add_question_index=args.add_question_index,
-        add_table_border=args.add_table_border,
     )
     # TODO: Refactor this print statement
     print(question_xml, file=args.output)

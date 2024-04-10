@@ -11,7 +11,7 @@ class TestMakeQuestionArguments:
         sys.argv = ["make-questions", "-h"]
 
         expected_output = """
-        usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-s] [-m] [-q] [-t]
+        usage: make-questions [-h] [-i INPUT] [-o OUTPUT] [-s] [-q]
         """.strip()
 
         # Call the main function
