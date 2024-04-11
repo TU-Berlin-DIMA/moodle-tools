@@ -242,6 +242,7 @@ database_connection: true  # Optional
 type: cloze  # Mandatory
 category: category/subcategory/cloze  # Optional
 title: Numerical cloze question  # Mandatory
+markdown: false   # Mandatory
 question: >-  # Mandatory
   <p>
   Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456}
@@ -251,16 +252,18 @@ general_feedback: General feedback  # Mandatory in strict mode
 type: cloze  # Mandatory
 category: category/subcategory/cloze  # Optional
 title: Numerical cloze question with general feedback  # Mandatory
+markdown: false   # Mandatory
 question: >-  # Mandatory
   <p>
   Enter the correct value:
-  {1:NUMERICAL:=5.17:0.01 #This is correct~%0%123456:10000000 #Feedback for (most) wrong answers.}
+  {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
 general_feedback: General feedback  # Mandatory in strict mode
 ---
 type: cloze  # Mandatory
 category: category/subcategory/cloze  # Optional
 title: Multiple choice cloze question  # Mandatory
+markdown: false   # Mandatory
 general_feedback: General feedback  # Mandatory in strict mode
 question: >-  # Mandatory
   <p>
@@ -271,10 +274,11 @@ type: cloze  # Mandatory
 category: category/subcategory/cloze  # Optional
 title: Multiple choice cloze question with detailed feedback  # Mandatory
 general_feedback: General feedback  # Mandatory in strict mode
+markdown: false   # Mandatory
 question: >-  # Mandatory
   <p>
   Select the correct value:
-  {1:MULTICHOICE:=Cache Hit #Correct answer~Cache Miss #Wrong answer}
+  {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
   </p>
 ---
 type: multiple_choice   # Mandatory
