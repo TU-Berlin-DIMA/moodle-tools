@@ -8,7 +8,7 @@
         <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01~%0%123456} </p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -23,7 +23,7 @@
         <text><![CDATA[<p> Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.} </p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>

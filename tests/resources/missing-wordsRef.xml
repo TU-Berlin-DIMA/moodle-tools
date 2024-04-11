@@ -5,10 +5,10 @@
         <text>Missing words question</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]]</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -18,13 +18,13 @@
         false
     </shuffleanswers>
     <correctfeedback format="html">
-        <text><![CDATA[Correct feedback]]></text>
+        <text><![CDATA[<p>Correct feedback</p>]]></text>
     </correctfeedback>
     <partiallycorrectfeedback format="html">
-        <text><![CDATA[Partial feedback]]></text>
+        <text><![CDATA[<p>Partial feedback</p>]]></text>
     </partiallycorrectfeedback>
     <incorrectfeedback format="html">
-        <text><![CDATA[Incorrect feedback]]></text>
+        <text><![CDATA[<p>Incorrect feedback</p>]]></text>
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
@@ -53,7 +53,7 @@
         <text>Simple missing words question</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[The main clauses of a SQL query are: [[1]] [[2]] [[3]]]]></text>
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]]</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>

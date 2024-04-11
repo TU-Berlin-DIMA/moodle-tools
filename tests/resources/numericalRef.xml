@@ -5,10 +5,10 @@
         <text>Numerical question</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[What is 2 + 2?]]></text>
+        <text><![CDATA[<p>What is 2 + 2?</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -38,7 +38,7 @@
         <text>Simple numerical</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[What is 2 + 2?]]></text>
+        <text><![CDATA[<p>What is 2 + 2?</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>

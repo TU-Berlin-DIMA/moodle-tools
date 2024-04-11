@@ -5,10 +5,10 @@
         <text>Question title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Complete question]]></text>
+        <text><![CDATA[<p>Complete question</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -17,13 +17,13 @@
     <answer fraction="0" format="html">
         <text><![CDATA[true]]></text>
         <feedback format="html">
-            <text><![CDATA[Wrong feedback]]></text>
+            <text><![CDATA[<p>Wrong feedback</p>]]></text>
         </feedback>
     </answer>
     <answer fraction="100" format="html">
         <text><![CDATA[false]]></text>
         <feedback format="html">
-            <text><![CDATA[Correct feedback]]></text>
+            <text><![CDATA[<p>Correct feedback</p>]]></text>
         </feedback>
     </answer>
 </question>
@@ -32,7 +32,7 @@
         <text>Question title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Minimal true question]]></text>
+        <text><![CDATA[<p>Minimal true question</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>
@@ -59,7 +59,7 @@
         <text>Question title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Minimal false question]]></text>
+        <text><![CDATA[<p>Minimal false question</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>

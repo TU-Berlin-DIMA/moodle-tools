@@ -67,9 +67,9 @@ def load_questions(
 def generate_moodle_questions(
     file: TextIOBase,
     skip_validation: bool = False,
-    parse_markdown: bool = False,
+    parse_markdown: bool = True,
     add_question_index: bool = False,
-    add_table_border: bool = False,
+    add_table_border: bool = True,
 ) -> str:
     """Generate Moodle XML from a file with a list of YAML documents.
 

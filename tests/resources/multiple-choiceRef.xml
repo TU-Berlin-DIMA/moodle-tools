@@ -5,7 +5,7 @@
         <text>Question title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Simple format]]></text>
+        <text><![CDATA[<p>Simple format</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>
@@ -21,29 +21,29 @@
     <answernumbering>none</answernumbering>
     <showstandardinstruction>1</showstandardinstruction>
     <correctfeedback format="html">
-        <text><![CDATA[Your answer is correct.]]></text>
+        <text><![CDATA[<p>Your answer is correct.</p>]]></text>
     </correctfeedback>
     <partiallycorrectfeedback format="html">
-        <text><![CDATA[Your answer is partially correct.]]></text>
+        <text><![CDATA[<p>Your answer is partially correct.</p>]]></text>
     </partiallycorrectfeedback>
     <incorrectfeedback format="html">
-        <text><![CDATA[Your answer is incorrect.]]></text>
+        <text><![CDATA[<p>Your answer is incorrect.</p>]]></text>
     </incorrectfeedback>
     <shownumcorrect/>
     <answer fraction="100" format="html">
-        <text><![CDATA[Correct answer 1]]></text>
+        <text><![CDATA[<p>Correct answer 1</p>]]></text>
         <feedback format="html">
             <text></text>
         </feedback>
     </answer>
     <answer fraction="0" format="html">
-        <text><![CDATA[Wrong answer 1]]></text>
+        <text><![CDATA[<p>Wrong answer 1</p>]]></text>
         <feedback format="html">
             <text></text>
         </feedback>
     </answer>
     <answer fraction="0" format="html">
-        <text><![CDATA[Wrong answer 2]]></text>
+        <text><![CDATA[<p>Wrong answer 2</p>]]></text>
         <feedback format="html">
             <text></text>
         </feedback>
@@ -54,10 +54,10 @@
         <text>Question title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Extended format]]></text>
+        <text><![CDATA[<p>Extended format</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -70,29 +70,29 @@
     <answernumbering>none</answernumbering>
     <showstandardinstruction>1</showstandardinstruction>
     <correctfeedback format="html">
-        <text><![CDATA[Your answer is correct.]]></text>
+        <text><![CDATA[<p>Your answer is correct.</p>]]></text>
     </correctfeedback>
     <partiallycorrectfeedback format="html">
-        <text><![CDATA[Your answer is partially correct.]]></text>
+        <text><![CDATA[<p>Your answer is partially correct.</p>]]></text>
     </partiallycorrectfeedback>
     <incorrectfeedback format="html">
-        <text><![CDATA[Your answer is incorrect.]]></text>
+        <text><![CDATA[<p>Your answer is incorrect.</p>]]></text>
     </incorrectfeedback>
     <shownumcorrect/>
     <answer fraction="100" format="html">
-        <text><![CDATA[Correct answer]]></text>
+        <text><![CDATA[<p>Correct answer</p>]]></text>
         <feedback format="html">
             <text><![CDATA[Feedback for option 1]]></text>
         </feedback>
     </answer>
     <answer fraction="50" format="html">
-        <text><![CDATA[Partial answer]]></text>
+        <text><![CDATA[<p>Partial answer</p>]]></text>
         <feedback format="html">
             <text><![CDATA[Feedback for option 2]]></text>
         </feedback>
     </answer>
     <answer fraction="0" format="html">
-        <text><![CDATA[Wrong answer]]></text>
+        <text><![CDATA[<p>Wrong answer</p>]]></text>
         <feedback format="html">
             <text><![CDATA[Feedback for option 3]]></text>
         </feedback>

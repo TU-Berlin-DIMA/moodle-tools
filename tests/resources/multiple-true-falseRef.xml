@@ -5,7 +5,7 @@
         <text>Title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Simple format]]></text>
+        <text><![CDATA[<p>Simple format</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>
@@ -25,7 +25,7 @@
     <answernumbering>none</answernumbering>
         <row number="1">
             <optiontext format="html">
-                <text><![CDATA[Answer 1]]></text>
+                <text><![CDATA[<p>Answer 1</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text></text>
@@ -33,7 +33,7 @@
         </row>
         <row number="2">
             <optiontext format="html">
-                <text><![CDATA[Answer 2]]></text>
+                <text><![CDATA[<p>Answer 2</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text></text>
@@ -75,10 +75,10 @@
         <text>Title</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[Extended format]]></text>
+        <text><![CDATA[<p>Extended format</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
-        <text><![CDATA[General feedback]]></text>
+        <text><![CDATA[<p>General feedback</p>]]></text>
     </generalfeedback>
     <idnumber></idnumber>
     <defaultgrade>1.0</defaultgrade>
@@ -95,7 +95,7 @@
     <answernumbering>none</answernumbering>
         <row number="1">
             <optiontext format="html">
-                <text><![CDATA[Answer 1]]></text>
+                <text><![CDATA[<p>Answer 1</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text><![CDATA[Feedback 1]]></text>
@@ -103,7 +103,7 @@
         </row>
         <row number="2">
             <optiontext format="html">
-                <text><![CDATA[Answer 2]]></text>
+                <text><![CDATA[<p>Answer 2</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text><![CDATA[Feedback 2]]></text>
@@ -111,7 +111,7 @@
         </row>
         <row number="3">
             <optiontext format="html">
-                <text><![CDATA[Answer 3]]></text>
+                <text><![CDATA[<p>Answer 3</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text><![CDATA[Feedback 3]]></text>
@@ -183,7 +183,7 @@
         <text>Memory hierarchy</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[For each category, say descending or ascending]]></text>
+        <text><![CDATA[<p>For each category, say descending or ascending</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>
@@ -203,7 +203,7 @@
     <answernumbering>none</answernumbering>
         <row number="1">
             <optiontext format="html">
-                <text><![CDATA[Cost]]></text>
+                <text><![CDATA[<p>Cost</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text></text>
@@ -211,7 +211,7 @@
         </row>
         <row number="2">
             <optiontext format="html">
-                <text><![CDATA[Latency]]></text>
+                <text><![CDATA[<p>Latency</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
                 <text></text>
