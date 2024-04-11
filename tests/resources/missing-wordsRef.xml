@@ -14,7 +14,9 @@
     <defaultgrade>1.0</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
-    <shuffleanswers>1</shuffleanswers>
+    <shuffleanswers>
+        false
+    </shuffleanswers>
     <correctfeedback format="html">
         <text><![CDATA[Correct feedback]]></text>
     </correctfeedback>
@@ -60,7 +62,9 @@
     <defaultgrade>1.0</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
-    <shuffleanswers>1</shuffleanswers>
+    <shuffleanswers>
+        false
+    </shuffleanswers>
     <correctfeedback format="html">
         <text></text>
     </correctfeedback>

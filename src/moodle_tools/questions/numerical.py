@@ -33,9 +33,6 @@ class NumericalQuestion(Question):
 
     def validate(self) -> list[str]:
         errors = super().validate()
-        num_full_points: int = len(list(filter(lambda x: x["points"] == 100, self.answers)))
-        if num_full_points != 1:
-            errors.append("Exactly one answer must have 100 points.")
         for answer in self.answers:
             if "feedback" not in answer and answer["points"] != 100:
                 errors.append(f"The incorrect answer '{answer['answer']}' has no feedback.")
