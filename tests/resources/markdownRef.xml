@@ -87,7 +87,7 @@
         </feedback>
     </answer>
     <answer fraction="0" format="html">
-        <text><![CDATA[<p>This is a formula: ( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 ).</p>]]></text>
+        <text><![CDATA[<p>This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).</p>]]></text>
         <feedback format="html">
             <text></text>
         </feedback>

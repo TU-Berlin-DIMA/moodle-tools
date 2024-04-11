@@ -42,4 +42,4 @@ answers:
       - Two
       - Three
   - answer: |-
-      This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).
+      This is a formula: \\( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \\).
