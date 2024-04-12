@@ -253,27 +253,24 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
 
         # Grab the ORDER BY statement so that we can get sorting information
         match = re.search(".*ORDER BY (.*);?", query, flags=re.IGNORECASE)
-        if not match:
-            raise ParsingError(
-                f"Could not retrieve the column names from the order by statement from the query "
-                f"{query}!"
-            )
-
-        # Splitting the order on "," and on " " to get the column name and the order modifier
-        order_by_statements = match.group(1).replace(";", "").split(",")
         column_orderings = {}
-        for item in order_by_statements:
-            item_split = item.strip().split(" ")
-            column_orderings.update({item_split[0]: item_split[1]})
+        if match:
+            # Splitting the order on "," and on " " to get the column name and the order modifier
+            order_by_statements = match.group(1).replace(";", "").split(",")
+            for item in order_by_statements:
+                item_split = item.strip().split(" ")
+                if len(item_split) == 1:
+                    item_split.append("ASC")
+                column_orderings.update({item_split[0]: item_split[1]})
 
         # Creating the output schema string, appending it to the question_text, and return it
-        asc_desc_map = {"ASC": "↑", "DESC": "↓"}
+        asc_desc_map = {"asc": "↑", "desc": "↓"}
         output_elements: list[str] = []
         for column in result_schema:
             column_name = column[0]
             if column_name in column_orderings:
                 output_elements.append(
-                    f"{column_name} ({asc_desc_map[column_orderings[column_name]]})"
+                    f"{column_name} ({asc_desc_map[column_orderings[column_name].lower()]})"
                 )
             else:
                 output_elements.append(column_name)

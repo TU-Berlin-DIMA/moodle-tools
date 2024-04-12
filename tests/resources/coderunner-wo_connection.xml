@@ -67,7 +67,7 @@ if db_working != ":memory:":
 
 testcode = """{{ TEST.testcode | e('py') }}"""
 extra = """{{ TEST.extra | e('py') }}"""
-con = duckdb.conect(db_working, config={"temp_directory": os.getcwd()})
+con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
 # Execute database modification
 try:
