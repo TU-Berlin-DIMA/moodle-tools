@@ -3,7 +3,11 @@ from __future__ import annotations
 import os
 import re
 import shutil
+
 import duckdb
+
+MAX_ROWS = 50
+MAX_PRINT_WIDTH = 500
 
 
 def remove_comments(s: str) -> str:
@@ -52,45 +56,35 @@ extra = """{{ TEST.extra | e('py') }}"""
 con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
 # Execute student answer
-try:
-    statements = [s for s in student_answer.split(";") if s.strip()]
-    for query in statements:
-        con.sql(query)
-except Exception as e:
-    raise e
+con.sql(student_answer)
 
 # Execute test code
 statements = [s for s in testcode.split(";") if s.strip()]
-for query in statements:
+for statement in statements:
     try:
-        res = con.sql(query)
-        print(res)
-    except (
-        duckdb.CastException,
-        duckdb.CatalogException,
-        duckdb.ConstraintException,
-        duckdb.ConversionException,
-        duckdb.ParserException,
-    ) as e:
+        res = con.sql(statement)
+        res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+    except duckdb.Error as e:
+        # TODO: Is this if-block still necessary?
         if isinstance(e, duckdb.CastException):
             if (
                 "CHECK constraint" in str(e)
                 or "FOREIGN KEY" in str(e)
                 or "UNIQUE constraint" in str(e)
-            ) and "INTO" in query:
-                into_idx = query.find("INTO")
-                table_name = query[(into_idx + 5) :].split(" ")[0]
+            ) and "INTO" in statement:
+                into_idx = statement.find("INTO")
+                table_name = statement[(into_idx + 5) :].split(" ")[0]
                 print(f"Table {table_name}: {str(e).split(':')[0]}")
             # Printing attribute names causes issues when students order compound
             # primary keys different than the reference solution.
             #
-            # elif "INTO" in query:
-            #     table_name_start = query.find("INTO")
-            #     table_name = query[(table_name_start + 5):].split(" ")[0]
+            # elif "INTO" in statement:
+            #     table_name_start = statement.find("INTO")
+            #     table_name = statement[(table_name_start + 5):].split(" ")[0]
             #     attribute = re.split(" |,|;", str(e)[str(e).find(table_name):])[0]
             #     print(f"{attribute}: {str(e).split(':')[0]}")
-            else:
-                print(e)
+        else:
+            print(e)
     except Exception as e:
         raise (e)
 

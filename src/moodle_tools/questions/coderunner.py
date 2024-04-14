@@ -1,4 +1,4 @@
-"""This module implements SQL DQL questions in Moodle CodeRunner."""
+"""This module implements the abstract base for questions in Moodle CodeRunner."""
 
 import abc
 from pathlib import Path
@@ -49,12 +49,11 @@ class CoderunnerQuestion(Question):
         question: str,
         title: str,
         answer: str,
+        testcases: list[Testcase],
         category: str | None = None,
         grade: float = 1.0,
         general_feedback: str = "",
-        result: str | None = None,
         answer_preload: str = "",
-        testcases: list[Testcase] | None = None,
         all_or_nothing: bool = True,
         check_results: bool = False,
         **flags: bool,
@@ -65,12 +64,11 @@ class CoderunnerQuestion(Question):
             question: The question text displayed to students.
             title: Title of the question.
             answer: The piece of code that, when executed, leads to the correct result.
+            testcases: List of testcases for checking the student answer.
             category: The category of the question.
             grade: The total number of points of the question.
             general_feedback: Feedback that is displayed once the quiz has closed.
-            result: The expected result of the correct answer.
             answer_preload: Text that is preloaded into the answer box.
-            testcases: List of testcases for checking the student answer.
             all_or_nothing: If True, the student must pass all test cases to receive any
                 points. If False, the student gets partial credit for each test case passed.
             check_results: If testcase_results are provided, run the reference solution and check
@@ -88,35 +86,32 @@ class CoderunnerQuestion(Question):
         ) as file:
             self.test_logic = file.read()
 
-        # Parameter validation
-        if check_results and (
-            result is None
-            or (testcases and any("result" not in testcase for testcase in testcases))
-        ):
-            raise ParsingError(
-                "You must provide a result for each testcase if you set check_results to True."
-            )
-
         # Execute test cases and fetch results
         self.testcases: list[Testcase] = []
-        if testcases is not None:
-            for i, testcase in enumerate(testcases):
-                if "code" not in testcase or testcase["code"] == "":
-                    raise ParsingError("A testcase must include code to execute.")
-                if "result" not in testcase:
-                    testcase["result"] = self.fetch_expected_result(testcase["code"])
-                if "grade" not in testcase:
-                    testcase["grade"] = 1.0
-                if "hiderestiffail" not in testcase:
-                    testcase["hiderestiffail"] = False
-                if "description" not in testcase:
-                    testcase["description"] = f"Testfall {i}"
-                if "hidden" not in testcase or testcase["hidden"] is False:
-                    testcase["show"] = "SHOW"
-                else:
-                    testcase["show"] = "HIDE"
+        for i, testcase in enumerate(testcases):
+            if "code" not in testcase:
+                raise ParsingError(
+                    "A testcase must include the key code. Leave it empty if no changes are "
+                    "needed."
+                )
+            if "result" not in testcase:
+                if check_results:
+                    raise ParsingError(
+                        "You must provide a result for each test case if check_results is True."
+                    )
+                testcase["result"] = self.fetch_expected_result(testcase["code"])
+            if "grade" not in testcase:
+                testcase["grade"] = 1.0
+            if "hiderestiffail" not in testcase:
+                testcase["hiderestiffail"] = False
+            if "description" not in testcase:
+                testcase["description"] = f"Testfall {i}"
+            if "hidden" not in testcase or testcase["hidden"] is False:
+                testcase["show"] = "SHOW"
+            else:
+                testcase["show"] = "HIDE"
 
-                self.testcases.append(testcase)
+            self.testcases.append(testcase)
 
     @property
     @abc.abstractmethod

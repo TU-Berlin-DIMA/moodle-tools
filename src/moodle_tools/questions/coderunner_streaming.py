@@ -1,3 +1,5 @@
+"""This module implements ISDA Streaming questions in Moodle CodeRunner."""
+
 import inspect
 import io
 from base64 import b64encode
@@ -22,13 +24,12 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         question: str,
         title: str,
         answer: str,
+        testcases: list[Testcase],
         input_stream: str | Path,
         category: str | None = None,
         grade: float = 1,
         general_feedback: str = "",
-        result: str | None = None,
         answer_preload: str = "",
-        testcases: list[Testcase] | None = None,
         all_or_nothing: bool = True,
         check_results: bool = False,
         **flags: bool,
@@ -39,31 +40,30 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             question: The question text displayed to students.
             title: Title of the question.
             answer: The piece of code that, when executed, leads to the correct result.
+            testcases: List of testcases for checking the student answer.
             input_stream: Path to a CSV file that simulates the input data stream.
             category: The category of the question.
             grade: The total number of points of the question.
             general_feedback: Feedback that is displayed once the quiz has closed.
-            result: The expected result of the correct answer.
             answer_preload: Text that is preloaded into the answer box.
-            testcases: List of testcases for checking the student answer.
             all_or_nothing: If True, the student must pass all test cases to receive any
                 points. If False, the student gets partial credit for each test case passed.
             check_results: If True, the expected results are checked against the provided answer
                 and testcases.
             **flags: Additional flags for the question.
         """
+        # pylint: disable=duplicate-code
         super().__init__(
-            question,
-            title,
-            answer,
-            category,
-            grade,
-            general_feedback,
-            result,
-            answer_preload,
-            testcases,
-            all_or_nothing,
-            check_results,
+            question=question,
+            title=title,
+            answer=answer,
+            testcases=testcases,
+            category=category,
+            grade=grade,
+            general_feedback=general_feedback,
+            answer_preload=answer_preload,
+            all_or_nothing=all_or_nothing,
+            check_results=check_results,
             **flags,
         )
         self.input_stream = Path(input_stream)

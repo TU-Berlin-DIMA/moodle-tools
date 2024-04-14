@@ -3,7 +3,11 @@ from __future__ import annotations
 import os
 import re
 import shutil
+
 import duckdb
+
+MAX_ROWS = 50
+MAX_PRINT_WIDTH = 500
 
 # Use Twig to get students answer
 student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
@@ -35,23 +39,16 @@ extra = """{{ TEST.extra | e('py') }}"""
 con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
 # Execute database modification
-try:
-    statements = [s for s in testcode.split(";") if s.strip()]
-    for query in statements:
-        con.sql(query)
-except Exception as e:
-    raise e
+con.sql(testcode)
 
 # Execute student answer
 try:
-    statements = [s for s in student_answer.split(";") if s.strip()]
-    for query in statements:
-        res = con.sql(query)
-        print(res)
+    res = con.sql(student_answer)
+    res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS) if res else print(res)
 except Exception as e:
     raise e
-
-con.close()
+finally:
+    con.close()
 
 {% if not loop.last %}
 print(SEPARATOR)

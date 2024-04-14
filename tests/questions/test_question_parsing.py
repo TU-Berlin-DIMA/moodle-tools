@@ -8,13 +8,13 @@ from moodle_tools import ParsingError
 from moodle_tools.make_questions import load_questions
 from moodle_tools.questions import (
     ClozeQuestion,
+    CoderunnerDQLQuestion,
     MissingWordsQuestion,
     MultipleChoiceQuestion,
     MultipleTrueFalseQuestion,
     NumericalQuestion,
     Question,
     TrueFalseQuestion,
-    CoderunnerDQLQuestion,
 )
 
 # Dictionary with a correspondance between input file and tests references
@@ -29,7 +29,7 @@ test_cases = {
     "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),
     "missing_words": ("missing-words.yaml", MissingWordsQuestion),
     "cloze": ("cloze.yaml", ClozeQuestion),
-    "sql_dql": ("coderunner-w_connection.yaml",CoderunnerDQLQuestion),
+    "sql_dql": ("coderunner-w_connection.yaml", CoderunnerDQLQuestion),
 }
 
 

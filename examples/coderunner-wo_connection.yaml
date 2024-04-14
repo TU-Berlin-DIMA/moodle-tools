@@ -17,14 +17,15 @@ answer: |-
     FROM Produkt
   )
   ORDER BY Name ASC;
-result: |-
-  ┌───────────────┬───────┐
-  │     Name      │ Preis │
-  │    varchar    │ int64 │
-  ├───────────────┼───────┤
-  │ Rolex Daytona │ 20000 │
-  └───────────────┴───────┘
 testcases:
+  - code: ""
+    result: |-
+      ┌───────────────┬───────┐
+      │     Name      │ Preis │
+      │    varchar    │ int64 │
+      ├───────────────┼───────┤
+      │ Rolex Daytona │ 20000 │
+      └───────────────┴───────┘
   - code: |-
       INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
       INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
