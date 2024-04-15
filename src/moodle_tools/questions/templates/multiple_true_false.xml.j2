@@ -5,8 +5,7 @@
         <text>subpoints</text>
     </scoringmethod>
     <shuffleanswers>
-        {# Can this but "1" or "true"? We should make it consistent. #}
-        {{ "true" if shuffle_answers == true else "false" }}
+        {{ "1" if shuffle_answers else "0" }}
     </shuffleanswers>
     <numberofrows>{{ answers|length }}</numberofrows>
     <numberofcolumns>{{ choices|length }}</numberofcolumns>

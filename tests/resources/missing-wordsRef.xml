@@ -15,7 +15,7 @@
     <penalty>0</penalty>
     <hidden>0</hidden>
     <shuffleanswers>
-        false
+        1
     </shuffleanswers>
     <correctfeedback format="html">
         <text><![CDATA[<p>Correct feedback</p>]]></text>
@@ -63,7 +63,7 @@
     <penalty>0</penalty>
     <hidden>0</hidden>
     <shuffleanswers>
-        false
+        1
     </shuffleanswers>
     <correctfeedback format="html">
         <text></text>

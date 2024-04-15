@@ -18,7 +18,7 @@
         <text>subpoints</text>
     </scoringmethod>
     <shuffleanswers>
-        true
+        1
     </shuffleanswers>
     <numberofrows>2</numberofrows>
     <numberofcolumns>2</numberofcolumns>
@@ -88,7 +88,7 @@
         <text>subpoints</text>
     </scoringmethod>
     <shuffleanswers>
-        false
+        0
     </shuffleanswers>
     <numberofrows>3</numberofrows>
     <numberofcolumns>3</numberofcolumns>
@@ -196,7 +196,7 @@
         <text>subpoints</text>
     </scoringmethod>
     <shuffleanswers>
-        true
+        1
     </shuffleanswers>
     <numberofrows>2</numberofrows>
     <numberofcolumns>2</numberofcolumns>

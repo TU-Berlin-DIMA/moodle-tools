@@ -3,8 +3,7 @@
     {{ super() }}
     <single>true</single>
     <shuffleanswers>
-        {# Can this but "1" or "true"? We should make it consistent. #}
-        {{ "true" if shuffle_answers == true else "false" }}
+        {{ "1" if shuffle_answers else "0" }}
     </shuffleanswers>
     <answernumbering>none</answernumbering>
     <showstandardinstruction>1</showstandardinstruction>

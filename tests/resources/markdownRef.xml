@@ -21,7 +21,7 @@
     <hidden>0</hidden>
     <single>true</single>
     <shuffleanswers>
-        true
+        1
     </shuffleanswers>
     <answernumbering>none</answernumbering>
     <showstandardinstruction>1</showstandardinstruction>

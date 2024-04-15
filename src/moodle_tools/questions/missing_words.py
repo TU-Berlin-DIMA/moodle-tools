@@ -21,6 +21,7 @@ class MissingWordsQuestion(Question):
         correct_feedback: str = "",
         partial_feedback: str = "",
         incorrect_feedback: str = "",
+        shuffle_answers: bool = True,
         **flags: bool,
     ):
         super().__init__(question, title, category, grade, general_feedback, **flags)
@@ -28,6 +29,7 @@ class MissingWordsQuestion(Question):
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.partial_feedback = preprocess_text(partial_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
+        self.shuffle_answers = shuffle_answers
 
     def validate(self) -> list[str]:
         errors = super().validate()

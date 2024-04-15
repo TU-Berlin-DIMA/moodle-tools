@@ -2,8 +2,7 @@
 {% block content %}
     {{ super() }}
     <shuffleanswers>
-        {# Can this but "1" or "true"? We should make it consistent. #}
-        {{ "true" if shuffle_answers == true else "false" }}
+        {{ "1" if shuffle_answers else "0" }}
     </shuffleanswers>
     <correctfeedback format="html">
         <text>{{ "<![CDATA[{}]]>".format(correct_feedback) if correct_feedback }}</text>
