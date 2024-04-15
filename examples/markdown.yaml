@@ -22,7 +22,6 @@ answers:
       ```
       This is some code.
       ```
-    points: 0
   - answer: |-
       <span style="text-decoration:underline;">Underlined text in HTML</span>
   - answer: |-
