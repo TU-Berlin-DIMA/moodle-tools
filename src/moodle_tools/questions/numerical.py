@@ -28,7 +28,9 @@ class NumericalQuestion(Question):
 
         # Update missing answer points and feedback
         # TODO: Create corner case test fr this functionality
-        num_full_points: int = len(list(filter(lambda x: x["points"] == 100, self.answers)))
+        num_full_points: int = len(
+            list(filter(lambda x: "points" in x and x["points"] == 100, self.answers))
+        )
         for i, answer in enumerate(self.answers):
             if "points" not in answer:
                 if i == 0 and num_full_points == 0:
