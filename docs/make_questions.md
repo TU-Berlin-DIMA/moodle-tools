@@ -150,7 +150,9 @@ question: "Minimal true question"
 This question type specifies a multiple choice question in which the student can only select one answer.
 Moodle renders a radio button next to each answer.
 
-Note that the points attribute is optional for each answer, however it is only valid to declare the points for all the answers within a question OR none of the answers should contain the attribute points, in which case the first answer is assumed the correct one an the other are assumed incorrect.
+Note that the `points` attribute for each answer is optional.
+However, it is only valid to specify points for all OR none of the answers within a question.
+If you do not specify `points`, the first answer is assumed the correct one and the other are assumed incorrect.
 
 The full YAML format for such a question is as follows:
 
@@ -183,7 +185,7 @@ As the example shows, it is possible to assign a number of points for each answe
 It is possible to shorten the specification to only include the question type, the question text, and the answer text.
 The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
 
-For all the simple formats it is mandatory to rise the skip-strict-mode flag.
+For all the simple formats it is mandatory to raise the skip-strict-mode flag.
 
 ```yaml
 type: multiple_choice
