@@ -79,12 +79,14 @@ partially_correct_feedback: Your answer is partially correct.  # Mandatory in st
 incorrect_feedback: Your answer is incorrect.  # Mandatory in strict mode
 answers:  # Mandatory
   - answer: Correct answer 1  # Mandatory
-    points: 100  # Optional
+    points: 100  # See documentation on how to provide points
     feedback: Feedback for correct answer  # Mandatory in strict mode
   - answer: Wrong answer 1  # Mandatory
     feedback: Feedback for wrong answer  # Mandatory in strict mode
+    points: 0
   - answer: Wrong answer 2  # Mandatory
     feedback: Feedback for wrong answer  # Mandatory in strict mode
+    points: 0
 ---
 type: multiple_choice  # Mandatory
 category: category/subcategory/multiple_choice  # Optional
@@ -308,7 +310,6 @@ answers:   # Mandatory
       ```
       This is some code.
       ```
-    points: 0  # Mandatory
   - answer: |-  # Hint embbed HTML
       <span style="text-decoration:underline;">Underlined text in HTML</span>
   - answer: |-
