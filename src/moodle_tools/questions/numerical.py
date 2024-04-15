@@ -27,13 +27,16 @@ class NumericalQuestion(Question):
         ]
 
         # Update missing answer points and feedback
-        # TODO: Create corner case test fr this functionality
-        num_full_points: int = len(
+        # Explicit points is true when all the answers have points declared
+        # false when none of the answers have points, in this case
+        # the first answer is assumed to be correct.
+        # TODO: Create corner case test for this functionality
+        explicit_points: bool = len(
             list(filter(lambda x: "points" in x and x["points"] == 100, self.answers))
-        )
+        ) == len(self.answers)
         for i, answer in enumerate(self.answers):
             if "points" not in answer:
-                if i == 0 and num_full_points == 0:
+                if i == 0 and not explicit_points:
                     answer["points"] = 100
                     # TODO: Change this print to a LOG
                     print("First answer is assumed to be correct.")

@@ -95,7 +95,7 @@ It is possible to use more than one question variant.
 
 ## Question Types
 
-At the moment, six question types are supported.
+At the moment, seven question types are supported.
 
 - Simple true/false questions
 - Multiple choice questions with a single selection
@@ -103,6 +103,7 @@ At the moment, six question types are supported.
 - Numerical questions
 - Missing words questions
 - Cloze questions
+- CodeRunner SQL-DQL
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
@@ -114,26 +115,27 @@ This question type specifies a simple true/false question.
 The full YAML format for such a question is as follows:
 
 ```yaml
-type: true_false
-category: your/category/hierarchy
-question: "Complete question"
-title: "Question title"
-correct_answer: false
-general_feedback: "General feedback"
-correct_feedback: "Correct feedback"
-wrong_feedback: "Wrong feedback"
+type: true_false   # Mandatory
+category: category/subcategory/true_false    # Optional
+title: Question title    # Mandatory
+question: Complete question    # Mandatory
+correct_answer: false    # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+incorrect_feedback: Wrong feedback  # Mandatory in strict mode
 ```
 
 This YAML content is rendered as follows in Moodle:
 
 ![Simple true/false question](assets/simple-true-false.png)
 
-It is possible to shorten the specification to only include the question type, the question text, and the correct answer:
+It is possible to shorten the specification to only include the question type, the question text, and the correct answer, this requires the skip-strict-mode to be true, either by using the `-s` argument in the CLI or by declaring it in the YAML document:
 
 ```yaml
 type: true_false
 question: "Minimal false question"
 correct_answer: false
+skip_validation: true   # Optional
 ```
 
 Furthermore, if the correct answer is true, it is possible to shorten the specification even more:
@@ -148,25 +150,27 @@ question: "Minimal true question"
 This question type specifies a multiple choice question in which the student can only select one answer.
 Moodle renders a radio button next to each answer.
 
+Note that the points attribute is optional for each answer, however it is only valid to declare the points for all the answers within a question OR none of the answers should contain the attribute points, in which case the first answer is assumed the correct one an the other are assumed incorrect.
+
 The full YAML format for such a question is as follows:
 
 ```yaml
-type: multiple_choice
-category: your/category/hierarchy
-question: Extended format
-title: Question title
-general_feedback: General feedback
-shuffle_answers: True
-answers:
-  - answer: Correct answer
-    points: 100
-    feedback: Feedback for option 1
-  - answer: Partial answer
-    points: 50
-    feedback: Feedback for option 2
-  - answer: Wrong answer
-    points: 0
-    feedback: Feedback for option 3
+type: multiple_choice  # Mandatory
+category: category/subcategory/multiple_choice  # Optional
+title: Question title  # Mandatory
+question: Extended format  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+shuffle_answers: True  # Optional
+answers:  # Mandatory
+  - answer: Correct answer  # Mandatory
+    points: 100  # Optional
+    feedback: Feedback for option 1  # Mandatory in strict mode
+  - answer: Partial answer  # Mandatory
+    points: 50  # Optional
+    feedback: Feedback for option 2  # Mandatory in strict mode
+  - answer: Wrong answer  # Mandatory
+    points: 0  # Optional
+    feedback: Feedback for option 3  # Mandatory in strict mode
 ```
 
 This YAML content is rendered as follows in Moodle:
@@ -178,6 +182,8 @@ As the example shows, it is possible to assign a number of points for each answe
 
 It is possible to shorten the specification to only include the question type, the question text, and the answer text.
 The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
+
+For all the simple formats it is mandatory to rise the skip-strict-mode flag.
 
 ```yaml
 type: multiple_choice
@@ -202,19 +208,18 @@ This strategy is not possible with this question type.
 The full YAML format for such a question is as follows:
 
 ```yaml
-type: multiple_true_false
-category: your/category/hierarchy
-question: Full format
-title: Question title
-general_feedback: General Feedback
-shuffle_answers: True
-answers:
-  - answer: Answer 1
-    choice: True
-    feedback: Feedback 1
-  - answer: Answer 2
-    choice: False
-    feedback: Feedback 2
+type: multiple_true_false  # Mandatory
+category: category/subcategory/true_false  # Optional
+title: Title  # Mandatory
+question: Simple format  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+answers:  # Mandatory
+  - answer: Answer 1  # Mandatory
+    choice: True  # Mandatory
+    feedback: None  # Mandatory in strict mode
+  - answer: Answer 2  # Mandatory
+    choice: False  # Mandatory
+    feedback: None  # Mandatory in strict mode
 ```
 
 It is possible to shorten the specification to only include the question type, the question text, and the answers.
@@ -234,15 +239,20 @@ The default choices are `True` and `False`.
 The example below uses `Ascending` and `Descending` instead.
 
 ```yaml
-type: multiple_true_false
-title: Memory hierarchy
-question: For each category, say descending or ascending
-choices: [Ascending, Descending]
-answers:
-  - answer: Cost
-    choice: Ascending
-  - answer: Latency
-    choice: Descending
+type: multiple_true_false  # Mandatory
+category: category/subcategory/true_false  # Optional
+title: Memory hierarchy  # Mandatory
+question: For each category, say descending or ascending  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+shuffle_answers: True  # Optional
+choices: [Ascending, Descending]   # Optional
+answers:  # Mandatory
+  - answer: Cost  # Mandatory
+    choice: Ascending  # Mandatory
+    feedback: Feedback  # Mandatory in strict mode
+  - answer: Latency  # Mandatory
+    choice: Descending  # Mandatory
+    feedback: Feedback  # Mandatory in strict mode
 ```
 
 It is also possible to specify more than two choices.
@@ -251,20 +261,23 @@ Note that `Yes` and `No` are escaped with `!!str`.
 Without the escape, the YAML parser would treat them as `True` and `False`.
 
 ```yaml
-type: multiple_true_false
-question: Extended format
-general_feedback: General feedback
-choices: [!!str Yes, !!str No, Maybe]
-answers:
-  - answer: Answer 1
-    choice: !!str Yes
-    feedback: Feedback 1
-  - answer: Answer 2
-    choice: !!str No
-    feedback: Feedback 2
-  - answer: Answer 3
-    choice: Maybe
-    feedback: Feedback 3
+type: multiple_true_false  # Mandatory
+category: category/subcategory/true_false  # Optional
+title: Title  # Mandatory
+question: Extended format  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+shuffle_answers: False  # Optional
+choices: [!!str Yes, !!str No, Maybe]  # Optional
+answers:  # Mandatory
+  - answer: Answer 1  # Mandatory
+    choice: !!str Yes  # Mandatory
+    feedback: Feedback 1  # Mandatory in strict mode
+  - answer: Answer 2  # Mandatory
+    choice: !!str No  # Mandatory
+    feedback: Feedback 2  # Mandatory in strict mode
+  - answer: Answer 3  # Mandatory
+    choice: Maybe  # Mandatory
+    feedback: Feedback 3  # Mandatory in strict mode
 ```
 
 This YAML content is rendered as follows in Moodle:
@@ -280,20 +293,20 @@ Moodle will then evaluate the answer as correct if it is +/- the tolerance value
 The full YAML format for such a question is as follows:
 
 ```yaml
-type: numerical
-category: your/category/hierarchy
-title: Numerical question
-question: What is 2 + 2?
-general_feedback: General feedback
-answers:
-  - answer: 4
-    tolerance: 0
-    points: 100
-    feedback: Feedback for first answer
-  - answer: 5
-    tolerance: 0.1
-    points: 50
-    feedback: 2 + 2 = 5 for some values of 2
+type: numerical  # Mandatory
+category: category/subcategory/numerical  # Optional
+title: Numerical question  # Mandatory
+question: What is 2 + 2?  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+answers:  # Mandatory
+  - answer: 4  # Mandatory
+    tolerance: 0   # Optional
+    points: 100  # Optional
+    feedback: Feedback for first answer  # Mandatory in strict mode
+  - answer: 5  # Mandatory
+    tolerance: 0.1  # Optional
+    points: 50  # Optional
+    feedback: 2 + 2 = 5 for some values of 2  # Mandatory in strict mode
 ```
 
 This YAML content is rendered as follows in Moodle:
@@ -323,26 +336,27 @@ For each blank space, the student has to choose from multiple predefined phrases
 The full YAML format for a missing words question is as follows:
 
 ```yaml
-type: missing_words
-category: your/category/hierarchy
-title: Missing words question
-question: |
+type: missing_words  # Mandatory
+category: category/subcategory/missing_words  # Optional
+title: Missing words question  # Mandatory
+shuffle_answers: True  # Optional
+question: |-  # Mandatory
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
-general_feedback: General feedback
-correct_feedback: Correct feedback
-partial_feedback: Partial feedback
-incorrect_feedback: Incorrect feedback
-options:
-  - answer: SELECT
-    group: 1
-  - answer: FROM
-    group: 1
-  - answer: WHERE
-    group: 2
-  - answer: PROJECT
-    group: 1
-  - answer: SIGMA
-    group: 2
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
+options:  # Mandatory
+  - answer: SELECT  # Mandatory
+    group: 1  # Mandatory
+  - answer: FROM  # Mandatory
+    group: 1  # Mandatory
+  - answer: WHERE  # Mandatory
+    group: 2  # Mandatory
+  - answer: PROJECT  # Mandatory
+    group: 1  # Mandatory
+  - answer: SIGMA  # Mandatory
+    group: 2  # Mandatory
 ```
 
 This YAML content is rendered as follows in Moodle.
@@ -368,14 +382,16 @@ Below is an example of a numerical question written in Cloze format.
 Note that the correct and wrong answers, as well as the feedback is all contained in the `{NUMERICAL}` Cloze question.
 
 ```yaml
-type: cloze
-category: your/category/hierarchy
-title: Numerical cloze question with feedback
-question: |
+type: cloze  # Mandatory
+category: category/subcategory/cloze  # Optional
+title: Numerical cloze question with general feedback  # Mandatory
+markdown: false   # Mandatory
+question: >-  # Mandatory
   <p>
-  Enter the correct value: {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
+  Enter the correct value:
+  {1:NUMERICAL:=5.17:0.01#This is correct~%0%123456:10000000#Feedback for (most) wrong answers.}
   </p>
-feedback: General feedback
+general_feedback: General feedback  # Mandatory in strict mode
 ```
 
 This YAML content is rendered as follows in Moodle:
