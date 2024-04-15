@@ -20,8 +20,6 @@ DB_CONNECTION_ERROR = (
     "case, you must provide a result for each test case since we cannot automatically fetch the "
     "result from the database."
 )
-MAX_ROWS = 50
-MAX_PRINT_WIDTH = 500
 
 
 @contextmanager
@@ -47,6 +45,8 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
     """Template for a SQL question in Moodle CodeRunner."""
 
     ACE_LANG = "sql"
+    MAX_ROWS = 50
+    MAX_WIDTH = 500
 
     def __init__(
         self,
@@ -180,7 +180,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                 try:
                     res = con.sql(statement)
                     if res:
-                        res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS)  # type: ignore
+                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
                     else:
                         print(res)
                 except duckdb.Error as e:
@@ -249,7 +249,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             con.sql(test_code)
             res = con.sql(self.answer)
             if res:
-                res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS)  # type: ignore
+                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
             else:
                 print(res)
 
@@ -285,7 +285,11 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
                 column_orderings.update({item_split[0]: item_split[1]})
         else:
             # TODO: Migrate this to a proper log statement once we have a logging system
-            print("No ORDER BY statement found in the query.")
+            print(
+                "No ORDER BY statement found in the query. Please ensure that this was intended. "
+                "CodeRunner only performs string comparisons between solutions so usually an "
+                "ordering is necessary to ensure solution robustness."
+            )
 
         # Creating the output schema string, appending it to the question_text, and return it
         asc_desc_map = {"asc": "↑", "desc": "↓"}

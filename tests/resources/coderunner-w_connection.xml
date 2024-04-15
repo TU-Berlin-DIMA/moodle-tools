@@ -32,8 +32,8 @@
     <answerboxcolumns>100</answerboxcolumns>
     <answerpreload></answerpreload>
     <globalextra></globalextra>
-    <useace></useace>
-    <resultcolumns></resultcolumns>
+    <useace>1</useace>
+    <resultcolumns><![CDATA[]]></resultcolumns>
     <template><![CDATA[from __future__ import annotations
 
 import os
@@ -43,17 +43,19 @@ import shutil
 import duckdb
 
 MAX_ROWS = 50
-MAX_PRINT_WIDTH = 500
+MAX_WIDTH = 500
 
 # Use Twig to get students answer
 student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
 
 # Parsing the student answer
-if not student_answer.endswith(';'):
-    student_answer = student_answer + ';'
+if not student_answer.endswith(";"):
+    student_answer = student_answer + ";"
+if "pragma" in student_answer.lower():
+    raise ValueError("It is not allowed to use PRAGMA statements.")
 
 # Getting the database file
-db_files = [fname for fname in os.listdir() if fname.endswith('.db')]
+db_files = [fname for fname in os.listdir() if fname.endswith(".db")]
 if len(db_files) == 0:
     db_working = ":memory:"
 elif len(db_files) == 1:
@@ -74,13 +76,16 @@ testcode = """{{ TEST.testcode | e('py') }}"""
 extra = """{{ TEST.extra | e('py') }}"""
 con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
+# Set DB parameters
+con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
+
 # Execute database modification
 con.sql(testcode)
 
 # Execute student answer
 try:
     res = con.sql(student_answer)
-    res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+    res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
 except Exception as e:
     raise e
 finally:
@@ -91,8 +96,8 @@ print(SEPARATOR)
 {% endif %}
 {% endfor %}
 ]]></template>
-    <iscombinatortemplate></iscombinatortemplate>
-    <allowmultiplestdins></allowmultiplestdins>
+    <iscombinatortemplate>1</iscombinatortemplate>
+    <allowmultiplestdins>0</allowmultiplestdins>
     <answer><![CDATA[SELECT Name,
        Preis
 FROM Produkt
@@ -101,22 +106,22 @@ WHERE Preis =
      FROM Produkt)
 ORDER BY Name ASC;]]></answer>
     <validateonsave>1</validateonsave>
-    <testsplitterre></testsplitterre>
-    <language></language>
+    <testsplitterre><![CDATA[|#<ab@17943918#@>#\n|ms]]></testsplitterre>
+    <language>python3</language>
     <acelang>sql</acelang>
     <sandbox></sandbox>
-    <grader></grader>
+    <grader>EqualityGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb></memlimitmb>
-    <sandboxparams></sandboxparams>
+    <memlimitmb>1000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>
-    <templateparamslang></templateparamslang>
+    <templateparamslang>None</templateparamslang>
     <templateparamsevalpertry>0</templateparamsevalpertry>
     <templateparamsevald>{}</templateparamsevald>
     <twigall>0</twigall>
-    <uiplugin></uiplugin>
+    <uiplugin>ace</uiplugin>
     <uiparameters></uiparameters>
     <attachments>0</attachments>
     <attachmentsrequired>0</attachmentsrequired>
@@ -129,21 +134,21 @@ ORDER BY Name ASC;]]></answer>
     <testcases>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
             <testcode>
-                <text></text>
+                <text><![CDATA[]]></text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text>┌───────────────┬───────┐
+                <text><![CDATA[┌───────────────┬───────┐
 │     Name      │ Preis │
 │    varchar    │ int64 │
 ├───────────────┼───────┤
 │ Rolex Daytona │ 20000 │
-└───────────────┴───────┘</text>
+└───────────────┴───────┘]]></text>
             </expected>
             <extra>
-                <text>Testfall 1</text>
+                <text><![CDATA[Testfall 1]]></text>
             </extra>
             <display>
                 <text>SHOW</text>
@@ -151,7 +156,7 @@ ORDER BY Name ASC;]]></answer>
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
             <testcode>
-                <text>INSERT INTO Produkt (Id, Name, Preis)
+                <text><![CDATA[INSERT INTO Produkt (Id, Name, Preis)
 VALUES (12345, 'Audi A6', 25000);
 
 
@@ -160,22 +165,22 @@ VALUES (23456, 'BMW', 50000);
 
 
 INSERT INTO Produkt (Id, Name, Preis)
-VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);</text>
+VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);]]></text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text>┌───────────────────────────┬───────┐
+                <text><![CDATA[┌───────────────────────────┬───────┐
 │           Name            │ Preis │
 │          varchar          │ int64 │
 ├───────────────────────────┼───────┤
 │ BMW                       │ 50000 │
 │ Pokemon Glurak Holo Karte │ 50000 │
-└───────────────────────────┴───────┘</text>
+└───────────────────────────┴───────┘]]></text>
             </expected>
             <extra>
-                <text>Testfall 2</text>
+                <text><![CDATA[Testfall 2]]></text>
             </extra>
             <display>
                 <text>HIDE</text>
@@ -183,22 +188,22 @@ VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);</text>
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="4.0">
             <testcode>
-                <text>INSERT INTO Produkt (Id, Name, Preis)
-VALUES (45678, 'Rolex Daytona', 30000);</text>
+                <text><![CDATA[INSERT INTO Produkt (Id, Name, Preis)
+VALUES (45678, 'Rolex Daytona', 30000);]]></text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text>┌───────────────┬───────┐
+                <text><![CDATA[┌───────────────┬───────┐
 │     Name      │ Preis │
 │    varchar    │ int64 │
 ├───────────────┼───────┤
 │ Rolex Daytona │ 30000 │
-└───────────────┴───────┘</text>
+└───────────────┴───────┘]]></text>
             </expected>
             <extra>
-                <text>Testfall 3</text>
+                <text><![CDATA[Testfall 3]]></text>
             </extra>
             <display>
                 <text>SHOW</text>

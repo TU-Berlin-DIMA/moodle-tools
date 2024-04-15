@@ -7,27 +7,12 @@ import shutil
 import duckdb
 
 MAX_ROWS = 50
-MAX_PRINT_WIDTH = 500
-
-
-def remove_comments(s: str) -> str:
-    """Remove comments from a SQL string."""
-    # Single-line comments
-    # NOTE: This regex produces wrong results if a single-line comment is embedded in a value
-    # (e.g., in an INSERT statement). This situation should not occure in our excersises though
-    s = re.sub(r"--.*", "", s)
-
-    # Multi-line comments
-    s = re.sub(r"/\*.*?\*/", "", s, flags=re.DOTALL)
-
-    return s
-
+MAX_WIDTH = 500
 
 # Use Twig to get students answer
 student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
 
 # Parsing the student answer
-{# student_answer = remove_comments(student_answer) #}
 if not student_answer.endswith(";"):
     student_answer = student_answer + ";"
 if "pragma" in student_answer.lower():
@@ -55,6 +40,9 @@ testcode = """{{ TEST.testcode | e('py') }}"""
 extra = """{{ TEST.extra | e('py') }}"""
 con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
+# Set DB parameters
+con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
+
 # Execute student answer
 con.sql(student_answer)
 
@@ -63,28 +51,9 @@ statements = [s for s in testcode.split(";") if s.strip()]
 for statement in statements:
     try:
         res = con.sql(statement)
-        res.show(max_width=MAX_PRINT_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+        res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
     except duckdb.Error as e:
-        # TODO: Is this if-block still necessary?
-        if isinstance(e, duckdb.CastException):
-            if (
-                "CHECK constraint" in str(e)
-                or "FOREIGN KEY" in str(e)
-                or "UNIQUE constraint" in str(e)
-            ) and "INTO" in statement:
-                into_idx = statement.find("INTO")
-                table_name = statement[(into_idx + 5) :].split(" ")[0]
-                print(f"Table {table_name}: {str(e).split(':')[0]}")
-            # Printing attribute names causes issues when students order compound
-            # primary keys different than the reference solution.
-            #
-            # elif "INTO" in statement:
-            #     table_name_start = statement.find("INTO")
-            #     table_name = statement[(table_name_start + 5):].split(" ")[0]
-            #     attribute = re.split(" |,|;", str(e)[str(e).find(table_name):])[0]
-            #     print(f"{attribute}: {str(e).split(':')[0]}")
-        else:
-            print(e)
+        print(e)
     except Exception as e:
         raise (e)
 

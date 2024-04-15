@@ -12,29 +12,29 @@
     <answerboxcolumns>100</answerboxcolumns>
     <answerpreload>{{ answer_preload }}</answerpreload>
     <globalextra></globalextra>
-    <useace></useace>
-    <resultcolumns>{{ result_columns }}</resultcolumns>
+    <useace>1</useace>
+    <resultcolumns><![CDATA[{{ result_columns }}]]></resultcolumns>
     <template><![CDATA[{{ test_logic }}]]></template>
-    <iscombinatortemplate></iscombinatortemplate>
-    <allowmultiplestdins></allowmultiplestdins>
+    <iscombinatortemplate>1</iscombinatortemplate>
+    <allowmultiplestdins>0</allowmultiplestdins>
     <answer><![CDATA[{{ answer }}]]></answer>
     <validateonsave>1</validateonsave>
-    <testsplitterre></testsplitterre>
-    <language></language>
+    <testsplitterre><![CDATA[|#<ab@17943918#@>#\n|ms]]></testsplitterre>
+    <language>python3</language>
     <acelang>{{ ace_lang }}</acelang>
     <sandbox></sandbox>
-    <grader></grader>
+    <grader>EqualityGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb></memlimitmb>
-    <sandboxparams></sandboxparams>
+    <memlimitmb>1000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>
-    <templateparamslang></templateparamslang>
+    <templateparamslang>None</templateparamslang>
     <templateparamsevalpertry>0</templateparamsevalpertry>
     <templateparamsevald>{}</templateparamsevald>
     <twigall>0</twigall>
-    <uiplugin></uiplugin>
+    <uiplugin>ace</uiplugin>
     <uiparameters></uiparameters>
     <attachments>0</attachments>
     <attachmentsrequired>0</attachmentsrequired>
@@ -48,16 +48,16 @@
         {% for testcase in testcases %}
         <testcase testtype="0" useasexample="0" hiderestiffail="{{ testcase.hiderestiffail | int }}" mark="{{ testcase.grade }}">
             <testcode>
-                <text>{{ testcase.code }}</text>
+                <text><![CDATA[{{ testcase.code }}]]></text>
             </testcode>
             <stdin>
                 <text></text>
             </stdin>
             <expected>
-                <text>{{ testcase.result }}</text>
+                <text><![CDATA[{{ testcase.result }}]]></text>
             </expected>
             <extra>
-                <text>{{ testcase.description }}</text>
+                <text><![CDATA[{{ testcase.description }}]]></text>
             </extra>
             <display>
                 <text>{{ testcase.show }}</text>
