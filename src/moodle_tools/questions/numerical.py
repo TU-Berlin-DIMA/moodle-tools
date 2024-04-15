@@ -1,5 +1,6 @@
 from typing import Any
 
+from moodle_tools import ParsingError
 from moodle_tools.questions.question import Question, QuestionAnalysis
 
 
@@ -26,22 +27,21 @@ class NumericalQuestion(Question):
             answer if isinstance(answer, dict) else {"answer": answer} for answer in answers
         ]
 
-        # Update missing answer points and feedback
-        # Explicit points is true when all the answers have points declared
-        # false when none of the answers have points, in this case
-        # the first answer is assumed to be correct.
+        # Update points if not provided or raise an error if they are not consistent
         # TODO: Create corner case test for this functionality
-        explicit_points: bool = len(
-            list(filter(lambda x: "points" in x and x["points"] == 100, self.answers))
+        all_points_specified = len(
+            list(filter(lambda x: "points" in x and 0 <= x["points"] <= 100, self.answers))
         ) == len(self.answers)
-        for i, answer in enumerate(self.answers):
-            if "points" not in answer:
-                if i == 0 and not explicit_points:
-                    answer["points"] = 100
-                    # TODO: Change this print to a LOG
-                    print("First answer is assumed to be correct.")
+        if all_points_specified and 100 not in [answer["points"] for answer in self.answers]:
+            raise ParsingError("At least one answer must have 100 points if you specify points.")
+        if not all_points_specified:
+            for i, answer in enumerate(self.answers):
+                if "points" not in answer:
+                    answer["points"] = 100 if i == 0 else 0
                 else:
-                    answer["points"] = 0
+                    raise ParsingError("All or no answers must have points specified.")
+                # TODO: Change this print to a LOG
+                print("[DEBUG] No points specified, first answer is assumed to be correct.")
 
     def validate(self) -> list[str]:
         errors = super().validate()
