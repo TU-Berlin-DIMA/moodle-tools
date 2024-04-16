@@ -95,6 +95,13 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
                 f"SQL queries must end with a ';' symbol. But the last symbol was: {answer[-1]}"
             )
 
+        # Apply a consistent formatting to all SQL queries
+        answer = sqlparse.format(answer, reindent=True, keyword_case="upper")
+        for testcase in testcases:
+            testcase["code"] = sqlparse.format(
+                testcase["code"], reindent=True, keyword_case="upper"
+            )
+
         super().__init__(
             question=question,
             title=title,
@@ -108,12 +115,6 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             check_results=check_results,
             **flags,
         )
-
-        self.answer = sqlparse.format(self.answer, reindent=True, keyword_case="upper")
-        for testcase in self.testcases:
-            testcase["code"] = sqlparse.format(
-                testcase["code"], reindent=True, keyword_case="upper"
-            )
 
     @property
     def files(self) -> list[dict[str, str]]:
