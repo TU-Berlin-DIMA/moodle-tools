@@ -1,0 +1,19 @@
+-- {{ tablename }} Test-Cases
+
+-- Column names
+SELECT name AS name_columns FROM pragma_table_info("{{ tablename }}") ORDER BY name;
+
+-- Not null columns
+SELECT name AS name_notnull FROM pragma_table_info("{{ tablename }}") WHERE "notnull" ORDER BY name;
+
+-- Column types
+SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name;
+
+-- Primary key columns
+SELECT name AS name_primarykey FROM pragma_table_info("{{ tablename }}") WHERE pk ORDER BY name;
+
+-- Unique constraint
+SELECT unnest(constraint_column_names) AS name_unique from duckdb_constraints() where schema_name='main' and constraint_type = 'UNIQUE' and table_name='{{ tablename }}' ORDER BY name_unique;
+
+-- Foreign key columns
+SELECT unnest(constraint_column_names) AS name_fk_from, constraint_text as fk_constraint_text from duckdb_constraints() where schema_name='main' and constraint_type = 'FOREIGN KEY' and table_name='{{ tablename }}' ORDER BY name_fk_from;

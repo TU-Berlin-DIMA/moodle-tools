@@ -11,6 +11,7 @@ from pathlib import Path
 
 import duckdb
 import sqlparse  # type: ignore
+from jinja2 import Environment, PackageLoader
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 from moodle_tools.utils import ParsingError, preprocess_text
@@ -19,6 +20,10 @@ DB_CONNECTION_ERROR = (
     "Question parsing requested a database connection but `database_connection` is False. In this "
     "case, you must provide a result for each test case since we cannot automatically fetch the "
     "result from the database."
+)
+
+env = Environment(
+    loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
 )
 
 
@@ -149,11 +154,12 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
+
         super().__init__(
             question=question,
             title=title,
             answer=answer,
-            testcases=testcases,
+            testcases=self.render_test_templates(testcases),
             database_path=database_path,
             category=category,
             grade=grade,
@@ -167,6 +173,28 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
         if check_results:
             self.check_results()
+
+    @staticmethod
+    def render_test_templates(testcases: list[Testcase]) -> list[Testcase]:
+        """Replace test template placeholders with the respective Jinja templates.
+
+        Args:
+            testcases: List of testcases to render.
+
+        Returns:
+            list[Testcase]: List of rendered testcases.
+        """
+        for testcase in testcases:
+            match testcase["code"].split(" "):
+                case ["MT_testtablecorrectness", table_name]:
+                    testcase["code"] = env.get_template(
+                        "ddl_check_table_correctness.sql.j2"
+                    ).render(tablename=table_name)
+                case _:
+                    # TODO: Add a debug statement here that no matching test template was found
+                    pass
+
+        return testcases
 
     def fetch_expected_result(self, test_code: str) -> str:
         if not self.database_connection:

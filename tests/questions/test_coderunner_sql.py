@@ -119,3 +119,35 @@ class TestCoderunnerQuestionSQL:
         with open(output_file_path, "r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml
+
+    def test_e2e_cli_make_question_ddl_test_template(self, tmp_path: Path) -> None:
+        # Get the path to the directory containing the test resources
+        test_resources_dir = Path(__file__).parent / "../resources"
+
+        # Load content from the file
+        with open(
+            test_resources_dir / "coderunner-ddl_replace_tablecorrectness.xml",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            reference_xml = f.read().strip()
+
+        # Generate the file using the xyz function
+        output_file_path = tmp_path / "output.txt"
+
+        # Simulate command-line arguments
+        sys.argv = [
+            "make-questions",
+            "-i",
+            "examples/coderunner-ddl.yaml",
+            "-o",
+            str(output_file_path),
+        ]
+
+        # Call the main function
+        main()
+
+        # Assert the output is as expected by loading the created xml file into a string object
+        with open(output_file_path, "r", encoding="utf-8") as f:
+            generated_xml = f.read().strip()
+        assert reference_xml == generated_xml
