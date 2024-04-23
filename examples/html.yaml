@@ -1,0 +1,53 @@
+---
+title: Distanzfunktionen zuordnen 1
+type: cloze
+markdown: false    # HTML, therefore markdown is false
+category: category/subcategory/multiple_choice
+question: >-    #The formula is written the same way as in the Moodle rich text editor.
+  <p>
+    Die folgenden Diagramme zeigen jeweils ein zweidimensionales Koordinatensystem.
+    Die Punkte in den Diagrammen sind entsprechend ihrer Distanz zum Ursprung \( (0,0) \) eingefärbt.
+    Ordnen Sie den Diagrammen jeweils die korrekte Distanzfunktion zu.
+  </p>
+  <hr>
+  <br>
+  <p>
+    This line contains a formula: \(a^2 + b^2 = c^2 \)
+  </p>
+  <hr>
+  <br>
+  <p>
+    <b>Tipps:</b>
+    <ul>
+      <li>Orientieren Sie sich anhand der Koordinaten der Punkte mit maximaler und minimaler Distanz.</li>
+      <li>Achten Sie auch auf den in der Farbskala angegebenen absoluten Wert der Distanz.</li>
+    </ul>
+  </p>
+  <div style="display:flex; flex-flow: row wrap;">
+    <div style="margin: 1em;">
+      <img alt="Distanz 1-C" src="examples/assets/manhattan_distance_1.svg" />
+      <br>
+      {1:MULTICHOICE:Euklidisch~Hamming~=Manhattan~Maximum~Minimum}
+    </div>
+    <div style="margin: 1em;">
+      <img alt="Distanz 1-E" src="examples/assets/minimum_distance_1.svg" />
+      <br>
+      {1:MULTICHOICE:Euklidisch~Hamming~Manhattan~Maximum~=Minimum}
+    </div>
+  </div>
+general_feedback: >- # Feedback for the question can be expressed as HTML too.
+  <p>
+    <h2>Feedback</h2>
+    <hr>
+    <br>
+    <ul>
+      <li>
+        Die Euklidische Distanz gleicht der Manhattan-Distanz,
+        hat im Vergleich aber einen niedrigeren absoluten Wert aufgrund der diagonalen Bewegung.
+        </li>
+      <li>
+        Die Hamming-Distanz hat nur im Ursprung selbst oder auf einer der
+        Null-Achsen Überschneidungen mit \( (0,0) \).
+      </li>
+    </ul>
+  </p>

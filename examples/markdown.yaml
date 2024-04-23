@@ -40,5 +40,5 @@ answers:
       - One
       - Two
       - Three
-  - answer: |-
+  - answer: |- # Important to escape the backslash when using Markdown
       This is a formula: \\( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \\).

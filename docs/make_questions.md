@@ -534,15 +534,75 @@ In this case, it is okay to disable strict validation with the command line swit
 
 ### Question and answer text formatting
 
-Question and answer text accept HTML content.
+Question and answer text is valid in Plain Text, HTML, or Markdown content.
+
+Markdown is parsed by default from the questions in the YAML documents. This means the YAML is assumed to have the `markdown: true` attribute.
+In the case of explicit HTML with CSS, it is necessary to deactivate the Markdown Parsing by using the `markdown: false` attribute for the corresponding question in the YAML document.
+
+***It is the responsibility of the question creator to verify the correctness of the HTML and CSS code, this is passed verbatim into the Moodle Question Format.***
+
 To simplify writing complex questions and answers, it is also possible to write them in Markdown.
-In this case, specify the `--parse-markdown` command line switch.
 The file `../examples/markdown.yml` contains a multiple question file with many Markdown formatting options.
 
 Note that LaTeX formulas need to be escaped differently when using Markdown.
 
-- Without `--parse-markdown`: Write LaTeX formulas with a single backslash: `\ (a^2 + b^2 = c^2 \)`
-- With `--parse-markdown`: Write LaTeX formulas with a two backslashs: `\\ (a^2 + b^2 = c^2 \\)`
+- `markdown: false`: Write LaTeX formulas with single backslash: `\(a^2 + b^2 = c^2 \)`
+- `markdown: true`: Write LaTeX formulas with double backslash: `\\(a^2 + b^2 = c^2 \\)`
+
+Two examples are provided in the `examples/markdownconflictinghtml.yaml` file, where HTML and Markdown are combined, this is a nonextensive set of potential parsing and formatting errors, that are not checked by the validation process and, as mentioned before, are responsibility of the creator to make sure the result is as expected.
+
+The main differences in the YAML documents are: 1) the formula and 2) the `markdown: ` attribute.
+
+For the question using the `markdown: true` the formula is not rendered because it is surrounded by a HTML Tag, the words **operation** and *number* were expected to have bold and italic formatting, but similarly are inside an HTML Tag, therefore treated as such. The "Sample Markdown" and "Another MD" texts are correctly rendered. See the following image on how Moolde renders the question:
+
+![Conflicting HTML and Markdown with `markdown: true`](assets/conflictinmdhtmltrue.png)
+
+When using the `markdown: false`attribute, the formula is displayed correctly, however, the rest of the elements are passed verbatim as shown in the following image:
+
+![Conflicting HTML and Markdown with `markdown: false`](assets/conflictinmdhtmlfalse.png)
+
+One additional example is provided to show how an exclusive HTML file can be expressed. The file `../examples/html.yml` contains all the attributes required to express the question in HTML, i.e. question, feedback, general_feedback; whereas the definition attributes and flags, i.e. type, markdown, title, are expressed in plain text.
+
+The HTML example is modeled as a cloze type for multiple choice. It is possible to include standard HTML tags, such as line breakers, header styling, lists, image attributes as shown in the following extract of the example:
+
+```yaml
+  ...
+question: >- #The formula is written the same way as in the Moodle rich text editor.
+  <p>
+    Question ...
+  </p>
+  <hr>
+  <br>
+  <p>
+    This line contains a formula: \(a^2 + b^2 = c^2 \)
+  </p>
+  ...
+  <div style="display:flex; flex-flow: row wrap;">
+    <div style="margin: 1em;">
+      <img alt="Distanz 1-C" src="examples/assets/manhattan_distance_1.svg" />
+      <br>
+      {1:MULTICHOICE:Euklidisch~Hamming~=Manhattan~Maximum~Minimum}
+    </div>
+    ...
+  </div>
+  ...
+general_feedback: >- # Feedback for the question can be expressed as HTML too.
+  <p>
+    <h2>Feedback</h2>
+    <hr>
+    <br>
+    <ul>
+      <li>Some feedback.</li>
+      <li>Other feedback.</li>
+      ...
+    </ul>
+  </p>
+  ...
+```
+
+The following image shows partially the question in the ISIS (Moodle) preview side by side to the editor view, including the HTML enriched text and images, note that the formula does not use an escape for the backslash.
+
+![Pure HTML question definition editor and preview.](assets/html_formatting-1.png)
 
 ### Inline images
 

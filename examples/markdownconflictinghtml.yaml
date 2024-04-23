@@ -1,0 +1,40 @@
+---
+type: cloze
+title: Conflicting MD and HTML without MD Parsing
+markdown: false
+category: category/subcategory/multiple_choice
+general_feedback: >-
+  <p>
+    <ul>
+      <li>**This is a fancy HTML General Feedback.**</li>
+    </ul>
+  </p>
+question: >-
+  <p>This is a formula: \( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \).</p>
+  <p>
+  Enter the correct value for a power **operation** on a *number*: {1:NUMERICAL:=5.17:0.01~%0%123456}
+  </p>
+
+  # Sample Markdown
+
+  **Another MD**
+---
+type: cloze
+title: Conflicting MD and HTML with MD Parsing
+markdown: true
+category: category/subcategory/multiple_choice
+general_feedback: >-
+  <p>
+    <ul>
+      <li>**This is a fancy HTML General Feedback.**</li>
+    </ul>
+  </p>
+question: >-
+  <p>This is a formula: \\( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \\).</p>
+  <p>
+  Enter the correct value for a power **operation** on a *number*: {1:NUMERICAL:=5.17:0.01~%0%123456}
+  </p>
+
+  # Sample Markdown
+
+  **Another MD**

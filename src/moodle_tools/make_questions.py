@@ -16,8 +16,8 @@ from moodle_tools.utils import ParsingError
 def load_questions(
     documents: Iterator[dict[str, Any]],
     strict_validation: bool = True,
-    parse_markdown: bool = False,
-    add_table_border: bool = False,
+    parse_markdown: bool = True,
+    add_table_border: bool = True,
 ) -> Iterator[Question]:
     """Load questions from a collection of dictionaries.
 
