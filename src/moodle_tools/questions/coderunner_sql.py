@@ -10,7 +10,7 @@ from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
 import duckdb
-import sqlparse  # type: ignore
+import sqlglot
 from jinja2 import Environment, PackageLoader
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
@@ -101,10 +101,20 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             )
 
         # Apply a consistent formatting to all SQL queries
-        answer = sqlparse.format(answer, reindent=True, keyword_case="upper")
+        answer = ";\n\n".join(
+            sqlglot.transpile(
+                answer, read="duckdb", write="duckdb", pretty=True, normalize_functions="upper"
+            )
+        )
         for testcase in testcases:
-            testcase["code"] = sqlparse.format(
-                testcase["code"], reindent=True, keyword_case="upper"
+            testcase["code"] = ";\n\n".join(
+                sqlglot.transpile(
+                    testcase["code"],
+                    read="duckdb",
+                    write="duckdb",
+                    pretty=True,
+                    normalize_functions="upper",
+                )
             )
 
         super().__init__(
