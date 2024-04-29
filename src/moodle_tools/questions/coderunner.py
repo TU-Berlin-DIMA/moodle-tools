@@ -43,6 +43,7 @@ class CoderunnerQuestion(Question):
     CODERUNNER_TYPE: str
     RESULT_COLUMNS: str
     TEST_TEMPLATE: str
+    GRADER_TYPE = "EqualityGrader"
 
     def __init__(
         self,
@@ -160,6 +161,7 @@ class CoderunnerQuestion(Question):
                 "result_columns": self.RESULT_COLUMNS,
                 "coderunner_type": self.CODERUNNER_TYPE,
                 "files": self.files,
+                "grader_type": self.GRADER_TYPE,
             }
         )
 

@@ -137,6 +137,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
     CODERUNNER_TYPE = "PROTOTYPE_duckdb_ddl"
     RESULT_COLUMNS = """[["Testfall", "extra"], ["Bewertung", "awarded"]]"""
     TEST_TEMPLATE = "testlogic_ddl.py.j2"
+    GRADER_TYPE = "TemplateGrader"
 
     def __init__(
         self,

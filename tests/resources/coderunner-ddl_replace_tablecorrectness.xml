@@ -107,7 +107,7 @@ print(SEPARATOR)
     <language>python3</language>
     <acelang>sql</acelang>
     <sandbox></sandbox>
-    <grader>EqualityGrader</grader>
+    <grader>TemplateGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
     <memlimitmb>1000</memlimitmb>
     <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>

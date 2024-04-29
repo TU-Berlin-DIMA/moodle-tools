@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import io
 import os
 import re
 import shutil
+from contextlib import redirect_stdout
 
+import json
 import duckdb
 
 MAX_ROWS = 50
@@ -11,6 +14,7 @@ MAX_WIDTH = 500
 
 # Use Twig to get students answer
 student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
+
 
 # Parsing the student answer
 if not student_answer.endswith(";"):
@@ -29,6 +33,12 @@ else:
 
 SEPARATOR = "#<ab@17943918#@>#"
 
+# set header names
+testcase_results = [["iscorrect", "Testfall", "Bewertung", "ishidden"]]
+total_awarded_points = 0
+total_points = 0
+hiderestiffail_carryover = 0
+
 # Running each test in isolation
 {% for TEST in TESTCASES %}
 
@@ -37,7 +47,12 @@ if db_working != ":memory:":
     shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
 
 testcode = """{{ TEST.testcode | e('py') }}"""
-extra = """{{ TEST.extra | e('py') }}"""
+description = """{{ TEST.extra | e('py') }}"""
+points = float("""{{ TEST.mark | e('py') }}""")
+correct_answer = """{{ TEST.expected | e('py') }}""".rstrip()
+#hiderestiffail = 1 if """{{ TEST.hiderestiffail | e('py') }}""" else 0
+epilogue = []
+
 con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
 # Set DB parameters
@@ -46,20 +61,57 @@ con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;
 # Execute student answer
 con.sql(student_answer)
 
+
 # Execute test code
 statements = [s for s in testcode.split(";") if s.strip()]
-for statement in statements:
-    try:
-        res = con.sql(statement)
-        res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except duckdb.Error as e:
-        print(e)
-    except Exception as e:
-        raise (e)
+
+with io.StringIO() as buf, redirect_stdout(buf):
+    for statement in statements:
+        try:
+            res = con.sql(statement)
+            res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+        except duckdb.Error as e:
+            print(e)
+        except Exception as e:
+            raise (e)
+
+    output = buf.getvalue().strip()
+
+
+# check correctness
+testcorrect = output == correct_answer
+
+# calculate grade and accumulated grade, grade hint test cases as 0
+case_max_points = points if points > 0.001 else 0
+total_points += case_max_points
+
+awarded_points = case_max_points if testcorrect else 0
+total_awarded_points += awarded_points
+
+testcase_results.append([testcorrect, description, awarded_points, hiderestiffail_carryover])
+
+#print(f"{description} pre: hrif {hiderestiffail}, hrif_c {hiderestiffail_carryover}")
+#
+#
+## calculate hidden
+#if not testcorrect:
+#    hiderestiffail_carryover = 1 if hiderestiffail == 1 else 0
+#
+#print(f"{description} post: hrif {hiderestiffail}, hrif_c {hiderestiffail_carryover}")
+
 
 con.close()
 
 {% if not loop.last %}
-print(SEPARATOR)
+#print(SEPARATOR)
 {% endif %}
 {% endfor %}
+
+output = {
+    "fraction": total_awarded_points / total_points,
+    "testresults": testcase_results,
+    #"prologuehtml": f"<h2> Your code received 420/23 marks</h2>",
+    "epiloguehtml": "<br>".join(epilogue)
+}
+
+print(json.dumps(output))
