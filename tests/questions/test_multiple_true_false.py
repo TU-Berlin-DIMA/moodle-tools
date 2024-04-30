@@ -3,21 +3,20 @@ from pathlib import Path
 
 import pytest
 
+from moodle_tools import ParsingError
 from moodle_tools.make_questions import main
 
 
 class TestMultipleTrueFalse:
-    def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_yml_parsing_strict(self) -> None:
         # Simulate command-line arguments
         sys.argv = ["make-questions", "-i", "examples/multiple-true-false.yaml"]
 
-        # Call the main function
-        main()
-        captured = capsys.readouterr()
-        # Assert the output is as expected
+        # Expected ParsingError for general feedback
+        with pytest.raises(ParsingError) as error:
+            main()
 
-        assert '<question type="mtf">' in captured.out
-        assert "The following question did not pass strict validation:" in captured.err
+        assert "general_feedback" in str(error.value)
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments

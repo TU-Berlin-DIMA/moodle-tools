@@ -3,10 +3,12 @@
 import argparse
 import sys
 from io import TextIOBase
+from pathlib import Path
 from typing import Any, Iterator
 
 import yaml
 from jinja2 import Environment, PackageLoader
+from jsonschema import Draft202012Validator, ValidationError
 
 from moodle_tools.questions.factory import QuestionFactory
 from moodle_tools.questions.question import Question
@@ -34,6 +36,11 @@ def load_questions(
     Raises:
         ParsingError: If question type or title are not provided.
     """
+    schema_path = Path(__file__).parent / "questions/schemas/"
+    question_schema = "question.yaml"
+
+    report_errors = []
+
     for document in documents:
         if "table_border" not in document:
             document.update({"table_border": add_table_border})
@@ -41,33 +48,56 @@ def load_questions(
             document.update({"markdown": parse_markdown})
         if "skip_validation" in document:
             strict_validation = not document["skip_validation"]
+            document.update({"strict_validation": strict_validation})
+        else:
+            document.update({"strict_validation": strict_validation})
         if "type" in document:
             question_type = document["type"]
+
+        # Validation of mandatory basic attributes
+        with open(schema_path / question_schema, "r", encoding="utf8") as stream:
+            schema_base = yaml.safe_load(stream.read())
+
+        validator = Draft202012Validator(schema_base)
+
+        try:
+            validator.validate(document)
+        except ValidationError as e:
+            if "title" in document:
+                current_document = (document["title"], [e.message])
+            else:
+                current_document = ("No Reference", [e.message])
+            report_errors.append(current_document)
         else:
-            raise ParsingError(f"Question type not provided: {document}")
-        if "title" not in document:
-            raise ParsingError(f"Question title not provided: {document}")
-        # TODO: Add further validation for required fields here
+            # if "type" in document:
+            #     question_type = document["type"]
+            # else:
+            #     raise ParsingError(f"Question type not provided: {document}")
+            # if "title" not in document:
+            #     raise ParsingError(f"Question title not provided: {document}")
+            # # TODO: Add further validation for required fields here
+            if "internal_copy" in document and document["internal_copy"]:
+                internal_document = document.copy()
+                internal_document["title"] += " (intern \U0001f92b)"
+                document.pop("internal_copy")
+                yield QuestionFactory.create_question(question_type, **internal_document)
 
-        if "internal_copy" in document and document["internal_copy"]:
-            internal_document = document.copy()
-            internal_document["title"] += " (intern \U0001f92b)"
-            document.pop("internal_copy")
-            yield QuestionFactory.create_question(question_type, **internal_document)
-
-        question = QuestionFactory.create_question(question_type, **document)
-        if strict_validation:
-            errors = question.validate()
-            # TODO: Raise a ValidationError here instead of printing to stderr
-            if errors:
-                message = (
-                    "---\nThe following question did not pass strict validation:\n"
-                    + f"{yaml.safe_dump(document)}\n"
-                    + "\n- ".join(errors)
-                )
-                print(message, file=sys.stderr)
-                continue
-        yield question
+            question = QuestionFactory.create_question(question_type, **document)
+            if strict_validation:
+                errors = question.validate()
+                # TODO: Raise a ValidationError here instead of printing to stderr
+                if errors:
+                    message = (
+                        "---\nThe following question did not pass strict validation:\n"
+                        + f"{yaml.safe_dump(document)}\n"
+                        + "\n- ".join(errors)
+                    )
+                    print(message, file=sys.stderr)
+                    continue
+            yield question
+    # Reports all errors
+    if report_errors:
+        raise ParsingError(report_errors)
 
 
 def generate_moodle_questions(

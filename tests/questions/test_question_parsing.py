@@ -71,7 +71,7 @@ class TestGeneralQuestion:
         input_yaml_with_no_title = dedent(
             """
         ---
-        type: not_supported
+        type: true_false
         question: "Some question"
         correct_answer: false
         """
@@ -97,7 +97,7 @@ class TestGeneralQuestion:
 
         with pytest.raises(ParsingError) as e_no_type:
             next(questions)
-        assert "Question type not provided:" in str(e_no_type.value)
+        assert "is a required property" in str(e_no_type.value)
 
         # Test unsupported question
         questions = load_questions(
@@ -109,7 +109,7 @@ class TestGeneralQuestion:
 
         with pytest.raises(ParsingError) as e_no_support:
             next(questions)
-        assert str(e_no_support.value) == "Unsupported Question Type: not_supported."
+        assert "'not_supported' is not one of" in str(e_no_support.value)
 
         # Test no title property provided
         questions = load_questions(
@@ -121,7 +121,7 @@ class TestGeneralQuestion:
 
         with pytest.raises(ParsingError) as e_no_type:
             next(questions)
-        assert "Question title not provided" in str(e_no_type.value)
+        assert "is a required property" in str(e_no_type.value)
 
     @pytest.mark.parametrize("test_data", test_cases.values())
     def test_question_types(self, test_data: tuple[str, type[Question]]) -> None:

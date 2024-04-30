@@ -1,0 +1,41 @@
+---
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "/schemas/question.schema.json"
+title: "Question"
+type: "object"
+properties:
+  type:
+    enum: ["true_false", "numerical", "multiple_true_false", "multiple_choice",
+           "missing_words", "sql_dql", "cloze", "coderunner", "sql_ddl"]
+    description: "Question Type"
+  title:
+    type: "string"
+  question:
+    type: "string"
+  grade:
+    type: "number"
+    description: "Grade"
+    exclusiveMinumum: 0
+  category:
+    type: "string"
+    description: "Category and Subcategory"
+  markdown:
+    type: "boolean"
+  skip_validation:
+    type: "boolean"
+  table_border:
+    type: "boolean"
+  general_feedback:
+    type: "string"
+    description: "General Feedback"
+  strict_validation:
+    type: "boolean"
+    description: "NOT skip_validation"
+if:
+  properties:
+    strict_validation:
+      const: true
+then:
+  required: ["type", "title", "question", "general_feedback"]
+else:
+  required: ["type", "title", "question"]
