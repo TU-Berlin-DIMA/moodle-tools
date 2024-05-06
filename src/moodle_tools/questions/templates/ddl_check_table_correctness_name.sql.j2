@@ -1,0 +1,4 @@
+-- {{ tablename }} Test-Cases
+
+-- Column names
+SELECT name AS name_columns FROM pragma_table_info("{{ tablename }}") ORDER BY name;

@@ -190,6 +190,10 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                     testcase["code"] = env.get_template(
                         "ddl_check_table_correctness.sql.j2"
                     ).render(tablename=table_name)
+                case ["MT_testtablecorrectness_name", table_name]:
+                    testcase["code"] = env.get_template(
+                        "ddl_check_table_correctness_name.sql.j2"
+                    ).render(tablename=table_name)
                 case _:
                     # TODO: Add a debug statement here that no matching test template was found
                     pass
