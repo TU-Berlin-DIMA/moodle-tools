@@ -328,11 +328,16 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
         output_elements: list[str] = []
         for column in result_schema:
             column_name = column[0]
-            if column_name in column_orderings:
-                output_elements.append(
-                    f"{column_name} ({asc_desc_map[column_orderings[column_name].lower()]})"
-                )
-            else:
+            found_column = False
+            for column_order, order_statement in column_orderings.items():
+                if column_name in column_order:
+                    output_elements.append(
+                        f"{column_name} ({asc_desc_map[order_statement.lower()]})"
+                    )
+                    found_column = True
+                    break
+
+            if not found_column:
                 output_elements.append(column_name)
 
         return "\nErgebnisschema:\n\n" + ", ".join(output_elements)

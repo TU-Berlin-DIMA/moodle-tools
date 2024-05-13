@@ -2,9 +2,9 @@
 
 import abc
 from pathlib import Path
-from typing import Required, TypedDict
 
 from jinja2 import Environment
+from typing_extensions import Required, TypedDict
 
 from moodle_tools.questions.question import Question, QuestionAnalysis
 from moodle_tools.utils import ParsingError, parse_code
