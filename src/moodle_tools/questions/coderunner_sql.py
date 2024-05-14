@@ -10,7 +10,6 @@ from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
 import duckdb
-import sqlglot
 from jinja2 import Environment, PackageLoader
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
@@ -66,6 +65,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         answer_preload: str = "",
         all_or_nothing: bool = True,
         check_results: bool = False,
+        parser: str | None = None,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -85,6 +85,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
                 points. If False, the student gets partial credit for each test case passed.
             check_results: If testcase_results are provided, run the reference solution and check
                 if the results match.
+            parser: Code parser for formatting the correct answer and testcases.
             database_connection: If True, connect to the provided database to fetch the expected
                 result. If False, use the provided result.
             flags: Additional flags that can be used to control the behavior of the
@@ -100,23 +101,6 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
                 f"SQL queries must end with a ';' symbol. But the last symbol was: {answer[-1]}"
             )
 
-        # Apply a consistent formatting to all SQL queries
-        answer = ";\n\n".join(
-            sqlglot.transpile(
-                answer, read="duckdb", write="duckdb", pretty=True, normalize_functions="upper"
-            )
-        )
-        for testcase in testcases:
-            testcase["code"] = ";\n\n".join(
-                sqlglot.transpile(
-                    testcase["code"],
-                    read="duckdb",
-                    write="duckdb",
-                    pretty=True,
-                    normalize_functions="upper",
-                )
-            )
-
         super().__init__(
             question=question,
             title=title,
@@ -128,6 +112,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             answer_preload=answer_preload,
             all_or_nothing=all_or_nothing,
             check_results=check_results,
+            parser=parser,
             **flags,
         )
 
@@ -161,6 +146,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         answer_preload: str = "",
         all_or_nothing: bool = False,
         check_results: bool = False,
+        parser: str | None = None,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -177,6 +163,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
             answer_preload=answer_preload,
             all_or_nothing=all_or_nothing,
             check_results=check_results,
+            parser=parser,
             database_connection=database_connection,
             **flags,
         )
@@ -252,6 +239,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
         answer_preload: str = "",
         all_or_nothing: bool = True,
         check_results: bool = False,
+        parser: str | None = None,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -267,6 +255,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             answer_preload=answer_preload,
             all_or_nothing=all_or_nothing,
             check_results=check_results,
+            parser=parser,
             database_connection=database_connection,
             **flags,
         )

@@ -2,6 +2,7 @@ import base64
 import re
 
 import markdown
+import sqlparse  # type: ignore
 
 
 def add_table_borders(text: str) -> str:
@@ -38,6 +39,27 @@ def preprocess_text(text: str, **flags: bool) -> str:
     text = inline_images(text)
     text = add_table_borders(text) if flags["table_border"] else text
     return text
+
+
+def parse_code(code: str, parser: str | None = None) -> str:
+    """Parses code with a chosen parser.
+
+    Args:
+        code: code to be parsed.
+        parser: parser to be used.
+
+    Returns:
+        str: Code that has been parsed with the selected parser.
+    """
+    match (parser):
+        case None:
+            return code
+        case "sqlparse":
+            return sqlparse.format(code, reindent=True, keyword_case="upper")  # type: ignore
+        case "sqlparse-no-indent":
+            return sqlparse.format(code, reindent=False, keyword_case="upper")  # type: ignore
+        case _:
+            raise ParsingError(f"Parser not supported: {parser}")
 
 
 class ParsingError(Exception):
