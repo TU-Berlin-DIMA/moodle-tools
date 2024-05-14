@@ -4,7 +4,7 @@ from moodle_tools import utils
 
 
 class TestUtils:
-    def test_convert_markdown(self) -> None:
+    def test_parse_markdown(self) -> None:
         eval_text = dedent(
             """
         # Really important question!
@@ -124,3 +124,58 @@ class TestUtils:
     def test_normalize_questions(self) -> None:
         # TODO: Implement it extensively. Not clear what it does.
         assert True
+
+    def test_parse_code(self) -> None:
+        input_code = dedent(
+            """
+        SELECT Name, Preis FROM Produkt
+        WHERE Preis = (
+            SELECT MAX(Preis)
+            from Produkt
+        ) ORDER BY Name ASC;
+        """
+        )
+
+        expected_none_output = dedent(
+            """
+        SELECT Name, Preis FROM Produkt
+        WHERE Preis = (
+            SELECT MAX(Preis)
+            from Produkt
+        ) ORDER BY Name ASC;
+        """
+        ).strip()
+
+        output = utils.parse_code(input_code).strip()
+
+        assert output == expected_none_output
+
+        expected_no_indent_output = dedent(
+            """
+        SELECT Name, Preis FROM Produkt
+        WHERE Preis = (
+            SELECT MAX(Preis)
+            FROM Produkt
+        ) ORDER BY Name ASC;
+        """
+        ).strip()
+
+        output = utils.parse_code(input_code, parser="sqlparse-no-indent").strip()
+
+        assert output == expected_no_indent_output
+
+        expected_indent_output = dedent(
+            """
+        SELECT Name,
+               Preis
+        FROM Produkt
+        WHERE Preis =
+            (SELECT MAX(Preis)
+             FROM Produkt)
+        ORDER BY Name ASC;
+        """
+        ).strip()
+
+        output = utils.parse_code(input_code, parser="sqlparse").strip()
+
+        assert output == expected_indent_output

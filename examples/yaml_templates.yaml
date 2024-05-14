@@ -148,6 +148,7 @@ options:  # Mandatory
 type: sql_dql  # Mandatory
 category: category/subcategory/coderunner  # Optional
 title: Sample SQL Coderunner Question  # Mandatory
+parser: sqlparse  # Optional
 markdown: true  # Optional
 question: |-  # Mandatory
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
@@ -191,6 +192,7 @@ database_connection: false  # Optional
 type: sql_dql  # Mandatory
 category: category/subcategory/coderunner
 title: Sample SQL Coderunner Question  # Mandatory
+parser: sqlparse  # Optional
 markdown: true  # Mandatory
 question: |-  # Mandatory
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:

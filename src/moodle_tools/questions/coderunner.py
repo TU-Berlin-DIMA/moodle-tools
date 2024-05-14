@@ -7,7 +7,7 @@ from typing import Required, TypedDict
 from jinja2 import Environment
 
 from moodle_tools.questions.question import Question, QuestionAnalysis
-from moodle_tools.utils import ParsingError
+from moodle_tools.utils import ParsingError, parse_code
 
 
 class Testcase(TypedDict, total=False):
@@ -56,6 +56,7 @@ class CoderunnerQuestion(Question):
         answer_preload: str = "",
         all_or_nothing: bool = True,
         check_results: bool = False,
+        parser: str | None = None,
         **flags: bool,
     ) -> None:
         """Create a new CodeRunner question.
@@ -73,6 +74,7 @@ class CoderunnerQuestion(Question):
                 points. If False, the student gets partial credit for each test case passed.
             check_results: If testcase_results are provided, run the reference solution and check
                 if the results match.
+            parser: Code parser for formatting the correct answer and testcases.
             flags: Additional flags that can be used to control the behavior of the
                 question.
         """
@@ -80,6 +82,10 @@ class CoderunnerQuestion(Question):
         self.answer = answer
         self.answer_preload = answer_preload
         self.all_or_nothing = all_or_nothing
+        self.parser = parser
+
+        # Apply consistent formatting to the answer code
+        self.answer = parse_code(self.answer, parser=self.parser)
 
         with open(
             Path(__file__).parent / "templates" / self.TEST_TEMPLATE, "r", encoding="utf-8"
@@ -110,6 +116,9 @@ class CoderunnerQuestion(Question):
                 testcase["show"] = "SHOW"
             else:
                 testcase["show"] = "HIDE"
+
+            # Apply consistent formatting to each testcase code, same parser as answer
+            testcase["code"] = parse_code(testcase["code"], parser=self.parser)
 
             self.testcases.append(testcase)
 

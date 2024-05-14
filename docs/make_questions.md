@@ -418,6 +418,7 @@ question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
   Die Namen der teuersten Produkte und deren Preis?
 general_feedback: A query was submitted
+parser: sqlparse
 answer: |-
   SELECT Name, Preis
   FROM Produkt
@@ -467,6 +468,7 @@ Therefore, a minimal version of the above `.yml` file looks as follows:
 ```yaml
 type: sql_ddl | sql_dql | isda_streaming
 title: Sample SQL Coderunner Question
+parser: none
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
   Die Namen der teuersten Produkte und deren Preis?
@@ -501,6 +503,20 @@ In addition to the general fields, Coderunner Streaming question recognizes the 
 ```yaml
 input_stream: ./example.csv
 ```
+
+#### Code Formatting in Coderunner Questions
+
+The attribute `parser` allows to parse and format code according to a specified parsing library.
+`answer` and each testcase's `code` are considered subject to parsing and formatting.
+The `parser` applies the formatting to both with the same configuration.
+
+Currently, the following parsers are supported:
+
+- The YAML keyword `null` or an empty/missing field passes the code verbatim from the YAML file.
+- `sqlparse` parses the code with the library `sqlparse` and the arguments `reindent=True, keyword_case="upper"`
+- `sqlparse-no-indent` parses the code with the library `sqlparse` and the arguments `reindent=False, keyword_case="upper"`
+
+Additional parsers can be implemented in `src/moodle_tools/utils.py`.
 
 ## Command Line Usage
 
@@ -551,7 +567,7 @@ Note that LaTeX formulas need to be escaped differently when using Markdown.
 
 Two examples are provided in the `examples/markdownconflictinghtml.yaml` file, where HTML and Markdown are combined, this is a nonextensive set of potential parsing and formatting errors, that are not checked by the validation process and, as mentioned before, are responsibility of the creator to make sure the result is as expected.
 
-The main differences in the YAML documents are: 1) the formula and 2) the `markdown: ` attribute.
+The main differences in the YAML documents are: (1) the formula and (2) the `markdown:` attribute.
 
 For the question using the `markdown: true` the formula is not rendered because it is surrounded by a HTML Tag, the words **operation** and *number* were expected to have bold and italic formatting, but similarly are inside an HTML Tag, therefore treated as such. The "Sample Markdown" and "Another MD" texts are correctly rendered. See the following image on how Moolde renders the question:
 

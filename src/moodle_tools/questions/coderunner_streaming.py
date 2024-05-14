@@ -32,6 +32,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         answer_preload: str = "",
         all_or_nothing: bool = True,
         check_results: bool = False,
+        parser: str | None = None,
         **flags: bool,
     ) -> None:
         """Create a new ISDA Streaming question.
@@ -50,6 +51,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
                 points. If False, the student gets partial credit for each test case passed.
             check_results: If True, the expected results are checked against the provided answer
                 and testcases.
+            parser: Code parser for formatting the correct answer and testcases.
             **flags: Additional flags for the question.
         """
         # pylint: disable=duplicate-code
@@ -64,6 +66,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             answer_preload=answer_preload,
             all_or_nothing=all_or_nothing,
             check_results=check_results,
+            parser=parser,
             **flags,
         )
         self.input_stream = Path(input_stream)
