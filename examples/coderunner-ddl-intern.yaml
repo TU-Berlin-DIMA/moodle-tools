@@ -3,7 +3,7 @@ type: sql_ddl
 category: DDL-DML
 title: DDL-DB
 parser: sqlparse
-internal_copy: false
+internal_copy: true
 question: |
   This is a DDL question
 grade: 8.0

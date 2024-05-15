@@ -16,7 +16,10 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
     ACE_LANG = "pyhthon"
     CODERUNNER_TYPE = "PROTOTYPE_isda_streaming"
-    RESULT_COLUMNS = """[["Erwartet", "expected"], ["Erhalten", "got"]]"""
+    RESULT_COLUMNS_DEFAULT = """[["Erwartet", "expected"], ["Erhalten", "got"]]"""
+    RESULT_COLUMNS_DEBUG = (
+        """[["Test", "testcode"], ["Erwartet", "expected"], ["Erhalten", "got"]]"""
+    )
     TEST_TEMPLATE = "testlogic_streaming.py.j2"
 
     def __init__(
@@ -33,6 +36,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        internal_copy: bool = False,
         **flags: bool,
     ) -> None:
         """Create a new ISDA Streaming question.
@@ -52,6 +56,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             check_results: If True, the expected results are checked against the provided answer
                 and testcases.
             parser: Code parser for formatting the correct answer and testcases.
+            internal_copy: Flag to create an internal copy for debugging purposes.
             **flags: Additional flags for the question.
         """
         # pylint: disable=duplicate-code
@@ -67,6 +72,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             all_or_nothing=all_or_nothing,
             check_results=check_results,
             parser=parser,
+            internal_copy=internal_copy,
             **flags,
         )
         self.input_stream = Path(input_stream)

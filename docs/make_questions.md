@@ -518,6 +518,12 @@ Currently, the following parsers are supported:
 
 Additional parsers can be implemented in `src/moodle_tools/utils.py`.
 
+#### Internal Copy of Coderunner Questions
+
+For all the Coderunner-type questions, it is possible to create a copy for debugging purposes. This requires an optional YAML attribute `internal_copy: true` and for each question type requires to update the code that alters the `RESULT_COLUMNS_INTERNAL_COPY` constant.
+
+At the moment, it is implemented for SQL-DDL questions: the `RESULT_COLUMNS_INTERNAL_COPY` constant is set to `[["Beschreibung", "extra"], ["Test", "testcode"], ["Erhalten", "got"], ["Erwartet", "expected"], ["Bewertung", "awarded"]]`.
+
 ## Command Line Usage
 
 You can get usage information with the following command:

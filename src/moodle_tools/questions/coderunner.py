@@ -2,9 +2,9 @@
 
 import abc
 from pathlib import Path
+from typing import Required, TypedDict
 
 from jinja2 import Environment
-from typing_extensions import Required, TypedDict
 
 from moodle_tools.questions.question import Question, QuestionAnalysis
 from moodle_tools.utils import ParsingError, parse_code
@@ -41,7 +41,8 @@ class CoderunnerQuestion(Question):
     XML_TEMPLATE = "coderunner.xml.j2"
     ACE_LANG: str
     CODERUNNER_TYPE: str
-    RESULT_COLUMNS: str
+    RESULT_COLUMNS_DEFAULT: str
+    RESULT_COLUMNS_DEBUG: str
     TEST_TEMPLATE: str
 
     def __init__(
@@ -57,6 +58,7 @@ class CoderunnerQuestion(Question):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        internal_copy: bool = False,
         **flags: bool,
     ) -> None:
         """Create a new CodeRunner question.
@@ -75,6 +77,7 @@ class CoderunnerQuestion(Question):
             check_results: If testcase_results are provided, run the reference solution and check
                 if the results match.
             parser: Code parser for formatting the correct answer and testcases.
+            internal_copy: Flag to create an internal copy for debugging purposes.
             flags: Additional flags that can be used to control the behavior of the
                 question.
         """
@@ -83,6 +86,9 @@ class CoderunnerQuestion(Question):
         self.answer_preload = answer_preload
         self.all_or_nothing = all_or_nothing
         self.parser = parser
+        self.result_columns = (
+            self.RESULT_COLUMNS_DEBUG if internal_copy else self.RESULT_COLUMNS_DEFAULT
+        )
 
         # Apply consistent formatting to the answer code
         self.answer = parse_code(self.answer, parser=self.parser)
@@ -166,7 +172,6 @@ class CoderunnerQuestion(Question):
             | {
                 "type": self.QUESTION_TYPE,
                 "ace_lang": self.ACE_LANG,
-                "result_columns": self.RESULT_COLUMNS,
                 "coderunner_type": self.CODERUNNER_TYPE,
                 "files": self.files,
             }

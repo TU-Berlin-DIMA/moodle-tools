@@ -49,6 +49,12 @@ def load_questions(
             raise ParsingError(f"Question title not provided: {document}")
         # TODO: Add further validation for required fields here
 
+        if "internal_copy" in document and document["internal_copy"]:
+            internal_document = document.copy()
+            internal_document["title"] += " (intern \U0001f92b)"
+            document.pop("internal_copy")
+            yield QuestionFactory.create_question(question_type, **internal_document)
+
         question = QuestionFactory.create_question(question_type, **document)
         if strict_validation:
             errors = question.validate()

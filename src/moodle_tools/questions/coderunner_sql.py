@@ -66,6 +66,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        internal_copy: bool = False,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -86,6 +87,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             check_results: If testcase_results are provided, run the reference solution and check
                 if the results match.
             parser: Code parser for formatting the correct answer and testcases.
+            internal_copy: Flag to create an internal copy for debugging purposes.
             database_connection: If True, connect to the provided database to fetch the expected
                 result. If False, use the provided result.
             flags: Additional flags that can be used to control the behavior of the
@@ -113,6 +115,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             all_or_nothing=all_or_nothing,
             check_results=check_results,
             parser=parser,
+            internal_copy=internal_copy,
             **flags,
         )
 
@@ -130,7 +133,12 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
     """Template for a SQL DDL/DML question in Moodle CodeRunner."""
 
     CODERUNNER_TYPE = "PROTOTYPE_duckdb_ddl"
-    RESULT_COLUMNS = """[["Testfall", "extra"], ["Bewertung", "awarded"]]"""
+    RESULT_COLUMNS_DEFAULT = """[["Testfall", "extra"], ["Bewertung", "awarded"]]"""
+    RESULT_COLUMNS_DEBUG = (
+        """[["Beschreibung", "extra"], """
+        """["Test", "testcode"], ["Erhalten", "got"], """
+        """["Erwartet", "expected"], ["Bewertung", "awarded"]]"""
+    )
     TEST_TEMPLATE = "testlogic_ddl.py.j2"
 
     def __init__(
@@ -147,6 +155,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         all_or_nothing: bool = False,
         check_results: bool = False,
         parser: str | None = None,
+        internal_copy: bool = False,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -164,6 +173,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
             all_or_nothing=all_or_nothing,
             check_results=check_results,
             parser=parser,
+            internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
         )
@@ -223,7 +233,8 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
     """Template for a SQL DQL question in Moodle CodeRunner."""
 
     CODERUNNER_TYPE = "PROTOTYPE_duckdb_dql"
-    RESULT_COLUMNS = ""
+    RESULT_COLUMNS_DEFAULT = ""  # TODO
+    RESULT_COLUMNS_DEBUG = ""  # TODO
     TEST_TEMPLATE = "testlogic_dql.py.j2"
 
     def __init__(
@@ -240,6 +251,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        internal_copy: bool = False,
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
@@ -256,6 +268,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             all_or_nothing=all_or_nothing,
             check_results=check_results,
             parser=parser,
+            internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
         )
