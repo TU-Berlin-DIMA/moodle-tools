@@ -515,6 +515,7 @@ Currently, the following parsers are supported:
 - The YAML keyword `null` or an empty/missing field passes the code verbatim from the YAML file.
 - `sqlparse` parses the code with the library `sqlparse` and the arguments `reindent=True, keyword_case="upper"`
 - `sqlparse-no-indent` parses the code with the library `sqlparse` and the arguments `reindent=False, keyword_case="upper"`
+- `sqlglot` parses the code with the library `sqlglot` and the arguments `pretty=True, normalize_functions="upper"`. Note: As `sqlglot` first converts the code into an AST internally, the output may use different functions than the input.
 
 Additional parsers can be implemented in `src/moodle_tools/utils.py`.
 

@@ -2,6 +2,7 @@ import base64
 import re
 
 import markdown
+import sqlglot
 import sqlparse  # type: ignore
 
 
@@ -58,6 +59,16 @@ def parse_code(code: str, parser: str | None = None) -> str:
             return sqlparse.format(code, reindent=True, keyword_case="upper")  # type: ignore
         case "sqlparse-no-indent":
             return sqlparse.format(code, reindent=False, keyword_case="upper")  # type: ignore
+        case "sqlglot":
+            return ";\n\n".join(
+                sqlglot.transpile(
+                    code,
+                    read="duckdb",
+                    write="duckdb",
+                    pretty=True,
+                    normalize_functions="upper",
+                )
+            )
         case _:
             raise ParsingError(f"Parser not supported: {parser}")
 
