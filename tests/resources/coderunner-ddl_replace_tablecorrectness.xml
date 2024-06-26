@@ -28,7 +28,7 @@
     <showsource>0</showsource>
     <answerboxlines>18</answerboxlines>
     <answerboxcolumns>100</answerboxcolumns>
-    <answerpreload></answerpreload>
+    <answerpreload><![CDATA[]]></answerpreload>
     <globalextra></globalextra>
     <useace>1</useace>
     <resultcolumns><![CDATA[[["Testfall", "extra"], ["Bewertung", "awarded"]]]]></resultcolumns>
@@ -247,7 +247,7 @@ ORDER BY name_fk_from;]]></text>
 ┌──────────────┬────────────────────┐
 │ name_fk_from │ fk_constraint_text │
 │   varchar    │      varchar       │
-├───────────────────────────────────┤
+├──────────────┴────────────────────┤
 │              0 rows               │
 └───────────────────────────────────┘
 

@@ -29,7 +29,7 @@
     <showsource>0</showsource>
     <answerboxlines>18</answerboxlines>
     <answerboxcolumns>100</answerboxcolumns>
-    <answerpreload></answerpreload>
+    <answerpreload><![CDATA[]]></answerpreload>
     <globalextra></globalextra>
     <useace>1</useace>
     <resultcolumns><![CDATA[]]></resultcolumns>

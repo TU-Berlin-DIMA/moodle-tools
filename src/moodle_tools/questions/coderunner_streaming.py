@@ -2,6 +2,8 @@
 
 import inspect
 import io
+import os
+import shutil
 from base64 import b64encode
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -10,12 +12,19 @@ from isda_streaming import data_stream, synopsis
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 
+ISDA_STREAMING_IMPORTS = """
+from typing import Any
+from isda_streaming.data_stream import DataStream, TimedStream, WindowedStream, KeyedStream, \
+    _check_element_structure_in_stream
+from isda_streaming.synopsis import CountMinSketch, BloomFilter, ReservoirSample
+"""
+
 
 class CoderunnerStreamingQuestion(CoderunnerQuestion):
     """Template for a question using ISDA Streaming in Moodle CodeRunner."""
 
-    ACE_LANG = "pyhthon"
-    CODERUNNER_TYPE = "PROTOTYPE_isda_streaming"
+    ACE_LANG = "python"
+    CODERUNNER_TYPE = "python3"
     RESULT_COLUMNS_DEFAULT = """[["Erwartet", "expected"], ["Erhalten", "got"]]"""
     RESULT_COLUMNS_DEBUG = (
         """[["Test", "testcode"], ["Erwartet", "expected"], ["Erhalten", "got"]]"""
@@ -59,6 +68,8 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             internal_copy: Flag to create an internal copy for debugging purposes.
             **flags: Additional flags for the question.
         """
+        self.input_stream = Path(input_stream)
+
         # pylint: disable=duplicate-code
         super().__init__(
             question=question,
@@ -75,7 +86,6 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             internal_copy=internal_copy,
             **flags,
         )
-        self.input_stream = Path(input_stream)
 
         if check_results:
             self.check_results()
@@ -106,8 +116,32 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
     def fetch_expected_result(self, test_code: str) -> str:
         # TODO: Add test
+        shutil.copy(self.input_stream, self.input_stream.name)
+
         stdout_capture = io.StringIO()
-        eval(self.answer)
-        with redirect_stdout(stdout_capture):
-            eval(test_code)
+        combined_code = f"{ISDA_STREAMING_IMPORTS}\n\n{self.answer}\n\n{test_code}"
+
+        try:
+            with redirect_stdout(stdout_capture):
+                exec(combined_code, {})  # pylint: disable=exec-used
+        except Exception as e:
+            # Error occurred during execution of the test code
+            error_type = type(e).__name__
+            raise RuntimeError(
+                f"""Error occurred during execution of the test code.
+                The test code trying to execute was the following:
+
+                {combined_code}
+
+                ------------------------------
+
+                This is error obtained during execution:
+
+                {error_type}: {e}
+
+                ------------------------------"""
+            ) from e
+        finally:
+            os.remove(self.input_stream.name)
+
         return stdout_capture.getvalue()

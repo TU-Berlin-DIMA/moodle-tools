@@ -1,0 +1,57 @@
+---
+
+type: isda_streaming
+category: Streaming/autobahn
+title: Sample Streaming Coderunner Question
+input_stream: ./examples/assets/autobahn.csv
+question: |
+  Question text goes here.
+grade: 1.0
+answer_preload: |
+  def pipeline(input_stream: TimedStream) -> Any:
+    return # your dataflow pipeline here
+answer: |-
+  # Map
+  def get_velocity(stream_element: tuple) -> bool:
+      return stream_element[1]
+
+  # Pipeline
+  def pipeline(input_stream: TimedStream) -> TimedStream:
+      return input_stream.map(get_velocity)
+testcases:
+  - description: Check output stream structure
+    code: |-
+      data_stream = TimedStream().from_csv("autobahn.csv", 0, 20)
+
+      output_stream = pipeline(data_stream)
+      _check_element_structure_in_stream(output_stream, 124.0, "velocity")
+    hiderestiffail: true
+  - code: |-
+      start = 0
+      end = 30
+      print(f"Testing elements with indices {start} to {end}.\n")
+      data_stream = TimedStream().from_csv("autobahn.csv", start, end)
+
+      print(pipeline(data_stream))
+  - code: |-
+      start = 100
+      end = 150
+      print(f"Testing elements with indices {start} to {end}.\n")
+      data_stream = TimedStream().from_csv("autobahn.csv", start, end)
+
+      print(pipeline(data_stream))
+  - code: |-
+      start = 5437
+      end = 5735
+      print(f"Testing elements with indices {start} to {end}.\n")
+      data_stream = TimedStream().from_csv("autobahn.csv", start, end)
+
+      print(pipeline(data_stream))
+  - code: |-
+      start = 7283
+      end = 8436
+      print(f"Testing elements with indices {start} to {end}.\n")
+      data_stream = TimedStream().from_csv("autobahn.csv", start, end)
+
+      print(pipeline(data_stream))
+    hidden: true
