@@ -13,7 +13,14 @@ SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename 
 SELECT name AS name_primarykey FROM pragma_table_info("{{ tablename }}") WHERE pk ORDER BY name;
 
 -- Unique constraint
-SELECT unnest(constraint_column_names) AS name_unique from duckdb_constraints() where schema_name='main' and constraint_type = 'UNIQUE' and table_name='{{ tablename }}' ORDER BY name_unique;
+SELECT unnest(constraint_column_names) AS name_unique from duckdb_constraints() where schema_name='main' and constraint_type = 'UNIQUE' and lower(table_name)=lower('{{ tablename }}') ORDER BY name_unique;
 
 -- Foreign key columns
-SELECT unnest(constraint_column_names) AS name_fk_from, constraint_text as fk_constraint_text from duckdb_constraints() where schema_name='main' and constraint_type = 'FOREIGN KEY' and table_name='{{ tablename }}' ORDER BY name_fk_from;
+select unnest(regexp_split_to_array(name_fk_from, ', ')) as name_fk_from_unnest,
+       table_fk_to,
+       unnest(regexp_split_to_array(name_fk_to, ', ')) as name_fk_to_unnest,
+       len(regexp_split_to_array(name_fk_from, ', ')) as length_fk_from
+FROM (SELECT unnest(regexp_extract(constraint_text, 'FOREIGN KEY \((.*?)\) REFERENCES (.*?)\((.*?)\)', ['name_fk_from', 'table_fk_to', 'name_fk_to'])) AS fk_constraint_text
+      FROM duckdb_constraints()
+      WHERE SCHEMA_NAME='main' AND constraint_type = 'FOREIGN KEY' AND lower(TABLE_NAME)=lower('{{ tablename }}'))
+ORDER BY table_fk_to, name_fk_from_unnest;

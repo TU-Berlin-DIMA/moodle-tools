@@ -135,9 +135,9 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
     CODERUNNER_TYPE = "PROTOTYPE_duckdb_ddl"
     RESULT_COLUMNS_DEFAULT = """[["Testfall", "extra"], ["Bewertung", "awarded"]]"""
     RESULT_COLUMNS_DEBUG = (
-        """[["Beschreibung", "extra"], """
-        """["Test", "testcode"], ["Erhalten", "got"], """
-        """["Erwartet", "expected"], ["Bewertung", "awarded"]]"""
+        """[["Beschreibung", "extra"], ["Erhalten", "got"], """
+        """["Erwartet", "expected"], ["Bewertung", "awarded"], """
+        """["Test", "testcode"]]"""
     )
     TEST_TEMPLATE = "testlogic_ddl.py.j2"
 
