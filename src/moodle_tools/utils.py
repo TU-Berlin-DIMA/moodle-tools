@@ -5,9 +5,9 @@ import markdown
 import sqlparse  # type: ignore
 
 
-def add_table_borders(text: str) -> str:
-    """Add a border to tables in the question text."""
-    return text.replace("<table>", '<table border="1px solid black" style="margin-bottom: 2ex">')
+def format_tables(text: str) -> str:
+    """Add bootstrap style classes to table tags."""
+    return text.replace("<table>", '<table class="table table-sm w-auto">')
 
 
 def parse_markdown(text: str) -> str:
@@ -33,11 +33,11 @@ def preprocess_text(text: str, **flags: bool) -> str:
 
     Flags:
     - markdown: Bool
-    - table_border: Bool
+    - table_styling: Bool
     """
     text = parse_markdown(text) if flags["markdown"] else text
     text = inline_images(text)
-    text = add_table_borders(text) if flags["table_border"] else text
+    text = format_tables(text) if flags["table_styling"] else text
     return text
 
 

@@ -82,7 +82,7 @@ class TestGeneralQuestion:
             yaml.safe_load_all(input_yaml_with_property),
             strict_validation=False,
             parse_markdown=False,
-            add_table_border=False,
+            table_styling=False,
         )
         question_with_type = next(questions)
         assert isinstance(question_with_type, TrueFalseQuestion)
@@ -92,7 +92,7 @@ class TestGeneralQuestion:
             yaml.safe_load_all(input_yaml_with_no_question_type),
             strict_validation=False,
             parse_markdown=False,
-            add_table_border=False,
+            table_styling=False,
         )
 
         with pytest.raises(ParsingError) as e_no_type:
@@ -104,7 +104,7 @@ class TestGeneralQuestion:
             yaml.safe_load_all(input_yaml_with_no_support),
             strict_validation=False,
             parse_markdown=False,
-            add_table_border=False,
+            table_styling=False,
         )
 
         with pytest.raises(ParsingError) as e_no_support:
@@ -116,7 +116,7 @@ class TestGeneralQuestion:
             yaml.safe_load_all(input_yaml_with_no_title),
             strict_validation=False,
             parse_markdown=False,
-            add_table_border=False,
+            table_styling=False,
         )
 
         with pytest.raises(ParsingError) as e_no_type:
@@ -136,7 +136,7 @@ class TestGeneralQuestion:
             yaml.safe_load_all(reference_yaml),
             strict_validation=False,
             parse_markdown=False,
-            add_table_border=False,
+            table_styling=False,
         )
         question_to_test = next(questions)
         assert isinstance(question_to_test, test_data[1])

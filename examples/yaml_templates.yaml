@@ -291,7 +291,7 @@ title: Multiple choice question with Markdown  # Mandatory
 general_feedback: General feedback  # Mandatory in strict mode
 markdown: true   # Mandatory
 skip_validation: true   # Optional
-table_border: true   # Optional
+table_styling: true   # Optional
 question: |-   # Mandatory
   # Really important question!
 

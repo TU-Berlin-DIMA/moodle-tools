@@ -17,7 +17,7 @@ def load_questions(
     documents: Iterator[dict[str, Any]],
     strict_validation: bool = True,
     parse_markdown: bool = True,
-    add_table_border: bool = True,
+    table_styling: bool = True,
 ) -> Iterator[Question]:
     """Load questions from a collection of dictionaries.
 
@@ -25,8 +25,8 @@ def load_questions(
         documents: Collection of dictionaries.
         strict_validation: Validate each question strictly and raise errors for questions that miss
             optional information, such as feedback (default True).
-        parse_markdown: Parse question and answer text as Markdown (default False).
-        add_table_border: Put a 1 Pixel solid black border around each table cell (default False).
+        parse_markdown: Parse question and answer text as Markdown (default True).
+        table_styling: Add Bootstrap style classes to table tags (default True).
 
     Yields:
         Iterator[Question]: The loaded questions.
@@ -35,8 +35,8 @@ def load_questions(
         ParsingError: If question type or title are not provided.
     """
     for document in documents:
-        if "table_border" not in document:
-            document.update({"table_border": add_table_border})
+        if "table_styling" not in document:
+            document.update({"table_styling": table_styling})
         if "markdown" not in document:
             document.update({"markdown": parse_markdown})
         if "skip_validation" in document:
@@ -75,16 +75,16 @@ def generate_moodle_questions(
     skip_validation: bool = False,
     parse_markdown: bool = True,
     add_question_index: bool = False,
-    add_table_border: bool = True,
+    table_styling: bool = True,
 ) -> str:
     """Generate Moodle XML from a file with a list of YAML documents.
 
     Args:
         file: Input YAML file.
         skip_validation: Skip strict validation (default False).
-        parse_markdown: Parse question and answer text as Markdown (default False).
+        parse_markdown: Parse question and answer text as Markdown (default True).
         add_question_index: Extend each question title with an increasing number (default False).
-        add_table_border: Put a 1 Pixel solid black border around each table cell (default False).
+        table_styling: Add Bootstrap style classes to table tags (default True).
 
     Returns:
         str: Moodle XML for all questions in the YAML file.
@@ -94,7 +94,7 @@ def generate_moodle_questions(
             yaml.safe_load_all(file),
             strict_validation=not skip_validation,
             parse_markdown=parse_markdown,
-            add_table_border=add_table_border,
+            table_styling=table_styling,
         )
     )
 

@@ -64,7 +64,7 @@ class TestUtils:
 
         assert utils.parse_markdown(eval_text).strip() == expected_text.strip()
 
-    def test_table_borders(self) -> None:
+    def test_table_styling(self) -> None:
         eval_text = dedent(
             """
         <table>
@@ -86,7 +86,7 @@ class TestUtils:
 
         expected_text = dedent(
             """
-        <table border="1px solid black" style="margin-bottom: 2ex">
+        <table class="table table-sm w-auto">
         <thead>
         <tr>
         <th>Col1</th>
@@ -103,7 +103,7 @@ class TestUtils:
         """
         )
 
-        assert utils.add_table_borders(eval_text).strip() == expected_text.strip()
+        assert utils.format_tables(eval_text).strip() == expected_text.strip()
 
     def test_inline_image(self) -> None:
         # TODO: Implement it
