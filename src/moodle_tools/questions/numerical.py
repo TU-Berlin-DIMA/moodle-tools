@@ -2,6 +2,7 @@ from typing import Any
 
 from moodle_tools import ParsingError
 from moodle_tools.questions.question import Question, QuestionAnalysis
+from moodle_tools.utils import preprocess_text
 
 
 class NumericalQuestion(Question):
@@ -35,13 +36,17 @@ class NumericalQuestion(Question):
         if all_points_specified and 100 not in [answer["points"] for answer in self.answers]:
             raise ParsingError("At least one answer must have 100 points if you specify points.")
         if not all_points_specified:
+            # TODO: Change this print to a LOG
+            print("[DEBUG] Not all points specified, first answer is assumed to be correct.")
             for i, answer in enumerate(self.answers):
                 if "points" not in answer:
                     answer["points"] = 100 if i == 0 else 0
                 else:
                     raise ParsingError("All or no answers must have points specified.")
-                # TODO: Change this print to a LOG
-                print("[DEBUG] No points specified, first answer is assumed to be correct.")
+                if "feedback" not in answer:
+                    answer["feedback"] = ""
+                else:
+                    answer["feedback"] = preprocess_text(answer["feedback"], **flags)
 
     def validate(self) -> list[str]:
         errors = super().validate()

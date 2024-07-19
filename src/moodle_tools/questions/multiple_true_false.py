@@ -29,12 +29,12 @@ class MultipleTrueFalseQuestion(Question):
         self.shuffle_answers = shuffle_answers
 
         for answer in self.answers:
-            # Update missing feedback
-            if "feedback" not in answer:
-                answer["feedback"] = ""
-            # Inline images
             answer["answer"] = preprocess_text(answer["answer"], **flags)
             answer["choice"] = str(answer["choice"])
+            if "feedback" not in answer:
+                answer["feedback"] = ""
+            else:
+                answer["feedback"] = preprocess_text(answer["feedback"], **flags)
 
     def validate(self) -> list[str]:
         errors = super().validate()

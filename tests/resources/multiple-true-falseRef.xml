@@ -98,7 +98,7 @@
                 <text><![CDATA[<p>Answer 1</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
-                <text><![CDATA[Feedback 1]]></text>
+                <text><![CDATA[<p>Feedback 1</p>]]></text>
             </feedbacktext>
         </row>
         <row number="2">
@@ -106,7 +106,7 @@
                 <text><![CDATA[<p>Answer 2</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
-                <text><![CDATA[Feedback 2]]></text>
+                <text><![CDATA[<p>Feedback 2</p>]]></text>
             </feedbacktext>
         </row>
         <row number="3">
@@ -114,7 +114,7 @@
                 <text><![CDATA[<p>Answer 3</p>]]></text>
             </optiontext>
             <feedbacktext format="html">
-                <text><![CDATA[Feedback 3]]></text>
+                <text><![CDATA[<p>Feedback 3</p>]]></text>
             </feedbacktext>
         </row>
         <column number="1">
