@@ -9,6 +9,7 @@ from typing import Any, Iterator
 
 import yaml
 from jinja2 import Environment, PackageLoader
+from loguru import logger
 
 from moodle_tools.questions.factory import QuestionFactory
 from moodle_tools.questions.question import Question
@@ -58,16 +59,16 @@ def load_questions(
             yield QuestionFactory.create_question(question_type, **internal_document)
 
         question = QuestionFactory.create_question(question_type, **document)
+        logger.debug(f"Parsed `{type(question).__name__}` question.")
         if strict_validation:
             errors = question.validate()
-            # TODO: Raise a ValidationError here instead of printing to stderr
             if errors:
                 message = (
-                    "---\nThe following question did not pass strict validation:\n"
+                    "The following question did not pass strict validation:\n"
                     + f"{yaml.safe_dump(document)}\n"
                     + "\n- ".join(errors)
                 )
-                print(message, file=sys.stderr)
+                logger.error(message)
                 continue
         yield question
 
@@ -106,12 +107,15 @@ def generate_moodle_questions(
                 if add_question_index:
                     question.title = f"{question.title} ({i})"
                 questions.append(question)
+    logger.debug(f"Loaded {len(questions)} questions from YAML.")
 
     env = Environment(
         loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
     )
     template = env.get_template("quiz.xml.j2")
-    return template.render(questions=[question.to_xml(env) for question in questions])
+    xml = template.render(questions=[question.to_xml(env) for question in questions])
+    logger.info(f"Generated {len(questions)} Moodle XML questions.")
+    return xml
 
 
 def iterate_inputs(
@@ -142,8 +146,7 @@ def iterate_inputs(
         elif strict:
             raise IOError(f"Not a file or folder: {file}")
         else:
-            # TODO: Change this to a logging statement once we introduce a logger
-            print(f"[DEBUG] Neither a file nor a folder: {file}")
+            logger.debug(f"{file} is neither a file nor a folder - ignoring.")
 
 
 def parse_args() -> argparse.Namespace:
@@ -181,10 +184,18 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Extend each question title with an increasing number (default: %(default)s)",
     )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        type=str,
+        choices=["DEBUG", "INFO", "ERROR"],
+        help="Set the log level (default: %(default)s)",
+    )
 
     return parser.parse_args()
 
 
+@logger.catch(reraise=False, onerror=lambda _: sys.exit(1))
 def main() -> None:
     """Run the question generator.
 
@@ -194,13 +205,25 @@ def main() -> None:
         SystemExit: If the program is called with invalid arguments.
     """
     args = parse_args()
+    logger.remove()
+    logger.add(
+        sys.stdout,
+        format="{time:YYYY-MM-DD HH:mm:ss} | <level>{message}</level>",
+        level=args.log_level,
+        filter=lambda record: record["level"].no < 40,  # Don't log errors twice
+    )
+    logger.add(
+        sys.stderr,
+        format="{time:YYYY-MM-DD HH:mm:ss} | <level>{message}</level>",
+        level="ERROR",
+    )
+
     inputs = iterate_inputs(args.input, not args.skip_validation)
     question_xml = generate_moodle_questions(
         paths=inputs,
         skip_validation=args.skip_validation,
         add_question_index=args.add_question_index,
     )
-    # TODO: Refactor this print statement
     print(question_xml, file=args.output)
 
 

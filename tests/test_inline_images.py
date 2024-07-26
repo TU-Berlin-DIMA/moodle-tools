@@ -28,7 +28,10 @@ class TestInlineImages:
         captured = capsys.readouterr()
         assert captured.err == ""
         assert '<img alt="Inline image image1.png" src="data:image/png;base64,iVBO' in captured.out
-        assert '<img alt="Inline image folder1/image2.png" src="data:image/png;base64,iVBO' in captured.out
+        assert (
+            '<img alt="Inline image folder1/image2.png" src="data:image/png;base64,iVBO'
+            in captured.out
+        )
 
     def test_explicit_file_in_folder(self, capsys: pytest.CaptureFixture[str]) -> None:
         sys.argv = ["make-questions", "-i", "folder2/file4.yml"]

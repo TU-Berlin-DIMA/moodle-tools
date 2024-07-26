@@ -6,6 +6,8 @@ import sys
 from io import TextIOBase
 from statistics import median
 
+from loguru import logger
+
 from moodle_tools.questions.cloze import ClozeQuestionAnalysis
 from moodle_tools.questions.coderunner import CoderunnerQuestionAnalysis
 from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
@@ -41,7 +43,7 @@ def analyze_questions(
     grades = [grade["grade"] for _, grade in questions]
     median_grade = median(grades)
     mad = median([abs(grade - median_grade) for grade in grades])
-    print(f"Median grade: {median_grade:1.1f}, MAD: {mad:1.1f}", file=sys.stderr)
+    logger.info(f"Median grade: {median_grade:1.1f}, MAD: {mad:1.1f}")
     # Write normalized results as CSV file
     fieldnames = [
         "question_number",
@@ -173,6 +175,9 @@ def main() -> None:
         Any exceptions raised during execution.
     """
     args = parse_args()
+    logger.remove()
+    logger.add(sys.stdout, format="{time:YYYY-MM-DD HH:mm:ss} | <level>{message}</level>")
+
     # TODO: Refactor or remove
     custom_handlers: list[QuestionAnalysis] = []
     analyze_questions(args.input, args.output, args.handlers + custom_handlers)
