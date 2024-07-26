@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from pathlib import Path
 from textwrap import dedent
@@ -9,7 +10,9 @@ from moodle_tools import ParsingError
 from moodle_tools.make_questions import load_questions, main
 from moodle_tools.questions import (
     ClozeQuestion,
+    CoderunnerDDLQuestion,
     CoderunnerDQLQuestion,
+    CoderunnerStreamingQuestion,
     MissingWordsQuestion,
     MultipleChoiceQuestion,
     MultipleTrueFalseQuestion,
@@ -19,18 +22,16 @@ from moodle_tools.questions import (
 )
 
 # Dictionary with a correspondance between input file and tests references
-# TODO: add example/yaml template for general coderunner, coderunner dql, and coderunner streaming
 test_cases = {
     "true_false": ("true-false.yaml", TrueFalseQuestion),
-    "multiple_choice": (
-        "multiple-choice.yaml",
-        MultipleChoiceQuestion,
-    ),
+    "multiple_choice": ("multiple-choice.yaml", MultipleChoiceQuestion),
     "numerical": ("numerical.yaml", NumericalQuestion),
     "multiple_true_false": ("multiple-true-false.yaml", MultipleTrueFalseQuestion),
     "missing_words": ("missing-words.yaml", MissingWordsQuestion),
     "cloze": ("cloze.yaml", ClozeQuestion),
-    "sql_dql": ("coderunner-w_connection.yaml", CoderunnerDQLQuestion),
+    "sql_dql": ("coderunner-dql-wo_connection.yaml", CoderunnerDQLQuestion),
+    "sql_ddl": ("coderunner-ddl.yaml", CoderunnerDDLQuestion),
+    "isda_streaming": ("coderunner-streaming.yaml", CoderunnerStreamingQuestion),
 }
 
 
@@ -125,21 +126,20 @@ class TestGeneralQuestion:
 
     @pytest.mark.parametrize("test_data", test_cases.values())
     def test_question_types(self, test_data: tuple[str, type[Question]]) -> None:
-        # Get the path to the directory containing the test resources
-        test_resources_dir = Path(__file__).parent / "../../examples"
+        # Change to the directory containing the test resources
+        with contextlib.chdir(Path(__file__).parent / "../../examples"):
+            # Load content from the file
+            with open(test_data[0], "r", encoding="utf-8") as f:
+                reference_yaml = f.read().strip()
 
-        # Load content from the file
-        with open(test_resources_dir / test_data[0], "r", encoding="utf-8") as f:
-            reference_yaml = f.read().strip()
-
-        questions = load_questions(
-            yaml.safe_load_all(reference_yaml),
-            strict_validation=False,
-            parse_markdown=False,
-            table_styling=False,
-        )
-        question_to_test = next(questions)
-        assert isinstance(question_to_test, test_data[1])
+            questions = load_questions(
+                yaml.safe_load_all(reference_yaml),
+                strict_validation=False,
+                parse_markdown=False,
+                table_styling=False,
+            )
+            question_to_test = next(questions)
+            assert isinstance(question_to_test, test_data[1])
 
     def test_all_template_strict_mode(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments all types in strict mode

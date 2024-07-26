@@ -25,12 +25,12 @@ question: >-    #The formula is written the same way as in the Moodle rich text 
   </p>
   <div style="display:flex; flex-flow: row wrap;">
     <div style="margin: 1em;">
-      <img alt="Distanz 1-C" src="examples/assets/manhattan_distance_1.svg" />
+      <img alt="Distanz 1-C" src="assets/manhattan_distance_1.svg" />
       <br>
       {1:MULTICHOICE:Euklidisch~Hamming~=Manhattan~Maximum~Minimum}
     </div>
     <div style="margin: 1em;">
-      <img alt="Distanz 1-E" src="examples/assets/minimum_distance_1.svg" />
+      <img alt="Distanz 1-E" src="assets/minimum_distance_1.svg" />
       <br>
       {1:MULTICHOICE:Euklidisch~Hamming~Manhattan~Maximum~=Minimum}
     </div>

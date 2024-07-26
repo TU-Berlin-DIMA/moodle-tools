@@ -156,7 +156,7 @@ question: |-  # Mandatory
   Die Namen der teuersten Produkte und deren Preis?
 grade: 2.0  # Optional
 general_feedback: A query was submitted  # Mandatory in strict mode
-database_path: ./examples/assets/eshop.db  # Mandatory
+database_path: assets/eshop.db  # Mandatory
 answer: |-  # Mandatory
   SELECT Name, Preis
   FROM Produkt
@@ -200,7 +200,7 @@ question: |-  # Mandatory
   Die Namen der teuersten Produkte und deren Preis?
 grade: 1.5  # Optional
 general_feedback: A query was submitted  # Mandatory in strict mode
-database_path: ./examples/assets/eshop.db  # Mandatory
+database_path: assets/eshop.db  # Mandatory
 answer: |-  # Mandatory
   SELECT Name, Preis
   FROM Produkt
@@ -297,7 +297,7 @@ question: |-   # Mandatory
 
   Please take a look at the rectangle below:
 
-  ![Blue rectangle PNG](examples/assets/blue-rectangle.png)
+  ![Blue rectangle PNG](assets/blue-rectangle.png)
 
        Code
 
@@ -306,7 +306,7 @@ answers:   # Mandatory
   - answer: |-  # Mandatory - Hint: Include an image
       The rectangle is *blue*, like the one below.
 
-      ![Blue rectangle SVG](examples/assets/blue-rectangle.svg)
+      ![Blue rectangle SVG](assets/blue-rectangle.svg)
   - answer: The rectangle is yellow.
   - answer: |-  # Hint include code snippet
       ```

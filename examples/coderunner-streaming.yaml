@@ -3,7 +3,7 @@
 type: isda_streaming
 category: Streaming/autobahn
 title: Sample Streaming Coderunner Question
-input_stream: ./examples/assets/autobahn.csv
+input_stream: assets/autobahn.csv
 question: |
   Question text goes here.
 grade: 1.0

@@ -1,8 +1,10 @@
 """.. include:: ../../docs/make_questions.md"""
 
 import argparse
+import contextlib
+import os
 import sys
-from io import TextIOBase
+from pathlib import Path
 from typing import Any, Iterator
 
 import yaml
@@ -71,16 +73,16 @@ def load_questions(
 
 
 def generate_moodle_questions(
-    file: TextIOBase,
+    paths: Iterator[Path],
     skip_validation: bool = False,
     parse_markdown: bool = True,
     add_question_index: bool = False,
     table_styling: bool = True,
 ) -> str:
-    """Generate Moodle XML from a file with a list of YAML documents.
+    """Generate Moodle XML from a list of paths to YAML documents.
 
     Args:
-        file: Input YAML file.
+        paths: Input YAML files as paths.
         skip_validation: Skip strict validation (default False).
         parse_markdown: Parse question and answer text as Markdown (default True).
         add_question_index: Extend each question title with an increasing number (default False).
@@ -89,24 +91,59 @@ def generate_moodle_questions(
     Returns:
         str: Moodle XML for all questions in the YAML file.
     """
-    questions = list(
-        load_questions(
-            yaml.safe_load_all(file),
-            strict_validation=not skip_validation,
-            parse_markdown=parse_markdown,
-            table_styling=table_styling,
-        )
-    )
-
-    if add_question_index:
-        for i, question in enumerate(questions, start=1):
-            question.title = f"{question.title} ({i})"
+    questions: list[Question] = []
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as file, contextlib.chdir(path.parent):
+            for i, question in enumerate(
+                load_questions(
+                    yaml.safe_load_all(file),
+                    strict_validation=not skip_validation,
+                    parse_markdown=parse_markdown,
+                    table_styling=table_styling,
+                ),
+                start=1,
+            ):
+                if add_question_index:
+                    question.title = f"{question.title} ({i})"
+                questions.append(question)
 
     env = Environment(
         loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
     )
     template = env.get_template("quiz.xml.j2")
     return template.render(questions=[question.to_xml(env) for question in questions])
+
+
+def iterate_inputs(
+    files: Iterator[str | os.PathLike[Any]], strict: bool = False
+) -> Iterator[Path]:
+    """Iterate over a collection of input files or directories.
+
+    Args:
+        files: An iterator of file paths or directory paths.
+        strict: If True, raise an IOError if a path is neither a file nor a directory.
+                If False, ignore such paths.
+
+    Yields:
+        Iterator[Path]: A generator that yields Path objects representing input files.
+    """
+    for file in files:
+        path = Path(file)
+        # Ignore the extension if the file is explicitly specified on the command line.
+        if path.is_file():
+            yield path
+        elif path.is_dir():
+            # TODO: Refactor this to use path.walk() once we drop Python 3.11 support
+            for dirpath, _, filenames in os.walk(path):
+                for filename in filenames:
+                    # Only process YAML files in folders, to exclude resources, like images.
+                    if filename.endswith(".yml") or filename.endswith(".yaml"):
+                        yield Path(dirpath) / filename
+        elif strict:
+            raise IOError(f"Not a file or folder: {file}")
+        else:
+            # TODO: Change this to a logging statement once we introduce a logger
+            print(f"[DEBUG] Neither a file nor a folder: {file}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -119,25 +156,30 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-i",
         "--input",
-        help="Input file (default: %(default)s)",
-        type=argparse.FileType("r", encoding="utf-8"),
-        default=sys.stdin,
+        action="extend",
+        nargs="+",
+        type=str,
+        required=True,
+        help="Input files or folder",
     )
     parser.add_argument(
         "-o",
         "--output",
-        help="Output file (default: %(default)s)",
-        type=argparse.FileType("w", encoding="utf-8"),
         default=sys.stdout,
+        type=argparse.FileType("w", encoding="utf-8"),
+        help="Output file (default: stdout)",
     )
     parser.add_argument(
-        "-s", "--skip-validation", help="Skip strict validation", action="store_true"
+        "-s",
+        "--skip-validation",
+        action="store_true",
+        help="Skip strict validation (default: %(default)s)",
     )
     parser.add_argument(
         "-q",
         "--add-question-index",
-        help="Extend each question title with an increasing number",
         action="store_true",
+        help="Extend each question title with an increasing number (default: %(default)s)",
     )
 
     return parser.parse_args()
@@ -152,8 +194,9 @@ def main() -> None:
         SystemExit: If the program is called with invalid arguments.
     """
     args = parse_args()
+    inputs = iterate_inputs(args.input, not args.skip_validation)
     question_xml = generate_moodle_questions(
-        file=args.input,
+        paths=inputs,
         skip_validation=args.skip_validation,
         add_question_index=args.add_question_index,
     )

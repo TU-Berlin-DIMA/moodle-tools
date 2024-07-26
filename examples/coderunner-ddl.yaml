@@ -8,7 +8,7 @@ question: |
   This is a DDL question
 grade: 8.0
 general_feedback: Die Beschreibungen der Tests geben Ihnen Hinweise auf die Korrektheit Ihrer Lösung.
-database_path: examples/assets/emptydb.db
+database_path: assets/emptydb.db
 answer: |-
   CREATE TABLE thisisatest (
     id INTEGER PRIMARY KEY,

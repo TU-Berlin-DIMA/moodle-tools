@@ -1,0 +1,12 @@
+---
+type: numerical
+title: Dummy question
+question: |
+  How many dots in are in the image?
+
+  ![Inline image image1.png](image1.png)
+
+  ![Inline image folder1/image2.png](folder1/image2.png)
+answers:
+  - One dot
+general_feedback: Feedback

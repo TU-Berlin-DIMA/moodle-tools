@@ -10,7 +10,7 @@ question: |-
   Die Namen der teuersten Produkte und deren Preis?
 grade: 2.0
 general_feedback: A query was submitted
-database_path: ./examples/assets/eshop.db
+database_path: assets/eshop.db
 answer: |-
   SELECT Name, Preis
   FROM Produkt

@@ -68,7 +68,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             internal_copy: Flag to create an internal copy for debugging purposes.
             **flags: Additional flags for the question.
         """
-        self.input_stream = Path(input_stream)
+        self.input_stream = Path(input_stream).absolute()
 
         # pylint: disable=duplicate-code
         super().__init__(

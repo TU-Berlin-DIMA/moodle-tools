@@ -1,0 +1,10 @@
+---
+type: numerical
+title: Dummy question
+question: |
+  How many dots in are in the image?
+
+  ![Inline image image2.png](image2.png)
+answers:
+  - Four dots
+general_feedback: Feedback

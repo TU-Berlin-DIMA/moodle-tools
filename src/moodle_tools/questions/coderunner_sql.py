@@ -93,7 +93,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             flags: Additional flags that can be used to control the behavior of the
                 question.
         """
-        self.database_path = Path(database_path)
+        self.database_path = Path(database_path).absolute()
         self.database_connection = database_connection
 
         if not self.database_path.exists():

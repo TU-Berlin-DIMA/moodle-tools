@@ -7,7 +7,7 @@ question: |-
 
   Please take a look at the rectangle below:
 
-  ![Blue rectangle PNG](examples/assets/blue-rectangle.png)
+  ![Blue rectangle PNG](assets/blue-rectangle.png)
 
        Code
 
@@ -16,7 +16,7 @@ answers:
   - answer: |-
       The rectangle is *blue*, like the one below.
 
-      ![Blue rectangle SVG](examples/assets/blue-rectangle.svg)
+      ![Blue rectangle SVG](assets/blue-rectangle.svg)
   - answer: The rectangle is yellow.
   - answer: |-
       ```

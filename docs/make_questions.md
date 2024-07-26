@@ -1,6 +1,6 @@
 # Generate Moodle Quiz Questions
 
-This tool allows the generation of (multiple) Moodle quiz questions (of the same type) from a single YAML document.
+This tool allows the generation of (multiple) Moodle quiz questions from one or multiple YAML documents.
 The questions can be imported into a YAML-defined or individually selected question category in Moodle.
 We can then create a quiz entry which randomly selects a question from the question category.
 
@@ -95,7 +95,7 @@ It is possible to use more than one question variant.
 
 ## Question Types
 
-At the moment, seven question types are supported.
+At the moment, the following question types are supported.
 
 - Simple true/false questions
 - Multiple choice questions with a single selection
@@ -104,6 +104,8 @@ At the moment, seven question types are supported.
 - Missing words questions
 - Cloze questions
 - CodeRunner SQL-DQL
+- CodeRunner SQL-DDL/DML
+- CodeRunner ISDA Streaming
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
@@ -129,7 +131,8 @@ This YAML content is rendered as follows in Moodle:
 
 ![Simple true/false question](assets/simple-true-false.png)
 
-It is possible to shorten the specification to only include the question type, the question text, and the correct answer, this requires the skip-strict-mode to be true, either by using the `-s` argument in the CLI or by declaring it in the YAML document:
+It is possible to shorten the specification to only include the question type, the question text, and the correct answer.
+This requires the skip-strict-mode to be true, either by using the `-s` argument in the CLI or by declaring it in the YAML document:
 
 ```yaml
 type: true_false
@@ -152,7 +155,7 @@ Moodle renders a radio button next to each answer.
 
 Note that the `points` attribute for each answer is optional.
 However, it is only valid to specify points for all OR none of the answers within a question.
-If you do not specify `points`, the first answer is assumed the correct one and the other are assumed incorrect.
+If you do not specify `points`, the first answer is assumed the correct one and the others are assumed incorrect.
 
 The full YAML format for such a question is as follows:
 
@@ -201,8 +204,7 @@ answers:
 This question types specifies a question which contains multiple answers.
 For each answer, the student has to indicate whether it is true of false.
 
-This question should be used instead of specifying a multiple choice question with multiple correct answers.
-(Moodle would render those using checkboxes, allowing the student to select multiple answers.)
+This question should be used instead of specifying a multiple choice question with multiple correct answers (sinceMoodle would render those using checkboxes, allowing the student to select multiple answers).
 The reason is that the examination guidelines do not allow us to subtract points for false answers.
 Therefore, students could simply select all possible answers and get full credit.
 This strategy is not possible with this question type.
@@ -405,7 +407,7 @@ The general feedback is always shown.
 
 ### Coderunner questions
 
-This is a generic question type for three types of questions: `sql_ddl`, `sql_dql`, and `isda_streaming`.
+This is an abstract question type for three types of concrete questions: `sql_ddl`, `sql_dql`, and `isda_streaming`.
 
 The full YAML format for such a question is as follows:
 
@@ -535,7 +537,10 @@ make-questions -h
 ### Input / output handling
 
 The input YAML and output XML file are specified with `-i` and `-o`, respectively.
-It is also possible to use shell redirection.
+Input paths can either refer to specific files or entire folders.
+If a path points to a folder, `make-questions` will recursively iterate through the folder and take every `.yml` or `.yaml` file as input.
+You can provide one or multiple `-i` flags to combine specific files and entire folders in one call.
+It is also possible to use shell redirection for the output but the input must be given as paths to YAML files.
 
 ### Question numbers
 
@@ -601,7 +606,7 @@ question: >- #The formula is written the same way as in the Moodle rich text edi
   ...
   <div style="display:flex; flex-flow: row wrap;">
     <div style="margin: 1em;">
-      <img alt="Distanz 1-C" src="examples/assets/manhattan_distance_1.svg" />
+      <img alt="Distanz 1-C" src="assets/manhattan_distance_1.svg" />
       <br>
       {1:MULTICHOICE:Euklidisch~Hamming~=Manhattan~Maximum~Minimum}
     </div>
@@ -626,7 +631,7 @@ The following image shows partially the question in the ISIS (Moodle) preview si
 
 ![Pure HTML question definition editor and preview.](assets/html_formatting-1.png)
 
-### Inline images
+### Inlining images
 
 PNG or SVG images specified in question and answer texts will be inlined in the exported XML document.
 This way, we don't have to manually upload images using the Moodle web interface.

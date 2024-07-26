@@ -23,7 +23,7 @@ def inline_images(text: str) -> str:
         with open(filename, "rb") as file:
             base64_str = base64.b64encode(file.read()).decode("utf-8")
             img_type = "svg+xml" if match.group(2) == "svg" else match.group(2)
-            text = text.replace(filename, f"data:image/{img_type};base64,{base64_str}")
+            text = text.replace(f"src=\"{filename}\"", f"src=\"data:image/{img_type};base64,{base64_str}\"")
 
     return text
 

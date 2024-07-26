@@ -9,7 +9,7 @@ from moodle_tools.make_questions import main
 class TestCoderunnerQuestionSQL:
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/coderunner-wo_connection.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/coderunner-dql-wo_connection.yaml", "-s"]
 
         # Call the main function
         main()
@@ -22,7 +22,7 @@ class TestCoderunnerQuestionSQL:
 
     def test_correct_number_of_testcases(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/coderunner-wo_connection.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/coderunner-dql-wo_connection.yaml", "-s"]
 
         # Call the main function
         main()
@@ -34,7 +34,7 @@ class TestCoderunnerQuestionSQL:
 
     def test_correct_number_of_inserts_into(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/coderunner-wo_connection.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/coderunner-dql-wo_connection.yaml", "-s"]
 
         # Call the main function
         main()
@@ -52,7 +52,7 @@ class TestCoderunnerQuestionSQL:
 
     def test_correct_file_name(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/coderunner-wo_connection.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/coderunner-dql-wo_connection.yaml", "-s"]
 
         # Call the main function
         main()
@@ -67,7 +67,9 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "coderunner-wo_connection.xml", "r", encoding="utf-8") as f:
+        with open(
+            test_resources_dir / "coderunner-dql-wo_connection.xml", "r", encoding="utf-8"
+        ) as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -77,7 +79,7 @@ class TestCoderunnerQuestionSQL:
         sys.argv = [
             "make-questions",
             "-i",
-            "examples/coderunner-wo_connection.yaml",
+            "examples/coderunner-dql-wo_connection.yaml",
             "-o",
             str(output_file_path),
             "-s",
@@ -96,7 +98,9 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "coderunner-w_connection.xml", "r", encoding="utf-8") as f:
+        with open(
+            test_resources_dir / "coderunner-dql-w_connection.xml", "r", encoding="utf-8"
+        ) as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -106,7 +110,7 @@ class TestCoderunnerQuestionSQL:
         sys.argv = [
             "make-questions",
             "-i",
-            "examples/coderunner-w_connection.yaml",
+            "examples/coderunner-dql-w_connection.yaml",
             "-o",
             str(output_file_path),
             "-s",
