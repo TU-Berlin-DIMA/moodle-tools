@@ -3,6 +3,7 @@ import re
 
 import markdown
 import sqlparse  # type: ignore
+from loguru import logger
 
 
 def format_tables(text: str) -> str:
@@ -30,13 +31,17 @@ def inline_images(text: str) -> str:
     return text
 
 
-def preprocess_text(text: str, **flags: bool) -> str:
+def preprocess_text(text: str | None, **flags: bool) -> str:
     """Function that preprocess the text depending on the flags.
 
     Flags:
     - markdown: Bool
     - table_styling: Bool
     """
+    if not text:
+        logger.debug("Received empty text, doing nothing.")
+        return ""
+
     text = parse_markdown(text) if flags["markdown"] else text
     text = inline_images(text)
     text = format_tables(text) if flags["table_styling"] else text
