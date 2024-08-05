@@ -10,7 +10,6 @@ __all__ = [
     "CoderunnerDQLQuestion",
     "CoderunnerStreamingQuestion",
     "ClozeQuestionAnalysis",
-    "CoderunnerQuestionAnalysis",
     "DropDownQuestionAnalysis",
     "MissingWordsQuestionAnalysis",
     "MultipleChoiceQuestionAnalysis",
@@ -21,7 +20,6 @@ __all__ = [
 ]
 
 from .cloze import ClozeQuestion, ClozeQuestionAnalysis
-from .coderunner import CoderunnerQuestionAnalysis
 from .coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
 from .coderunner_streaming import CoderunnerStreamingQuestion
 from .drop_down import DropDownQuestionAnalysis

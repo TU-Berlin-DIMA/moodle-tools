@@ -6,7 +6,7 @@ from typing import Required, TypedDict
 
 from jinja2 import Environment
 
-from moodle_tools.questions.question import Question, QuestionAnalysis
+from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError, parse_code
 
 
@@ -176,7 +176,3 @@ class CoderunnerQuestion(Question):
                 "files": self.files,
             }
         )
-
-
-class CoderunnerQuestionAnalysis(QuestionAnalysis):
-    pass

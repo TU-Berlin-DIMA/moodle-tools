@@ -51,11 +51,11 @@ class Question(ABC):
 
 
 class AnalysisItem(NamedTuple):
-    question_number: int
+    question_id: str
     variant_number: int
     question: str
     subquestion: str
-    correct_response: str
+    correct_answer: str
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, AnalysisItem):
@@ -67,10 +67,8 @@ class AnalysisItem(NamedTuple):
 
 
 class QuestionAnalysis:
-    def __init__(self, question_number: int | str) -> None:
-        if isinstance(question_number, str):
-            question_number = int(question_number)
-        self.question_number = question_number
+    def __init__(self, question_id: str) -> None:
+        self.question_id = question_id
         self.questions: dict[AnalysisItem, Counter[str]] = {}
         self.question_texts: list[str] = []
 
@@ -86,7 +84,7 @@ class QuestionAnalysis:
         if question not in self.question_texts:
             self.question_texts.append(question)
         parsed_question = AnalysisItem(
-            self.question_number,
+            self.question_id,
             len(self.question_texts),
             question,
             sub_question,
@@ -109,6 +107,8 @@ class QuestionAnalysis:
         total = sum(responses.values())
 
         def correct_responses(responses: Counter[str], correct_answer: str) -> int:
+            # TODO: This method should consider numerical euqivalance plus a tolerance for
+            # numerical questions (and cloze)
             grade = responses[correct_answer]
             if re.match(r"^([0-9]*)?\.[0-9]+$", correct_answer):
                 grade += responses[correct_answer.replace(".", ",")]

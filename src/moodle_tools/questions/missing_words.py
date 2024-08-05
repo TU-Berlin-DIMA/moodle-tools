@@ -43,8 +43,8 @@ class MissingWordsQuestion(Question):
 
 
 class MissingWordsQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_number: int | str) -> None:
-        super().__init__(question_number, r"{(.*?)}", " ")
+    def __init__(self, question_id: str) -> None:
+        super().__init__(question_id, r"{(.*?)}", " ")
 
     def normalize_answers(self, response: str) -> dict[str, str]:
         answers: dict[str, str] = {}

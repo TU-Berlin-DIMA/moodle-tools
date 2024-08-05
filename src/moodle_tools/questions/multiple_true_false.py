@@ -47,5 +47,5 @@ class MultipleTrueFalseQuestion(Question):
 
 
 class MultipleTrueFalseQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_number: int | str):
-        super().__init__(question_number, r"(.*?)\n?: (False|Falsch|True|Wahr)", "; ")
+    def __init__(self, question_id: str):
+        super().__init__(question_id, r"(.*?)\n?: (False|Falsch|True|Wahr)", "; ")

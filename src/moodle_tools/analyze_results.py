@@ -5,11 +5,11 @@ import csv
 import sys
 from io import TextIOBase
 from statistics import median
+from typing import Literal, Sequence
 
 from loguru import logger
 
 from moodle_tools.questions.cloze import ClozeQuestionAnalysis
-from moodle_tools.questions.coderunner import CoderunnerQuestionAnalysis
 from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
 from moodle_tools.questions.missing_words import MissingWordsQuestionAnalysis
 from moodle_tools.questions.multiple_choice import MultipleChoiceQuestionAnalysis
@@ -20,37 +20,78 @@ from moodle_tools.questions.true_false import TrueFalseQuestionAnalysis
 
 __all__ = ["analyze_questions"]
 
+TRANSLATIONS = {
+    "question": {"de": "Frage", "en": "Question"},
+    "response": {"de": "Antwort", "en": "Response"},
+    "right_answer": {"de": "Richtige Antwort", "en": "Right answer"},
+}
+
+
+def detect_language(headers: Sequence[str] | None) -> Literal["en", "de"]:
+    """Detect the language of the responses export.
+
+    Args:
+        row: A row of the CSV file.
+
+    Returns:
+        Literal["en", "de"]: The detected language.
+    """
+    if headers is None:
+        logger.error("The input file does not contain any headers.")
+        sys.exit(1)
+    if "Nachname" in headers and "Vorname" in headers:
+        return "de"
+    if "Last name" in headers and "First name" in headers:
+        return "en"
+
+    logger.error(f"The input file language could not be detected via the CSV headers: {headers}")
+    sys.exit(1)
+
 
 def analyze_questions(
     infile: TextIOBase, outfile: TextIOBase, handlers: list[QuestionAnalysis]
 ) -> None:
+    csv_reader = csv.DictReader(infile, delimiter=",", quotechar='"')
+    lang = detect_language(csv_reader.fieldnames)
+
     # Process responses from input CSV file
-    for row in csv.DictReader(infile, delimiter=",", quotechar='"'):
+    for row in csv_reader:
         for handler in handlers:
-            question_num = handler.question_number
-            handler.process_response(
-                row[f"Question {question_num}"],
-                row[f"Response {question_num}"],
-                row[f"Right answer {question_num}"],
-            )
+            question_id = handler.question_id
+            try:
+                handler.process_response(
+                    row[f"{TRANSLATIONS['question'][lang]} {question_id}"],
+                    row[f"{TRANSLATIONS['response'][lang]} {question_id}"],
+                    row[f"{TRANSLATIONS['right_answer'][lang]} {question_id}"],
+                )
+            except KeyError as e:
+                logger.error(
+                    f"Could not find question with key {e} in CSV headers: {list(row.keys())}"
+                )
+                sys.exit(1)
+
     # Sort and flatten normalized questions and determine grades
     questions = [
-        (question, handler.grade(responses, question.correct_response))
-        for handler in sorted(handlers, key=lambda x: int(x.question_number))
+        (question, handler.grade(responses, question.correct_answer))
+        for handler in sorted(handlers, key=lambda x: x.question_id)
         for question, responses in handler.questions.items()
     ]
-    # Determine median grade and MAD
+
+    # Compute grade distribution statistics
     grades = [grade["grade"] for _, grade in questions]
+    # TODO: compute mean, mode, and standard deviation
+    # TODO: the median is probably wrong
     median_grade = median(grades)
     mad = median([abs(grade - median_grade) for grade in grades])
     logger.info(f"Median grade: {median_grade:1.1f}, MAD: {mad:1.1f}")
+
     # Write normalized results as CSV file
     fieldnames = [
-        "question_number",
+        "question_id",
         "variant_number",
         "question",
         "subquestion",
-        "correct_response",
+        "correct_answer",
         "grade",
         "outlier",
         "occurrence",
@@ -75,15 +116,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-i",
         "--input",
-        help="Input file (default: %(default)s)",
-        type=argparse.FileType("r"),
+        help="Input file (default: stdin)",
+        type=argparse.FileType("r", encoding="utf-8-sig"),
         default=sys.stdin,
     )
     parser.add_argument(
         "-o",
         "--output",
-        help="Output file (default: %(default)s)",
-        type=argparse.FileType("w"),
+        help="Output path, formatted as Excel-generated TAB-delimited file (default: stdout)",
+        type=argparse.FileType("w", encoding="utf-8"),
         default=sys.stdout,
     )
     parser.add_argument(
@@ -146,15 +187,6 @@ def parse_args() -> argparse.Namespace:
         action="extend",
         nargs="*",
         type=ClozeQuestionAnalysis,
-        default=[],
-    )
-    parser.add_argument(
-        "--cr",
-        "--coderunner",
-        help="List of coderunner questions",
-        action="extend",
-        nargs="*",
-        type=CoderunnerQuestionAnalysis,
         default=[],
     )
     args = parser.parse_args()

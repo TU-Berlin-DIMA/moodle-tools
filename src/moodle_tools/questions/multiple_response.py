@@ -4,8 +4,8 @@ from moodle_tools.questions.question import QuestionAnalysis
 
 
 class MultipleResponseQuestionAnalysis(QuestionAnalysis):
-    def __init__(self, question_number: int | str, answer_re: str, separator: str) -> None:
-        super().__init__(question_number)
+    def __init__(self, question_id: str, answer_re: str, separator: str) -> None:
+        super().__init__(question_id)
         self.answer_re = answer_re + separator
         self.separator = separator
 

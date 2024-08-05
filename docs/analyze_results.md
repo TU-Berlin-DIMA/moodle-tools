@@ -53,11 +53,11 @@ The resulting file can be imported into Excel (decimal separator: .).
 
 The file contains the following columns:
 
-- `question_number`
+- `question_id`
 - `variant_number`: This is determined automatically be comparing the question text to other possible variants for the same question number.
 - `question`: The question text
 - `subquestion`: This is either a textual questions, e.g., for multiple true/false or drop-down questions, or it is signifies a subquestion of a Cloze question.
-- `correct_response`
+- `correct_answer`
 - `grade`: How many students got the response right
 - `outlier`: True, if the grade is outside the range median +/- 2*MAD
 - `occurence`: How often this variant was chosen for this question number.

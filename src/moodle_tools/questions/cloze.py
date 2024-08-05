@@ -25,5 +25,5 @@ class ClozeQuestion(Question):
 
 
 class ClozeQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_number: int | str) -> None:
-        super().__init__(question_number, r"(.*?): (.*?)", "; ")
+    def __init__(self, question_id: str) -> None:
+        super().__init__(question_id, r"(.*?): (.*?)", "; ")
