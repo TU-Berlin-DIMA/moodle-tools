@@ -2,7 +2,7 @@
 <quiz>
 <question type="category">
     <category>
-        <text>$course$/Streaming/autobahn</text>
+        <text>$module$/Streaming/autobahn</text>
     </category>
 </question>
 <question type="coderunner">

@@ -2,7 +2,7 @@
 <quiz>
 <question type="category">
     <category>
-        <text>$course$/sql-dql</text>
+        <text>$module$/sql-dql</text>
     </category>
 </question>
 <question type="coderunner">

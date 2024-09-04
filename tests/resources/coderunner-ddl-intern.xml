@@ -2,7 +2,7 @@
 <quiz>
 <question type="category">
     <category>
-        <text>$course$/DDL-DML</text>
+        <text>$module$/DDL-DML</text>
     </category>
 </question>
 <question type="coderunner">
@@ -297,7 +297,7 @@ ORDER BY name;]]></text>
 </question>
 <question type="category">
     <category>
-        <text>$course$/DDL-DML</text>
+        <text>$module$/DDL-DML</text>
     </category>
 </question>
 <question type="coderunner">
