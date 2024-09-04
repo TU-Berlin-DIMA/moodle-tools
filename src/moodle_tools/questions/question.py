@@ -85,7 +85,7 @@ class QuestionAnalysis:
             self.question_texts.append(question)
         parsed_question = AnalysisItem(
             self.question_id,
-            len(self.question_texts),
+            self.question_texts.index(question) + 1,
             question,
             sub_question,
             correct_answer,

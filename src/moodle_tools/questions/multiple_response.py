@@ -12,8 +12,8 @@ class MultipleResponseQuestionAnalysis(QuestionAnalysis):
     def process_response(self, question: str, response: str, correct_answer: str) -> None:
         question = self.normalize_question(question)
         responses = self.normalize_answers(response)
-        right_answers = self.normalize_answers(correct_answer)
-        for subquestion_text, subquestion_right_answer in right_answers.items():
+        correct_answers = self.normalize_answers(correct_answer)
+        for subquestion_text, subquestion_right_answer in correct_answers.items():
             subquestion = self.add_question(question, subquestion_text, subquestion_right_answer)
             if subquestion:
                 self.add_response(subquestion, responses.get(subquestion_text, "-"))

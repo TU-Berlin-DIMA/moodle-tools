@@ -3,8 +3,8 @@
 import argparse
 import csv
 import sys
-from io import TextIOBase
-from statistics import median
+from io import TextIOWrapper
+from statistics import median, stdev
 from typing import Literal, Sequence
 
 from loguru import logger
@@ -49,7 +49,7 @@ def detect_language(headers: Sequence[str] | None) -> Literal["en", "de"]:
 
 
 def analyze_questions(
-    infile: TextIOBase, outfile: TextIOBase, handlers: list[QuestionAnalysis]
+    infile: TextIOWrapper, outfile: TextIOWrapper, handlers: list[QuestionAnalysis]
 ) -> None:
     csv_reader = csv.DictReader(infile, delimiter=",", quotechar='"')
     lang = detect_language(csv_reader.fieldnames)
@@ -71,6 +71,7 @@ def analyze_questions(
                 sys.exit(1)
 
     # Sort and flatten normalized questions and determine grades
+    # TODO: Grade calculation is wrong for numerical and cloze questions
     questions = [
         (question, handler.grade(responses, question.correct_answer))
         for handler in sorted(handlers, key=lambda x: x.question_id)
@@ -79,11 +80,17 @@ def analyze_questions(
 
     # Compute grade distribution statistics
     grades = [grade["grade"] for _, grade in questions]
-    # TODO: compute mean, mode, and standard deviation
-    # TODO: the median is probably wrong
-    median_grade = median(grades)
-    mad = median([abs(grade - median_grade) for grade in grades])
-    logger.info(f"Median grade: {median_grade:1.1f}, MAD: {mad:1.1f}")
+    m = median(grades)
+    stats = {
+        "mean": sum(grades) / len(grades),
+        "median": m,
+        "mode": max(set(grades), key=grades.count),
+        "stdev": stdev(grades),
+        "mad": median([abs(grade - m) for grade in grades]),  # Median absolute deviation
+    }
+    logger.info(
+        f"Grade stats (%): {{{', '.join(f'{key}: {value:1.2f}' for key, value in stats.items())}}}"
+    )
 
     # Write normalized results as CSV file
     fieldnames = [
@@ -101,9 +108,15 @@ def analyze_questions(
     writer.writeheader()
     for question, grade in questions:
         row = question._asdict()
-        grade["outlier"] = not median_grade - 2 * mad <= grade["grade"] <= median_grade + 2 * mad
+        grade["outlier"] = (
+            not stats["median"] - 2 * stats["mad"]
+            <= grade["grade"]
+            <= stats["median"] + 2 * stats["mad"]
+        )
         row.update(grade)
         writer.writerow(row)
+    print(type(outfile))
+    logger.debug(f"Wrote analysis report to {outfile.name}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -209,6 +222,14 @@ def main() -> None:
     args = parse_args()
     logger.remove()
     logger.add(sys.stdout, format="{time:YYYY-MM-DD HH:mm:ss} | <level>{message}</level>")
+
+    for handler in args.handlers:
+        if isinstance(handler, (ClozeQuestionAnalysis, NumericalQuestionAnalysis)):
+            logger.warning(
+                "Grade calculation and outlier detection for numerical and cloze questions is "
+                "bugged. You should not rely on it."
+            )
+            break
 
     # TODO: Refactor or remove
     custom_handlers: list[QuestionAnalysis] = []
