@@ -3,6 +3,7 @@ from typing import Any
 from moodle_tools.questions.cloze import ClozeQuestion
 from moodle_tools.questions.coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
 from moodle_tools.questions.coderunner_streaming import CoderunnerStreamingQuestion
+from moodle_tools.questions.description import Description
 from moodle_tools.questions.missing_words import MissingWordsQuestion
 from moodle_tools.questions.multiple_choice import MultipleChoiceQuestion
 from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestion
@@ -23,6 +24,7 @@ class QuestionFactory:
         "sql_ddl": CoderunnerDDLQuestion,
         "sql_dql": CoderunnerDQLQuestion,
         "isda_streaming": CoderunnerStreamingQuestion,
+        "description": Description,
     }
 
     @staticmethod

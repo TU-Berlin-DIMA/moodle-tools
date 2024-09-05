@@ -97,6 +97,7 @@ It is possible to use more than one question variant.
 
 At the moment, the following question types are supported.
 
+- Description
 - Simple true/false questions
 - Multiple choice questions with a single selection
 - Multiple true/false questions
@@ -109,6 +110,19 @@ At the moment, the following question types are supported.
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
+
+### Description
+
+This question type just provides a text field to write some information. It does not have any answer options or similar.
+
+The full YAML format for such a question is as follows:
+
+```yaml
+type: description   # Mandatory
+category: category/subcategory/description    # Optional
+title: Description title    # Mandatory
+question: Complete description    # Mandatory
+```
 
 ### Simple true/false questions
 
