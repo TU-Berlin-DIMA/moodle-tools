@@ -42,3 +42,14 @@ answers:
       - Three
   - answer: |- # Important to escape the backslash when using Markdown
       This is a formula: \\( \mathbf{a}^2 + \mathbf{b}^2 = \mathbf{c}^2 \\).
+
+  - answer: |-
+      the following table would be rendered properly as an html table in the output.
+
+      <section markdown="1">
+
+      | Col3 | Col4 |
+      |------|------|
+      | a    | b    |
+
+      </section>

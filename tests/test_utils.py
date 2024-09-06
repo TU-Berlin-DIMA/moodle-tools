@@ -26,6 +26,14 @@ class TestUtils:
         | Col1 | Col2 |
         |------|------|
         | 1    | 2    |
+
+        <section markdown="1">
+
+        | Col3 | Col4 |
+        |------|------|
+        | 3    | 4    |
+
+        </section>
         """
         )
 
@@ -59,6 +67,97 @@ class TestUtils:
         </tr>
         </tbody>
         </table>
+        <section>
+        <table>
+        <thead>
+        <tr>
+        <th>Col3</th>
+        <th>Col4</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>3</td>
+        <td>4</td>
+        </tr>
+        </tbody>
+        </table>
+        </section>
+        """
+        )
+
+        assert utils.parse_markdown(eval_text).strip() == expected_text.strip()
+
+    def test_parse_markdown_html_issue(self) -> None:
+        eval_text = dedent(
+            """
+        # Really important question!
+
+        Multiple choice question with Markdown
+
+        ## Ordered list
+
+        1. One
+        2. Two
+        3. Three
+
+        ## Unordered list
+
+        - One
+        - Two
+        - Three
+
+        | Col1 | Col2 |
+        |------|------|
+        | 1    | 2    |
+
+        <section>
+
+        | Col3 | Col4 |
+        |------|------|
+        | 3    | 4    |
+
+        </section>
+        """
+        )
+
+        expected_text = dedent(
+            """
+        <h1>Really important question!</h1>
+        <p>Multiple choice question with Markdown</p>
+        <h2>Ordered list</h2>
+        <ol>
+        <li>One</li>
+        <li>Two</li>
+        <li>Three</li>
+        </ol>
+        <h2>Unordered list</h2>
+        <ul>
+        <li>One</li>
+        <li>Two</li>
+        <li>Three</li>
+        </ul>
+        <table>
+        <thead>
+        <tr>
+        <th>Col1</th>
+        <th>Col2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>1</td>
+        <td>2</td>
+        </tr>
+        </tbody>
+        </table>
+        <section>
+
+        | Col3 | Col4 |
+        |------|------|
+        | 3    | 4    |
+
+        </section>
         """
         )
 

@@ -92,5 +92,27 @@
             <text></text>
         </feedback>
     </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[<p>the following table would be rendered properly as an html table in the output.</p>
+<section>
+<table class="table table-sm w-auto">
+<thead>
+<tr>
+<th>Col3</th>
+<th>Col4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>b</td>
+</tr>
+</tbody>
+</table>
+</section>]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
 </question>
 </quiz>

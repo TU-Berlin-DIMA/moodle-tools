@@ -13,7 +13,7 @@ def format_tables(text: str) -> str:
 
 def parse_markdown(text: str) -> str:
     """Parse the question text as markdown."""
-    return markdown.markdown(text, extensions=["tables", "attr_list"])
+    return markdown.markdown(text, extensions=["tables", "attr_list", "md_in_html"])
 
 
 def inline_images(text: str) -> str:

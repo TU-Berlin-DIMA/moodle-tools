@@ -586,6 +586,8 @@ To simplify writing complex questions and answers, it is also possible to write 
 The file `../examples/markdown.yml` contains a multiple question file with many Markdown formatting options.
 
 Note that LaTeX formulas need to be escaped differently when using Markdown.
+It is possible to enable markdown parsing within a HTML tag by specifying the attribute `markdown="1"` for that HTML tag.
+Example: `<section markdown="1">**Bold text**</section>` would be rendered correctly as bold font text.
 
 - `markdown: false`: Write LaTeX formulas with single backslash: `\(a^2 + b^2 = c^2 \)`
 - `markdown: true`: Write LaTeX formulas with double backslash: `\\(a^2 + b^2 = c^2 \\)`
