@@ -2,7 +2,7 @@
 type: missing_words
 title: Missing words question
 question: |-
-  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]] [[6]]
 general_feedback: General feedback
 correct_feedback: Correct feedback
 partial_feedback: Partial feedback
@@ -18,6 +18,8 @@ options:
     group: 1
   - answer: SIGMA
     group: 2
+  - answer: JOIN
+    group: 3
 ---
 type: missing_words
 title: Simple missing words question
@@ -30,3 +32,58 @@ options:
     group: 1
   - answer: WHERE
     group: 1
+---
+type: missing_words
+title: Simple missing words question with groups as letters and random ordering
+question: |-
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+shuffle_answers: SHUFFLE
+options:
+  - answer: SELECT
+    group: A
+  - answer: FROM
+    group: A
+  - answer: WHERE
+    group: A
+---
+type: missing_words
+title: Simple missing words question with correct solution in question text and lexicographical ordering
+question: |-
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - answer: SELECT
+    group: A
+  - answer: FROM
+    group: A
+  - answer: WHERE
+    group: A
+---
+type: missing_words
+title: Simple missing words question with gaps in options and in-order ordering
+question: |-
+  The main clauses of a SQL query are: [[1]] [[2]] [[5]]
+shuffle_answers: IN_ORDER
+options:
+  - answer: SELECT
+    group: A
+    ordinal: 1
+  - answer: FROM
+    group: A
+    ordinal: 2
+  - answer: WHERE
+    group: C
+    ordinal: 5
+---
+type: missing_words
+title: Simple missing words question with automatic gaps, correct solution in question text and lexicographical ordering
+question: |-
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - answer: WHERE
+    group: A
+  - answer: FROM
+    group: C
+  - answer: SELECT
+    group: A

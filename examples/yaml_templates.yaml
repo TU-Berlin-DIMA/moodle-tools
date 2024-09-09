@@ -108,7 +108,7 @@ answers:  # Mandatory
 type: missing_words  # Mandatory
 category: category/subcategory/missing_words  # Optional
 title: Missing words question  # Mandatory
-shuffle_answers: True  # Optional
+shuffle_answers: IN_ORDER  # Optional
 question: |-  # Mandatory
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
 general_feedback: General feedback  # Mandatory in strict mode
@@ -130,20 +130,20 @@ options:  # Mandatory
 type: missing_words  # Mandatory
 category: category/subcategory/missing_words  # Optional
 title: Simple missing words question  # Mandatory
-shuffle_answers: False  # Optional
+shuffle_answers: LEXICOGRAPHICAL  # Optional
 general_feedback: General feedback  # Mandatory in strict mode
 correct_feedback: Correct feedback  # Mandatory in strict mode
 partial_feedback: Partial feedback  # Mandatory in strict mode
 incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
 question: |-  # Mandatory
-  The main clauses of a SQL query are: [[1]] [[2]] [[3]]
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
 options:  # Mandatory
   - answer: SELECT  # Mandatory
-    group: 1  # Mandatory
+    group: A  # Mandatory
   - answer: FROM  # Mandatory
-    group: 1  # Mandatory
+    group: A  # Mandatory
   - answer: WHERE  # Mandatory
-    group: 1  # Mandatory
+    group: C  # Mandatory
 ---
 type: sql_dql  # Mandatory
 category: category/subcategory/coderunner  # Optional

@@ -5,7 +5,7 @@
         <text>Missing words question</text>
     </name>
     <questiontext format="html">
-        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]]</p>]]></text>
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]] [[6]]</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text><![CDATA[<p>General feedback</p>]]></text>
@@ -30,22 +30,32 @@
     <selectoption>
         <text>SELECT</text>
         <group>1</group>
+        <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
         <text>FROM</text>
         <group>1</group>
+        <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
         <text>WHERE</text>
         <group>2</group>
+        <!-- ordinal: 3, group: B -->
     </selectoption>
     <selectoption>
         <text>PROJECT</text>
         <group>1</group>
+        <!-- ordinal: 4, group: A -->
     </selectoption>
     <selectoption>
         <text>SIGMA</text>
         <group>2</group>
+        <!-- ordinal: 5, group: B -->
+    </selectoption>
+    <selectoption>
+        <text>JOIN</text>
+        <group>3</group>
+        <!-- ordinal: 6, group: C -->
     </selectoption>
 </question>
 <question type="gapselect">
@@ -78,14 +88,214 @@
     <selectoption>
         <text>SELECT</text>
         <group>1</group>
+        <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
         <text>FROM</text>
         <group>1</group>
+        <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
         <text>WHERE</text>
         <group>1</group>
+        <!-- ordinal: 3, group: A -->
+    </selectoption>
+</question>
+<question type="gapselect">
+    <name>
+        <text>Simple missing words question with groups as letters and random ordering</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        1
+    </shuffleanswers>
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <selectoption>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>FROM</text>
+        <group>1</group>
+        <!-- ordinal: 2, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>WHERE</text>
+        <group>1</group>
+        <!-- ordinal: 3, group: A -->
+    </selectoption>
+</question>
+<question type="gapselect">
+    <name>
+        <text>Simple missing words question with correct solution in question text and lexicographical ordering</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[2]] [[1]] [[3]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        0
+    </shuffleanswers>
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <selectoption>
+        <text>FROM</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 2, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>WHERE</text>
+        <group>1</group>
+        <!-- ordinal: 3, group: A -->
+    </selectoption>
+</question>
+<question type="gapselect">
+    <name>
+        <text>Simple missing words question with gaps in options and in-order ordering</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[5]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        0
+    </shuffleanswers>
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <selectoption>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>FROM</text>
+        <group>1</group>
+        <!-- ordinal: 2, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>.</text>
+        <group>20</group>
+        <!-- ordinal: 3, group: T -->
+    </selectoption>
+    <selectoption>
+        <text>.</text>
+        <group>20</group>
+        <!-- ordinal: 4, group: T -->
+    </selectoption>
+    <selectoption>
+        <text>WHERE</text>
+        <group>3</group>
+        <!-- ordinal: 5, group: C -->
+    </selectoption>
+</question>
+<question type="gapselect">
+    <name>
+        <text>Simple missing words question with automatic gaps, correct solution in question text and lexicographical ordering</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[5]] [[6]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        0
+    </shuffleanswers>
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <selectoption>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </selectoption>
+    <selectoption>
+        <text>.</text>
+        <group>20</group>
+        <!-- ordinal: 2, group: T -->
+    </selectoption>
+    <selectoption>
+        <text>.</text>
+        <group>20</group>
+        <!-- ordinal: 3, group: T -->
+    </selectoption>
+    <selectoption>
+        <text>.</text>
+        <group>20</group>
+        <!-- ordinal: 4, group: T -->
+    </selectoption>
+    <selectoption>
+        <text>FROM</text>
+        <group>3</group>
+        <!-- ordinal: 5, group: C -->
+    </selectoption>
+    <selectoption>
+        <text>WHERE</text>
+        <group>1</group>
+        <!-- ordinal: 6, group: A -->
     </selectoption>
 </question>
 </quiz>

@@ -357,7 +357,7 @@ The full YAML format for a missing words question is as follows:
 type: missing_words  # Mandatory
 category: category/subcategory/missing_words  # Optional
 title: Missing words question  # Mandatory
-shuffle_answers: True  # Optional
+shuffle_answers: SHUFFLE # Optional, Alternatives: IN_ORDER, LEXICOGRAPHICAL
 question: |-  # Mandatory
   The main clauses of a SQL query are: [[1]] [[2]] [[3]]
 general_feedback: General feedback  # Mandatory in strict mode
@@ -367,14 +367,19 @@ incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
 options:  # Mandatory
   - answer: SELECT  # Mandatory
     group: 1  # Mandatory
+    ordinal: 1  # Optional
   - answer: FROM  # Mandatory
     group: 1  # Mandatory
+    ordinal: 2  # Optional
   - answer: WHERE  # Mandatory
     group: 2  # Mandatory
+    ordinal: 3  # Optional
   - answer: PROJECT  # Mandatory
     group: 1  # Mandatory
+    ordinal: 4  # Optional
   - answer: SIGMA  # Mandatory
     group: 2  # Mandatory
+    ordinal: 5  # Optional
 ```
 
 This YAML content is rendered as follows in Moodle.
@@ -388,7 +393,138 @@ The result of this definition is that the correct answers for the placeholders a
 Furthermore, the choices `SELECT`, `FROM`, and `PROJECT` all belong to group 1 and therefore appear together in the first and second drop-down box.
 The third drop-down box consists of the choices `WHERE` and `SIGMA` which belong to group 2.
 
-It is possible to ommit the feedback attributes.
+Shuffle can be one of three values: `SHUFFLE`, `IN_ORDER`, or `LEXICOGRAPHICAL`.
+- `SHUFFLE` tasks moodle to shuffle the options in each group.
+- `IN_ORDER` leaves the order of the options as they are defined in the YAML file.
+- `LEXICOGRAPHICAL` sorts the options in each group lexicographically.
+
+It is possible to omit the feedback attributes.
+
+It is possible to not use solution reference numbers and instead define the answer directly as a string.
+In this case, moodletools will automatically resolve the IDs and insert the correct solution reference numbers.
+
+```yaml
+type: missing_words
+title: Simple missing words question with correct solution in question text and lexicographical ordering
+question: |-
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - answer: SELECT
+    group: A
+  - answer: FROM
+    group: A
+  - answer: WHERE
+    group: A
+```
+
+If ordinals are defined with gaps, moodletools will automatically fill the gaps with an unused group and a placeholder value, as seen here:
+
+```yaml
+type: missing_words
+title: Simple missing words question with gaps in options and in-order ordering
+question: |-
+  The main clauses of a SQL query are: [[1]] [[2]] [[5]]
+shuffle_answers: IN_ORDER
+options:
+  - answer: SELECT
+    group: A
+    ordinal: 1
+  - answer: FROM
+    group: A
+    ordinal: 2
+  - answer: WHERE
+    group: C
+    ordinal: 5
+```
+
+The options in this yaml file will generate the following xml output:
+
+```xml
+<selectoption>
+    <text>SELECT</text>
+    <group>1</group>
+    <!-- ordinal: 1, group: A -->
+</selectoption>
+<selectoption>
+    <text>FROM</text>
+    <group>1</group>
+    <!-- ordinal: 2, group: A -->
+</selectoption>
+<selectoption>
+    <text>.</text>
+    <group>20</group>
+    <!-- ordinal: 3, group: T -->
+</selectoption>
+<selectoption>
+    <text>.</text>
+    <group>20</group>
+    <!-- ordinal: 4, group: T -->
+</selectoption>
+<selectoption>
+    <text>WHERE</text>
+    <group>3</group>
+    <!-- ordinal: 5, group: C -->
+</selectoption>
+```
+
+You can observe that the ordinals 3 and 4, which are missing in the yaml file, are automatically added by moodletools.
+
+Similarly, if all references are defined as IDs, moodletools will automatically add gaps of three with an unused group between each group:
+
+```yaml
+type: missing_words
+title: Simple missing words question with gaps in options and in-order ordering
+question: |-
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
+shuffle_answers: IN_ORDER
+options:
+  - answer: SELECT
+    group: A
+  - answer: FROM
+    group: A
+  - answer: WHERE
+    group: C
+```
+
+The options in this yaml file will generate the following xml output:
+
+```xml
+<selectoption>
+    <text>SELECT</text>
+    <group>1</group>
+    <!-- ordinal: 1, group: A -->
+</selectoption>
+<selectoption>
+    <text>FROM</text>
+    <group>1</group>
+    <!-- ordinal: 2, group: A -->
+</selectoption>
+<selectoption>
+    <text>.</text>
+    <group>20</group>
+    <!-- ordinal: 3, group: T -->
+</selectoption>
+<selectoption>
+    <text>.</text>
+    <group>20</group>
+    <!-- ordinal: 4, group: T -->
+</selectoption>
+<selectoption>
+    <text>.</text>
+    <group>20</group>
+    <!-- ordinal: 5, group: T -->
+</selectoption>
+
+<selectoption>
+    <text>WHERE</text>
+    <group>3</group>
+    <!-- ordinal: 4, group: C -->
+</selectoption>
+```
+
+**Note**: This only works properly, if the groups are not scrambled in the yaml file.
+
 
 ### Cloze questions
 

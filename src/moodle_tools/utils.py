@@ -1,5 +1,6 @@
 import base64
 import re
+from pathlib import Path
 
 import markdown
 import sqlparse  # type: ignore
@@ -18,15 +19,20 @@ def parse_markdown(text: str) -> str:
 
 def inline_images(text: str) -> str:
     """Detect SVG or PNG images in a question text and inline them with base64 encoding."""
-    re_img = re.compile('<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>')
+    re_img = re.compile(
+        r"""<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>|"""
+        r"""background-image:\s*url\('([^']*).(png|svg)'\)"""
+    )  # TODO merge these regexes eventually
     for match in re_img.finditer(text):
-        filename = f"{match.group(1)}.{match.group(2)}"
-        with open(filename, "rb") as file:
+        filename = Path(match.group(1) if match.group(1) else match.group(3)).with_suffix(
+            f".{match.group(2) if match.group(2) else match.group(4)}"
+        )
+        with filename.open("rb") as file:
             base64_str = base64.b64encode(file.read()).decode("utf-8")
-            img_type = "svg+xml" if match.group(2) == "svg" else match.group(2)
+            img_type = "svg+xml" if filename.suffix == ".svg" else filename.suffix.replace(".", "")
             text = text.replace(
                 f'src="{filename}"', f'src="data:image/{img_type};base64,{base64_str}"'
-            )
+            ).replace(f"url('{filename}')", f"url('data:image/{img_type};base64,{base64_str}')")
 
     return text
 
