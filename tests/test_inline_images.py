@@ -47,3 +47,11 @@ class TestInlineImages:
         assert captured.err == ""
         assert '<img alt="Inline image image2.png" src="data:image/png;base64,iVBO' in captured.out
         assert '<img alt="Inline image image3.png" src="data:image/png;base64,iVBO' in captured.out
+
+    def test_image_as_bg_image(self, capsys: pytest.CaptureFixture[str]) -> None:
+        sys.argv = ["make-questions", "-i", "file_bg.yml"]
+        main()
+        captured = capsys.readouterr()
+        assert captured.err == ""
+        assert """<div style="background-image: url('data:image/png;base64,iVBO""" in captured.out
+        assert """'); width: 1vh; height: 20%">""" in captured.out

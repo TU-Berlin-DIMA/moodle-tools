@@ -1,0 +1,12 @@
+---
+type: numerical
+title: Dummy question
+question: |
+  How many dots in are in the image?
+
+  <div style="background-image: url('image1.png')"></div>
+
+  <div style="background-image: url('folder1/image2.png'); width: 1vh; height: 20%"></div>
+answers:
+  - One dot
+general_feedback: Feedback

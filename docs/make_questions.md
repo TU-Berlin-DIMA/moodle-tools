@@ -785,16 +785,22 @@ The following image shows partially the question in the ISIS (Moodle) preview si
 
 ### Inlining images
 
-PNG or SVG images specified in question and answer texts will be inlined in the exported XML document.
+Any image specified using either an HTML image tag or CSS background-image property in question and answer texts will be inlined in the exported XML document.
 This way, we don't have to manually upload images using the Moodle web interface.
 
-The inlining process checks for the following regular expression:
+For HTML img tags, the inlining process checks for the following regular expression:
 
-```html
-<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?\/>
+```pythonregexp
+<img alt="[^"]*" src="([^"]*)" (?:style="[^"]*" )?\/>
 ```
 
-While the CSS `style` tag is optional, the `alt` tag (the image description) is mandatory.
+For CSS background-images, the inlining process checks for the following regular expression:
+
+```pythonregexp
+background-image:\s*url\('([^"']*)\)'
+```
+
+For HTML Tag images, while the CSS `style` tag is optional, the `alt` tag (the image description) is mandatory.
 You should use a different description for every image.
 That is because the contents of the `alt` tag are used when exporting the quiz responses.
 If two questions or two answers just differ in the used image but not in the used text, it is not possible to distinguish the questions and/or answers when analyzing the responses.
@@ -803,6 +809,6 @@ However, if each image uses a different description, then the image description 
 Furthermore, the order of the `alt`, `src`, and optional `style` tag must be as in the example.
 This is the order created by the Markdown converter.
 
-Inlining can theoretically lead to an XML file that exceeds the 20 MB file size limit.
-In this case, you should reduce the file size of the images.
+Inlining can theoretically lead to an XML file that exceeds the 50 MB file size limit.
+In this case, you should split up your yaml file to instances smaller than 50MB or reduce the file size of the images.
 The images are encoded in base64, so the encoded size is larger than the actual file size.

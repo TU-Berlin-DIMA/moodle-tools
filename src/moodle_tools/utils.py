@@ -20,13 +20,14 @@ def parse_markdown(text: str) -> str:
 def inline_images(text: str) -> str:
     """Detect SVG or PNG images in a question text and inline them with base64 encoding."""
     re_img = re.compile(
-        r"""<img alt="[^"]*" src="([^"]*).(png|svg)" (?:style="[^"]*" )?/>|"""
-        r"""background-image:\s*url\('([^']*).(png|svg)'\)"""
-    )  # TODO merge these regexes eventually
+        r"""(?:<img alt="[^"]*" src="|"""  # opening tag for html img
+        r"""background-image:\s*url\(')"""  # opening css background-image property
+        r"""([^"']*)"""  # image path capture group
+        r"""(?:'|"""  # closing quote for css background-image property
+        r"""" (?:style="[^"]*" )?/>)"""  # closing tag for html img
+    )
     for match in re_img.finditer(text):
-        filename = Path(match.group(1) if match.group(1) else match.group(3)).with_suffix(
-            f".{match.group(2) if match.group(2) else match.group(4)}"
-        )
+        filename = Path(match.group(1))
         with filename.open("rb") as file:
             base64_str = base64.b64encode(file.read()).decode("utf-8")
             img_type = "svg+xml" if filename.suffix == ".svg" else filename.suffix.replace(".", "")
