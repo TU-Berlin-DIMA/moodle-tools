@@ -692,6 +692,11 @@ If a path points to a folder, `make-questions` will recursively iterate through 
 You can provide one or multiple `-i` flags to combine specific files and entire folders in one call.
 It is also possible to use shell redirection for the output but the input must be given as paths to YAML files.
 
+### Question filtering
+
+It is possible to export only some questions from one or multiple YAML files by specifying the to-be-exported question titles with one or multiple `-f` flags.
+
+
 ### Question numbers
 
 It is possible to automatically number each question in a YAML file with the command line switch `--add-question-index`.

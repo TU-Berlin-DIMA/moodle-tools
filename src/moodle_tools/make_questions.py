@@ -78,6 +78,7 @@ def generate_moodle_questions(
     skip_validation: bool = False,
     parse_markdown: bool = True,
     add_question_index: bool = False,
+    question_filter: list[str] | None = None,
     table_styling: bool = True,
 ) -> str:
     """Generate Moodle XML from a list of paths to YAML documents.
@@ -87,6 +88,7 @@ def generate_moodle_questions(
         skip_validation: Skip strict validation (default False).
         parse_markdown: Parse question and answer text as Markdown (default True).
         add_question_index: Extend each question title with an increasing number (default False).
+        filter: Filter questions to export by name.
         table_styling: Add Bootstrap style classes to table tags (default True).
 
     Returns:
@@ -108,6 +110,18 @@ def generate_moodle_questions(
                     question.title = f"{question.title} ({i})"
                 questions.append(question)
     logger.debug(f"Loaded {len(questions)} questions from YAML.")
+
+    if question_filter:
+        questions = [question for question in questions if question.title in question_filter]
+        logger.debug(f"{len(questions)} questions remained after running filter.")
+
+        if not questions:
+            logger.warning("Filter returned 0 questions. Exiting.")
+            sys.exit(1)
+
+        if len(questions) < len(question_filter):
+            logger.warning("Filter returned fewer questions than expected. Exiting.")
+            sys.exit(1)
 
     env = Environment(
         loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
@@ -185,6 +199,14 @@ def parse_args() -> argparse.Namespace:
         help="Extend each question title with an increasing number (default: %(default)s)",
     )
     parser.add_argument(
+        "-f",
+        "--filter",
+        action="extend",
+        nargs="+",
+        type=str,
+        help="Filter questions to export by name",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         type=str,
@@ -223,6 +245,7 @@ def main() -> None:
         paths=inputs,
         skip_validation=args.skip_validation,
         add_question_index=args.add_question_index,
+        question_filter=args.filter,
     )
     print(question_xml, file=args.output)
 
