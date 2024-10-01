@@ -9,6 +9,7 @@ from moodle_tools.questions.multiple_choice import MultipleChoiceQuestion
 from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestion
 from moodle_tools.questions.numerical import NumericalQuestion
 from moodle_tools.questions.question import Question
+from moodle_tools.questions.shortanswer import ShortAnswerQuestion
 from moodle_tools.questions.true_false import TrueFalseQuestion
 from moodle_tools.utils import ParsingError
 
@@ -25,6 +26,7 @@ class QuestionFactory:
         "sql_dql": CoderunnerDQLQuestion,
         "isda_streaming": CoderunnerStreamingQuestion,
         "description": Description,
+        "shortanswer": ShortAnswerQuestion,
     }
 
     @staticmethod

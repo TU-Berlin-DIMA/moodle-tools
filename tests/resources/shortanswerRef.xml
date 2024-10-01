@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="shortanswer">
+    <name>
+        <text>Short Answer question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>How does an SQL query start?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="html">
+        <text><![CDATA[SELECT]]></text>
+        <feedback format="html">
+            <text><![CDATA[Correct]]></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <answer fraction="50" format="html">
+        <text><![CDATA[WITH]]></text>
+        <feedback format="html">
+            <text><![CDATA[Only if you have a CTE]]></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <usecase>0</usecase>
+</question>
+<question type="shortanswer">
+    <name>
+        <text>Short Answer question with inline answer box of default width 10</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>An SQL statement starts with a __________ clause.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="html">
+        <text><![CDATA[SELECT]]></text>
+        <feedback format="html">
+            <text><![CDATA[Correct]]></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <answer fraction="50" format="html">
+        <text><![CDATA[WITH]]></text>
+        <feedback format="html">
+            <text><![CDATA[Only if you have a CTE]]></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <usecase>1</usecase>
+</question>
+<question type="shortanswer">
+    <name>
+        <text>Simple Short Answer with answer box width 6</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>An SQL query starts with the keyword ______.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="html">
+        <text><![CDATA[SELECT]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <answer fraction="0" format="html">
+        <text><![CDATA[FROM]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+        <tolerance>0</tolerance>
+    </answer>
+    <usecase>1</usecase>
+</question>
+</quiz>

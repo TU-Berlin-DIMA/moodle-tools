@@ -1,0 +1,35 @@
+---
+type: shortanswer
+title: Short Answer question
+question: How does an SQL query start?
+general_feedback: General feedback
+answer_case_sensitive: false
+answers:
+  - answer: SELECT
+    points: 100
+    feedback: Correct
+  - answer: WITH
+    points: 50
+    feedback: Only if you have a CTE
+
+---
+type: shortanswer
+title: Short Answer question with inline answer box of default width 10
+question: An SQL statement starts with a [[ANSWERBOX]] clause.
+general_feedback: General feedback
+answer_case_sensitive: true
+answers:
+  - answer: SELECT
+    points: 100
+    feedback: Correct
+  - answer: WITH
+    points: 50
+    feedback: Only if you have a CTE
+
+---
+type: shortanswer
+title: Simple Short Answer with answer box width 6
+question: An SQL query starts with the keyword [[ANSWERBOX=6]].
+answers:
+  - SELECT
+  - FROM

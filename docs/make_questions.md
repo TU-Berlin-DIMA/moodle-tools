@@ -102,6 +102,7 @@ At the moment, the following question types are supported.
 - Multiple choice questions with a single selection
 - Multiple true/false questions
 - Numerical questions
+- Short Answer questions
 - Missing words questions
 - Cloze questions
 - CodeRunner SQL-DQL
@@ -344,6 +345,56 @@ question: What is 2 + 2?
 answers:
   - 4
   - 22
+```
+
+### Short answer questions
+
+This question type expects a short text as the answer.
+By default, Moodle will render a text box below the question, where students will put their answer.
+
+The full YAML format for such a question is as follows:
+
+```yaml
+type: shortanswer  # Mandatory
+title: Short Answer question  # Mandatory
+question: How does an SQL query start?  # Mandatory
+general_feedback: General feedback  # Mandatory in strict mode
+answer_case_sensitive: false  # Optional
+answers:  # Mandatory
+  - answer: SELECT  # Mandatory
+    points: 100  # Optional
+    feedback: Correct  # Mandatory in strict mode
+  - answer: WITH  # Mandatory
+    points: 50  # Optional
+    feedback: Only if you have a CTE  # Mandatory in strict mode
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Short answer question](assets/shortanswer.png)
+
+As the example shows, it is possible to assign a number of points for each answer.
+100 points indicate a correct answer and 0 points a wrong answer; anything in between is partial credit.
+It is also possible to specify whether the answer is case sensitive or not.
+Further, it is possible to inline the answer field by specifying `[[ANSWERBOX]]` in the question text.
+Moodletools will automatically replace this placeholder with an answer box of width 10 by inserting 10 underscores at this location.
+If you specify a number after the placeholder (e.g. `[[ANSWERBOX=6]]` for an answerbox of width 6), the width of the answer box will be set to this number.
+The answerbox will always have a width of at least 5.
+For furter information on the answerbox, see the [Moodle documentation](https://docs.moodle.org/404/en/Short-Answer_question_type).
+Using underscores in the answer to specify the length of the answer box is not recommended, as non-escaped underscores will be interpreted by the markdown parser as italics or bold text.
+
+
+It is possible to shorten the specification to only include the question type, the question text, and the answers.
+The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
+Note how we are using the `[[ANSWERBOX]]` placeholder in the question text.
+
+```yaml
+type: shortanswer
+title: Simple Short Answer
+question: An SQL query starts with the keyword [[ANSWERBOX=6]].
+answers:
+  - SELECT
+  - FROM
 ```
 
 ### Missing words questions
