@@ -2,7 +2,6 @@
 
 import argparse
 import contextlib
-import os
 import sys
 from pathlib import Path
 from typing import Any, Iterator
@@ -13,7 +12,7 @@ from loguru import logger
 
 from moodle_tools.questions.factory import QuestionFactory
 from moodle_tools.questions.question import Question
-from moodle_tools.utils import ParsingError
+from moodle_tools.utils import ParsingError, iterate_inputs
 
 
 def load_questions(
@@ -132,37 +131,6 @@ def generate_moodle_questions(
     return xml
 
 
-def iterate_inputs(
-    files: Iterator[str | os.PathLike[Any]], strict: bool = False
-) -> Iterator[Path]:
-    """Iterate over a collection of input files or directories.
-
-    Args:
-        files: An iterator of file paths or directory paths.
-        strict: If True, raise an IOError if a path is neither a file nor a directory.
-                If False, ignore such paths.
-
-    Yields:
-        Iterator[Path]: A generator that yields Path objects representing input files.
-    """
-    for file in files:
-        path = Path(file)
-        # Ignore the extension if the file is explicitly specified on the command line.
-        if path.is_file():
-            yield path
-        elif path.is_dir():
-            # TODO: Refactor this to use path.walk() once we drop Python 3.11 support
-            for dirpath, _, filenames in os.walk(path):
-                for filename in filenames:
-                    # Only process YAML files in folders, to exclude resources, like images.
-                    if filename.endswith(".yml") or filename.endswith(".yaml"):
-                        yield Path(dirpath) / filename
-        elif strict:
-            raise IOError(f"Not a file or folder: {file}")
-        else:
-            logger.debug(f"{file} is neither a file nor a folder - ignoring.")
-
-
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments.
 
@@ -240,7 +208,7 @@ def main() -> None:
         level="ERROR",
     )
 
-    inputs = iterate_inputs(args.input, not args.skip_validation)
+    inputs = iterate_inputs(args.input, "YAML", not args.skip_validation)
     question_xml = generate_moodle_questions(
         paths=inputs,
         skip_validation=args.skip_validation,

@@ -17,4 +17,3 @@
 > If there exist multiple options on how to implement the goal to achieve, explain them here
 
 ## Option 1: Do X
-

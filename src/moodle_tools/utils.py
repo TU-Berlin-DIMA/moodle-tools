@@ -1,6 +1,8 @@
 import base64
+import os
 import re
 from pathlib import Path
+from typing import Any, Iterator
 
 import markdown
 import sqlparse  # type: ignore
@@ -36,6 +38,45 @@ def inline_images(text: str) -> str:
             ).replace(f"url('{filename}')", f"url('data:image/{img_type};base64,{base64_str}')")
 
     return text
+
+
+def iterate_inputs(
+    files: Iterator[str | os.PathLike[Any]], file_type: str, strict: bool = False
+) -> Iterator[Path]:
+    # pylint: disable=too-many-nested-blocks
+    # TODO: Refactor and remove pylint disable nested blocks
+    """Iterate over a collection of input files or directories.
+
+    Args:
+        files: An iterator of file paths or directory paths.
+        strict: If True, raise an IOError if a path is neither a file nor a directory.
+                If False, ignore such paths.
+
+    Yields:
+        Iterator[Path]: A generator that yields Path objects representing input files.
+    """
+    supported_file_types: dict[str, list[str]] = {"YAML": ["yml", "yaml"], "XML": ["xml"]}
+    if file_type in supported_file_types:
+        for file in files:
+            path = Path(file)
+            # Ignore the extension if the file is explicitly specified on the command line.
+            if path.is_file():
+                yield path
+            elif path.is_dir():
+                # TODO: Refactor this to use path.walk() once we drop Python 3.11 support
+                for dirpath, _, filenames in os.walk(path):
+                    for filename in filenames:
+                        # Only process files in folders that match with supported types
+                        # to exclude resources, like images.
+                        for file_type_variant in supported_file_types[file_type]:
+                            if filename.endswith(file_type_variant):
+                                yield Path(dirpath) / filename
+            elif strict:
+                raise IOError(f"Not a file or folder: {file}")
+            else:
+                logger.debug(f"{file} is neither a file nor a folder - ignoring.")
+    else:
+        raise ParsingError(f"Unsupported File Type: {file_type}.")
 
 
 def preprocess_text(text: str | None, **flags: bool) -> str:

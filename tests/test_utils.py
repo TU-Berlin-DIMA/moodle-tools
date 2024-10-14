@@ -1,6 +1,75 @@
 from textwrap import dedent
 
+import pytest
+
 from moodle_tools import utils
+
+
+class TestIterateInputs:
+    """Test class for handling input files and folders."""
+
+    @pytest.fixture(autouse=True)
+    def chdir(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Change working directory before every test.
+
+        This is required to work with a predefined set of files and folders.
+        """
+        monkeypatch.chdir("tests/resources/TestIterateInputs")
+
+    def test_files(self) -> None:
+        """Transform filenames into an open file objects."""
+        results = utils.iterate_inputs(iter(["file1.yml", "file2.yml"]), "YAML")
+        names = [str(path) for path in results]
+        assert names == ["file1.yml", "file2.yml"]
+
+    def test_folders(self) -> None:
+        """Recursively walk folders and return file objects for the YAML files in the folders."""
+        results = utils.iterate_inputs(iter(["folder1", "folder2"]), "YAML")
+        names = sorted([str(path) for path in results])
+        assert names == sorted(
+            [
+                "folder1/folder1_1/file1.yml",
+                "folder1/file1.yml",
+                "folder1/file2.yml",
+                "folder2/file1.yml",
+            ]
+        )
+
+    def test_files_and_folders(self) -> None:
+        """Process mixed files and folders."""
+        results = utils.iterate_inputs(iter(["file1.yml", "folder2"]), "YAML")
+        names = sorted([str(path) for path in results])
+        assert names == sorted(["file1.yml", "folder2/file1.yml"])
+
+    def test_not_a_file_or_folder_relaxed(self) -> None:
+        """Ignore inputs that are not files or folders."""
+        results = utils.iterate_inputs(
+            iter(["file1.yml", "unknown", "folder2"]), "YAML", strict=False
+        )
+        names = sorted([str(path) for path in results])
+        assert names == sorted(["file1.yml", "folder2/file1.yml"])
+
+    def test_not_a_file_or_folder_strict(self) -> None:
+        """Raise an exception on inputs that are not files or folders."""
+        with pytest.raises(IOError):
+            list(
+                utils.iterate_inputs(
+                    iter(["file1.yml", "unknown", "folder2"]), "YAML", strict=True
+                )
+            )
+
+    def test_xml_input(self) -> None:
+        """Filter only the XML files, for XML2YAML (extract_questions)."""
+        results = utils.iterate_inputs(
+            iter(["file1.xml", "unknown", "folder1"]), "XML", strict=False
+        )
+        names = sorted([str(path) for path in results])
+        assert names == sorted(["file1.xml", "folder1/file1.xml"])
+
+    def test_not_supported_file_type(self) -> None:
+        """Raise an exception on inputs that are not supported."""
+        with pytest.raises(utils.ParsingError):
+            list(utils.iterate_inputs(iter(["folder2"]), "XLSX"))
 
 
 class TestUtils:

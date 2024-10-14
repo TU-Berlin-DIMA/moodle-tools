@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Complete question</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
+            <text><![CDATA[<p>Wrong feedback</p>]]></text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
+            <text><![CDATA[<p>Correct feedback</p>]]></text>
+        </feedback>
+    </answer>
+</question>
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Minimal true question</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+</question>
+<question type="truefalse">
+    <name>
+        <text>Question title</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Minimal false question</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <answer fraction="0" format="html">
+        <text><![CDATA[true]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+        <text><![CDATA[false]]></text>
+        <feedback format="html">
+            <text></text>
+        </feedback>
+    </answer>
+</question>
+</quiz>

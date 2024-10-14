@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="category">
+    <category>
+        <text>$module$/description-cat</text>
+    </category>
+</question>
+<question type="description">
+    <name>
+        <text>a description</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>This is a very fancy description without a question. Thus students cannot get any points with this.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+<!--
+MMMMMMMMMMMMMMMMMMMMMMMMMMMWWN0kdoollokKNWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMWKo;....... .';cONMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMWWk'   ....'''..'.,oKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMWx.     ...;ccllclc:oKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMM0,       ..':llcccc::kWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMM0'        .':c:::;,;;dNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMXc        .;:;,,,''coo0WMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMO'    ....,::ccc:cllldXMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMO' ....'..,;;::::clc;lKMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMW0;  .....'',;;;:::::;,cKMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMNx'. ........''',,,;,,,'oNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMO'    .,'...''.''''''..'l0NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMWMMWNk'.. .,dl,''''''''','.  ..,cldk0XWMWMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMWN0xl;......,dxl:;;,'',,;;'      .....';dXMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMWXxl,.......'...cddlodl;:c:;;'    .. .......lNMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMNd,..........''..'lOxxxl;;ldodc. . ....... . .dWMWMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMWk. ...............'x0OkkodOOO0x'... .... ..   .kWMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMX:. ................;xO0XkkK0KXd......... ..    ;KMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMNd.     . ............:OKXkkKXNXo.........       .lNMMMMMMMMMMMMMMMMMM
+MMMMMMMMMWO' .        ...........oKXkkKXNKl.........        .kWMMMMMMMMMMMMMMMMM
+MMMMMMMMMNo. ..     .   .........'o0xxKNW0:........          :XMMMMMMMMMMMMMMMMM
+MMMMMMMMM0;.             .........'dxxXNNO:.......           .lXMMMMMMMMMMMMMMMM
+MMMMMMMMWx. ..            .........'cxXNXO;... ..              :0WMMMMMMMMMMMMMM
+MMMMMMMMXc. ...            .........'dXXXk;... ...             .'oXMWMMMMMMMMMMM
+MMMMMMMMO'.. ...            .........cKXXx,.. ...              . .:KWWMMMMMMMMMM
+MMMMMMMWx.........           ....... .oKXd'. ...            .......;OWWMMMMMMMMM
+MMMMMMMNo.      .............  ...... .o0o.  ....       .     ......'lOKKK0kk0NM
+MMMMMMMWx.   ..,;;::;;,,,,''.......... .,'. ....      .dOl.   .......;loolldOXWM
+MMMMMMMMO' .';::::;,,,;;'.......'.......    ..  .     ,0MWKo'.......,clllld0NMWM
+MMMMMMMMNo',;;:;,''';;,.........','.......,;;,..    . 'OMMMWXd,....'loooooddx0XW
+MMMMMMMMWOc;;:;,'.,;,'''.. ..,;::cc;'',:llooc,..      .dWMMMWWXx:..,odoolclllldK
+MMMMMMMMXo;;:;,..,,,'''''...,cloooddoolccc;'.    ..  ..;KMMMMMMMNOo:,',:odxO0KNW
+MMMMMMMMO:;;;,'',,,'',..'..';:cc:;;;;;,''......  ..    .oNMMMMMMMMWNOloONMMMMMMM
+MMMMMMMKl,;;,'',,,'','.....''',;;;;;,,'..     .   ..  . 'OMMMMMMMMMMMWWWMMMMMMMM
+MMMMMMNd;;;,'.';,'.','... .....',,,,'''...      .  ..  ..oWMMMMMMMMMMWWMMMMMMMMM
+MMMMMM0c;;;'.',,,..','..       ........''..      .    ...cXMMMMMMMMMMMMMMMMMMMMM
+MMMMMNx;,,'.',,,'..,',,.   .....   ........            . ;KMMMMMMMMMMMMMMMMMMMMM
+MMMMM0c,,'..,,,'..',,,'.  ..,''.....'.......  ..      ...,0MMMMMMMMMMMMMMMMMMMMM
+MMMWNd;,'..,,,,...'',,.  .'''',''.',,.......          ...,OMMMMMMMMMMMMMMMMMMMMM
+MMMWO:,,..',,,...''''.. ..'''',,'',,,........         .. .kMMMMMMMMMMMMMMMMMMMMM
+MMMNo,,'..,,,...'''''.. ..''''''..,;,'....''.         .. .kMMMMMMMMMMMMMMMMMMMMM
+MMWO:''..',,'.',,'''... ..''''''..,;,'..''''..         . .kMMMMMMMMMMMMMMMMMMMMM
+MWKl'....','',,,''..... ..'''''..';,,'.......          . 'OMMMMMMMMMMMMMMMMMMMMM
+MKl'...  .'''''''...... ..'''''..';,,'..                 'OMMMMMMMMMMMMMMMMMMMMM
+Kl'....  .'''''''........''''''..''....                  .kMMMMMMMMMMMMMMMMMMMMM
+k;''.....'''',,,,,,,,''''''''''....                    ...oNMMMMMMMMMMMMMMMMMMMM
+Nx,'''',,'',,,,,,,'',,'..''''.'.                     .....:KMMMMMMMMMMMMMMMMMMMM
+MWOc,'''''',,,,,''........''''..         .,.         .....:KMMMMMMMMMMMMMMMMMMMM
+MMWXkollooo;.....       ..'.''..         :Ko         .....:XMMMMMMMMMMMMMMMMMMMM
+MMMMMMWWWMO,..          ........        .cN0'          ...:XMMMMMMMMMMMMMMMMMMMM
+MMMMMMWWMK:.            .......         .oWNc            .;KMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMXc.             .......         .oWMk.            'kWMMMMMMMMMMMMMMMMMMM
+MMMMMMMM0c;;;;;;;;;;;;;::cccc::;,,,,,,,:lOWMKl;;;;;;;;;;:;cOWMMMMMMMMMMMMMMMMMMM
+-->
+</question>
+</quiz>
