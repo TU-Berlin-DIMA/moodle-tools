@@ -44,6 +44,7 @@ dev = [
 [project.scripts]
 analyze-results = "moodle_tools.analyze_results:main"
 make-questions = "moodle_tools.make_questions:main"
+extract-questions = "moodle_tools.extract_questions:main"
 
 [project.urls]
 Homepage = "https://git.tu-berlin.de/dima/moodle-tools"
