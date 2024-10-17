@@ -4,15 +4,16 @@ import argparse
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator
+from typing import Any, Iterator
 
+import yaml
 from loguru import logger
 
 from moodle_tools.questions import Question, QuestionFactory
 from moodle_tools.utils import iterate_inputs
 
 
-def load_moodle_xml(path: Path) -> Iterator[Question]:
+def load_moodle_xml(path: Path) -> Iterator[dict[str, str | Any | None]]:
     with open(path) as file:
         document = ET.parse(file)
         quiz = document.getroot()
@@ -27,7 +28,7 @@ def load_moodle_xml(path: Path) -> Iterator[Question]:
             question_props.update({"category": category})
             question_type = element.attrib.get("type")
             question_props.update({"type": question_type})
-            question = QuestionFactory.create_from_xml(question_type, element, **question_props)
+            question = QuestionFactory.props_from_xml(question_type, element, **question_props)
             yield question
 
 
@@ -40,14 +41,17 @@ def extract_yaml_questions(paths: Iterator[Path]) -> str:
     Returns:
         str: Moodle-Tools YAML for all questions in the XML file.
     """
-    questions: list[Question] = []
+    questions: list[dict[str, str | Any | None]] = []
     for path in paths:
         for question in load_moodle_xml(path):
             questions.append(question)
-            logger.info(f"Question {question.title} loaded.")
+            logger.debug(f"Question {question} loaded.")
 
     logger.info(f"Loaded {len(questions)} questions from YAML.")
-    return "TODO: Implement yaml document collection."
+
+    questions_yaml = yaml.safe_dump_all(questions, width=1000)
+
+    return questions_yaml
 
 
 def parse_args() -> argparse.Namespace:

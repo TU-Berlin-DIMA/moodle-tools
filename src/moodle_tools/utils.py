@@ -19,6 +19,12 @@ def parse_markdown(text: str) -> str:
     return markdown.markdown(text, extensions=["tables", "attr_list", "md_in_html"])
 
 
+def parse_html(text: str) -> str:
+    """Parse the question text from HTML to markdown."""
+    # TODO: Implement the function.
+    return text
+
+
 def inline_images(text: str) -> str:
     """Detect SVG or PNG images in a question text and inline them with base64 encoding."""
     re_img = re.compile(
@@ -38,6 +44,10 @@ def inline_images(text: str) -> str:
             ).replace(f"url('{filename}')", f"url('data:image/{img_type};base64,{base64_str}')")
 
     return text
+
+
+def transpile_dict_to_yaml(properties: dict[str, str | Any | None]) -> str:
+    pass
 
 
 def iterate_inputs(

@@ -41,10 +41,18 @@ class QuestionFactory:
         return question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES
 
     @staticmethod
-    def create_from_xml(question_type: str, element: Element, **properties: Any):
+    def create_from_xml(question_type: str, element: Element, **properties: Any) -> Question:
+        return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](
+            **QuestionFactory.props_from_xml(question_type, element, **properties)
+        )
+
+    @staticmethod
+    def props_from_xml(
+        question_type: str, element: Element, **properties: Any
+    ) -> dict[str, str | Any | None]:
         if question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES:
             properties = properties | QuestionFactory.SUPPORTED_QUESTION_TYPES[
                 question_type
             ].extract_properties_from_xml(element)
-            return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](**properties)
+            return properties
         raise ParsingError(f"Unsupported Question Type: {question_type}.")

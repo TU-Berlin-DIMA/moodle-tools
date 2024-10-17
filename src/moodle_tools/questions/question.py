@@ -6,7 +6,7 @@ from xml.etree.ElementTree import Element
 
 from jinja2 import Environment
 
-from moodle_tools.utils import preprocess_text
+from moodle_tools.utils import parse_html, preprocess_text
 
 
 class Question(ABC):
@@ -55,9 +55,11 @@ class Question(ABC):
     def extract_properties_from_xml(element: Element) -> dict[str, str | Any | None]:
         question_props = dict()
         question_props.update({"title": element.find("name").find("text").text})
-        question_props.update({"question": element.find("questiontext").find("text").text})
         question_props.update(
-            {"general_feedback": element.find("generalfeedback").find("text").text}
+            {"question": parse_html(element.find("questiontext").find("text").text)}
+        )
+        question_props.update(
+            {"general_feedback": parse_html(element.find("generalfeedback").find("text").text)}
         )
         question_props.update({"markdown": False})
         question_props.update({"table_styling": False})
