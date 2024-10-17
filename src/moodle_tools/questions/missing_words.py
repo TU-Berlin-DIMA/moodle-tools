@@ -2,6 +2,7 @@ import itertools
 import re
 import sys
 from typing import cast
+from xml.etree.ElementTree import Element
 
 from loguru import logger
 
@@ -172,6 +173,10 @@ class MissingWordsQuestion(Question):
         if not self.incorrect_feedback:
             errors.append("No feedback for incorrect answer provided.")
         return errors
+
+    @staticmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str]:
+        return Question.extract_properties_from_xml(element)
 
 
 class MissingWordsQuestionAnalysis(MultipleResponseQuestionAnalysis):

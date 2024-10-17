@@ -1,4 +1,5 @@
 from typing import Any
+from xml.etree.ElementTree import Element
 
 from loguru import logger
 
@@ -58,6 +59,10 @@ class NumericalQuestion(Question):
             if "feedback" not in answer and answer["points"] != 100:
                 errors.append(f"The incorrect answer '{answer['answer']}' has no feedback.")
         return errors
+
+    @staticmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str]:
+        return Question.extract_properties_from_xml(element)
 
 
 class NumericalQuestionAnalysis(QuestionAnalysis):

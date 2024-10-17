@@ -3,6 +3,7 @@
 import abc
 from pathlib import Path
 from typing import Required, TypedDict
+from xml.etree.ElementTree import Element
 
 from jinja2 import Environment
 
@@ -163,6 +164,10 @@ class CoderunnerQuestion(Question):
     def validate(self) -> list[str]:
         errors = super().validate()
         return errors
+
+    @staticmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str]:
+        return Question.extract_properties_from_xml(element)
 
     def to_xml(self, env: Environment) -> str:
         """Generate a Moodle XML export of the question."""

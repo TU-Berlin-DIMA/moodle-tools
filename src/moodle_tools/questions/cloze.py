@@ -1,3 +1,5 @@
+from xml.etree.ElementTree import Element
+
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
 
@@ -22,6 +24,10 @@ class ClozeQuestion(Question):
     def validate(self) -> list[str]:
         errors = super().validate()
         return errors
+
+    @staticmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str]:
+        return Question.extract_properties_from_xml(element)
 
 
 class ClozeQuestionAnalysis(MultipleResponseQuestionAnalysis):

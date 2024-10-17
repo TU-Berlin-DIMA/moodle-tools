@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from collections import Counter
 from typing import Any, NamedTuple
+from xml.etree.ElementTree import Element
 
 from jinja2 import Environment
 
@@ -48,6 +49,19 @@ class Question(ABC):
         """Generate a Moodle XML export of the question."""
         template = env.get_template(self.XML_TEMPLATE)
         return template.render(self.__dict__ | {"type": self.QUESTION_TYPE})
+
+    @staticmethod
+    @abstractmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str | Any | None]:
+        question_props = dict()
+        question_props.update({"title": element.find("name").find("text").text})
+        question_props.update({"question": element.find("questiontext").find("text").text})
+        question_props.update(
+            {"general_feedback": element.find("generalfeedback").find("text").text}
+        )
+        question_props.update({"markdown": False})
+        question_props.update({"table_styling": False})
+        return question_props
 
 
 class AnalysisItem(NamedTuple):

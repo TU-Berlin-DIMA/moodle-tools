@@ -17,25 +17,17 @@ def load_moodle_xml(path: Path) -> Iterator[Question]:
         document = ET.parse(file)
         quiz = document.getroot()
 
-    # Only one category allowed
+    # TODO: Define more than one category use case and implement logic
     category = ""
     for element in quiz.findall("question"):
-        question_props = dict()
+        question_props = {}
         if element.attrib.get("type") == "category":
             category = element.find("category").find("text").text
         else:
             question_props.update({"category": category})
-            question_props.update({"type": element.attrib.get("type")})
-            question_props.update({"title": element.find("name").find("text").text})
-            question_props.update({"question": element.find("questiontext").find("text").text})
-            question_props.update(
-                {"general_feedback": element.find("generalfeedback").find("text").text}
-            )
-            question_props.update({"markdown": False})
-            question_props.update({"table_styling": False})
-            question = QuestionFactory.create_question(
-                question_props.get("type"), **question_props
-            )
+            question_type = element.attrib.get("type")
+            question_props.update({"type": question_type})
+            question = QuestionFactory.create_from_xml(question_type, element, **question_props)
             yield question
 
 
@@ -52,10 +44,10 @@ def extract_yaml_questions(paths: Iterator[Path]) -> str:
     for path in paths:
         for question in load_moodle_xml(path):
             questions.append(question)
-            print(question.title)
+            logger.info(f"Question {question.title} loaded.")
 
     logger.info(f"Loaded {len(questions)} questions from YAML.")
-    return "yaml"
+    return "TODO: Implement yaml document collection."
 
 
 def parse_args() -> argparse.Namespace:

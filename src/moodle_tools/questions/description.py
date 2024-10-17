@@ -1,3 +1,5 @@
+from xml.etree.ElementTree import Element
+
 from moodle_tools.questions.question import Question, QuestionAnalysis
 
 
@@ -20,6 +22,10 @@ class Description(Question):
 
     def validate(self) -> list[str]:
         return []
+
+    @staticmethod
+    def extract_properties_from_xml(element: Element) -> dict[str, str]:
+        return Question.extract_properties_from_xml(element)
 
 
 class DescriptionAnalysis(QuestionAnalysis):

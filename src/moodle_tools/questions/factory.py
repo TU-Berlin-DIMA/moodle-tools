@@ -1,4 +1,5 @@
 from typing import Any
+from xml.etree.ElementTree import Element
 
 from moodle_tools.questions.cloze import ClozeQuestion
 from moodle_tools.questions.coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
@@ -38,3 +39,12 @@ class QuestionFactory:
     @staticmethod
     def is_valid_type(question_type: str) -> bool:
         return question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES
+
+    @staticmethod
+    def create_from_xml(question_type: str, element: Element, **properties: Any):
+        if question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES:
+            properties = properties | QuestionFactory.SUPPORTED_QUESTION_TYPES[
+                question_type
+            ].extract_properties_from_xml(element)
+            return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](**properties)
+        raise ParsingError(f"Unsupported Question Type: {question_type}.")
