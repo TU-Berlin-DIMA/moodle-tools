@@ -3,18 +3,18 @@
 import argparse
 import sys
 import xml.etree.ElementTree as ET
+from base64 import b64decode
 from pathlib import Path
 from typing import Any, Iterator
 
 import yaml
 from loguru import logger
-
-from moodle_tools.questions import Question, QuestionFactory
+from moodle_tools.questions import QuestionFactory
 from moodle_tools.utils import iterate_inputs
 
 
-def load_moodle_xml(path: Path) -> Iterator[dict[str, str | Any | None]]:
-    with open(path) as file:
+def load_moodle_xml(in_path: Path, out_path: Path | None) -> Iterator[dict[str, str | Any | None]]:
+    with open(in_path) as file:
         document = ET.parse(file)
         quiz = document.getroot()
 
@@ -29,10 +29,25 @@ def load_moodle_xml(path: Path) -> Iterator[dict[str, str | Any | None]]:
             question_type = element.attrib.get("type")
             question_props.update({"type": question_type})
             question = QuestionFactory.props_from_xml(question_type, element, **question_props)
+
+            if out_path:
+                for name, file in question.get("files", {}).items():
+                    if file["is_used"]:
+                        match file["encoding"]:
+                            case "base64":
+                                filename = out_path.parent / name
+                                if filename.exists():
+                                    filename = filename.with_suffix(filename.suffix + "." + question["title"])
+                                    logger.warning(f"File {filename} already exists, saving as {filename.name} .")
+                                with filename.open("wb") as f:
+                                    f.write(b64decode(file["content"]))
+            else:
+                logger.warning("No output path provided, additional files will not be saved.")
+
             yield question
 
 
-def extract_yaml_questions(paths: Iterator[Path]) -> str:
+def extract_yaml_questions(in_paths: Iterator[Path], out_path: Path | None) -> str:
     """Generate Moodle-Tools YAML from a Moodle-XML file.
 
     Args:
@@ -42,8 +57,8 @@ def extract_yaml_questions(paths: Iterator[Path]) -> str:
         str: Moodle-Tools YAML for all questions in the XML file.
     """
     questions: list[dict[str, str | Any | None]] = []
-    for path in paths:
-        for question in load_moodle_xml(path):
+    for in_path in in_paths:
+        for question in load_moodle_xml(in_path, out_path):
             questions.append(question)
             logger.debug(f"Question {question} loaded.")
 
@@ -115,7 +130,8 @@ def main() -> None:
         level="ERROR",
     )
     inputs = iterate_inputs(args.input, "XML")
-    moodle_tools_yaml = extract_yaml_questions(inputs)
+    output_dir = None if args.output.name == "<stdout>" else Path(args.output.name) if Path(args.output.name).parent.is_dir() else Path(args.output.name).parent
+    moodle_tools_yaml = extract_yaml_questions(inputs, output_dir)
     print(moodle_tools_yaml, file=args.output)
 
 

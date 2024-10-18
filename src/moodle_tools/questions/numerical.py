@@ -2,10 +2,11 @@ from typing import Any
 from xml.etree.ElementTree import Element
 
 from loguru import logger
-
 from moodle_tools import ParsingError
 from moodle_tools.questions.question import Question, QuestionAnalysis
 from moodle_tools.utils import preprocess_text
+
+from moodle_tools.utils import parse_html
 
 
 class NumericalQuestion(Question):
@@ -15,14 +16,14 @@ class NumericalQuestion(Question):
     XML_TEMPLATE = "numerical.xml.j2"
 
     def __init__(
-        self,
-        question: str,
-        title: str,
-        answers: list[str],
-        category: str | None = None,
-        grade: float = 1.0,
-        general_feedback: str = "",
-        **flags: bool,
+            self,
+            question: str,
+            title: str,
+            answers: list[str],
+            category: str | None = None,
+            grade: float = 1.0,
+            general_feedback: str = "",
+            **flags: bool,
     ):
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
@@ -62,7 +63,30 @@ class NumericalQuestion(Question):
 
     @staticmethod
     def extract_properties_from_xml(element: Element) -> dict[str, str]:
-        return Question.extract_properties_from_xml(element)
+        question_props = Question.extract_properties_from_xml(element)
+        for el in [e for e in element.findall("*") if e.tag in ["shuffleanswers", "usecase"]]:
+            match el.tag:
+                case "shuffleanswers":
+                    question_props.update({"shuffle_answers": el.text.lower() == "true"})
+                case "usecase":
+                    question_props.update({"answer_case_sensitive": el.text.lower() == "1"})
+
+        answers = []
+        for answer in element.findall("answer"):
+            answer = {
+                               "answer": parse_html(answer.find("text").text),
+                               "points": int(answer.get("fraction")),
+                               "feedback": parse_html(answer.find("feedback").find("text").text or ""),
+                           } | {e.tag: e.text for e in answer if e.tag not in ["text", "feedback"]}
+
+            answers.append(answer)
+
+            Question.check_file_used_in_text(answer["answer"], question_props["files"])
+            Question.check_file_used_in_text(answer["feedback"], question_props["files"])
+
+        question_props.update({"answers": answers})
+
+        return question_props
 
 
 class NumericalQuestionAnalysis(QuestionAnalysis):

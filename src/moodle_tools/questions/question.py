@@ -2,10 +2,10 @@ import re
 from abc import ABC, abstractmethod
 from collections import Counter
 from typing import Any, NamedTuple
+from urllib.parse import quote
 from xml.etree.ElementTree import Element
 
 from jinja2 import Environment
-
 from moodle_tools.utils import parse_html, preprocess_text
 
 
@@ -16,13 +16,13 @@ class Question(ABC):
     XML_TEMPLATE: str
 
     def __init__(
-        self,
-        question: str,
-        title: str,
-        category: str | None,
-        grade: float = 1.0,
-        general_feedback: str = "",
-        **flags: bool,
+            self,
+            question: str,
+            title: str,
+            category: str | None,
+            grade: float = 1.0,
+            general_feedback: str = "",
+            **flags: bool,
     ) -> None:
         """General template for a question."""
         self.question = preprocess_text(question, **flags)
@@ -54,6 +54,20 @@ class Question(ABC):
     @abstractmethod
     def extract_properties_from_xml(element: Element) -> dict[str, str | Any | None]:
         question_props = dict()
+
+        files = {}
+        for f in element.findall("questiontext/file"):
+            if f.get("name") in files:
+                raise ValueError(f"File {f.get('name')} already exists.")
+
+            files[f.get("name")] = {
+                "encoding": f.get("encoding"),
+                "content": f.text,
+                "is_used": False
+            }
+
+        question_props.update({"files": files})
+
         question_props.update({"title": element.find("name").find("text").text})
         question_props.update(
             {"question": parse_html(element.find("questiontext").find("text").text)}
@@ -63,7 +77,18 @@ class Question(ABC):
         )
         question_props.update({"markdown": False})
         question_props.update({"table_styling": False})
+
+        Question.check_file_used_in_text(question_props["question"], question_props["files"])
+        Question.check_file_used_in_text(question_props["general_feedback"] or "", question_props["files"])
+
         return question_props
+
+    @staticmethod
+    def check_file_used_in_text(text: str, files: dict[str, dict[str, str | bool]]) -> None:
+        for name in files.keys():
+            if quote(name) in text:
+                files[name]["is_used"] = True
+
 
 
 class AnalysisItem(NamedTuple):

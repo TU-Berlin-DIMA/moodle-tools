@@ -10,6 +10,7 @@ from moodle_tools.enums import ShuffleAnswersEnum
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import preprocess_text
+from pkg_resources import resource_isdir
 
 re_solution_ref_number = re.compile(r"\[\[(\d+)\]\]")
 re_id = re.compile(r"""\[\[\"([^\"]*)\"\]\]""")
@@ -176,7 +177,8 @@ class MissingWordsQuestion(Question):
 
     @staticmethod
     def extract_properties_from_xml(element: Element) -> dict[str, str]:
-        return Question.extract_properties_from_xml(element)
+        raise NotImplementedError("This method is not implemented for this question type.")
+        #return Question.extract_properties_from_xml(element)
 
 
 class MissingWordsQuestionAnalysis(MultipleResponseQuestionAnalysis):
