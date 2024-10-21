@@ -7,11 +7,7 @@ from typing import Any, Iterator
 import markdown
 import sqlparse  # type: ignore
 from loguru import logger
-from markdownify import markdownify
-
-
-class Literal(str):
-    pass
+from markdownify import markdownify  # type: ignore
 
 
 def format_tables(text: str) -> str:
@@ -27,8 +23,8 @@ def parse_markdown(text: str) -> str:
 def parse_html(text: str) -> str:
     """Parse the question text from HTML to markdown."""
     # TODO: Implement the function.
-    md_text = markdownify(text).strip()
-    return Literal(md_text) if md_text else md_text
+    md_text: str = markdownify(text).strip()
+    return md_text
 
 
 def inline_images(text: str) -> str:
@@ -52,8 +48,8 @@ def inline_images(text: str) -> str:
     return text
 
 
-def transpile_dict_to_yaml(properties: dict[str, str | Any | None]) -> str:
-    pass
+# def transpile_dict_to_yaml(properties: dict[str, str | Any | None]) -> str:
+#    pass
 
 
 def iterate_inputs(

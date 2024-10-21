@@ -30,9 +30,13 @@ class QuestionFactory:
         "shortanswer": ShortAnswerQuestion,
     }
 
-    SUPPORTED_MOODLE_TYPES: dict[str, type[Question]] = {c.QUESTION_TYPE: c for t, c in SUPPORTED_QUESTION_TYPES.items()}
+    SUPPORTED_MOODLE_TYPES: dict[str, type[Question]] = {
+        c.QUESTION_TYPE: c for t, c in SUPPORTED_QUESTION_TYPES.items()
+    }
 
-    SUPPORTED_MOODLE_TO_MT: dict[str, str] = {c.QUESTION_TYPE: t for t, c in SUPPORTED_QUESTION_TYPES.items()}
+    SUPPORTED_MOODLE_TO_MT: dict[str, str] = {
+        c.QUESTION_TYPE: t for t, c in SUPPORTED_QUESTION_TYPES.items()
+    }
 
     @staticmethod
     def create_question(question_type: str, **properties: Any) -> Question:

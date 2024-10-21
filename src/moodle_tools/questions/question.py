@@ -54,7 +54,7 @@ class Question(ABC):
     @staticmethod
     @abstractmethod
     def extract_properties_from_xml(element: Element) -> dict[str, str | Any | None]:
-        question_props = dict()
+        question_props = {}
 
         files = {}
         for f in element.findall("questiontext/file"):
@@ -69,10 +69,8 @@ class Question(ABC):
 
         question_props.update({"files": files})
 
-        question_props.update({"title": element.find("name").find("text").text})
-        question_props.update(
-            {"question": parse_html(element.find("questiontext").find("text").text)}
-        )
+        question_props.update({"title": element.find("name/text").text})
+        question_props.update({"question": parse_html(element.find("questiontext/text").text)})
         question_props.update(
             {
                 "general_feedback": parse_html(
@@ -80,7 +78,7 @@ class Question(ABC):
                 )
             }
         )
-        question_props.update({"markdown": False})
+        # question_props.update({"markdown": False})
         question_props.update({"table_styling": False})
 
         Question.handle_file_used_in_text(question_props, "question")

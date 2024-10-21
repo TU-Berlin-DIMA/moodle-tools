@@ -12,7 +12,7 @@ import yaml
 from loguru import logger
 
 from moodle_tools.questions import QuestionFactory
-from moodle_tools.utils import Literal, iterate_inputs
+from moodle_tools.utils import iterate_inputs
 
 ITEM_ORDER = {
     "type": 0,
@@ -60,7 +60,9 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str,
 
     logger.info(f"Loaded {len(questions)} questions from YAML.")
 
-    category_parts = [list(r) for r in zip(*[q["category"].split("/") for q in questions])]
+    category_parts = [
+        list(r) for r in zip(*[q["category"].split("/") for q in questions], strict=True)
+    ]
     category_diff = [len(set(parts)) != 1 for parts in category_parts]
 
     min_category_diff = min(p for p in [i * int(c) for i, c in enumerate(category_diff)] if p > 0)
@@ -99,14 +101,17 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str,
 
         del question["files"]
 
-    def literal_presenter(dumper, data):
-        return dumper.represent_scalar("tag:yaml.org,2002:str", data, style=">")
+    def str_presenter(dumper, data):
+        if len(data.splitlines()) > 1:  # check for multiline string
+            data = "\n".join([line.rstrip() for line in data.strip().splitlines()])
+            return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
-    mls_dumper = yaml.dumper.SafeDumper
-    mls_dumper.add_representer(Literal, literal_presenter)
+    yaml.add_representer(str, str_presenter)
+    yaml.representer.SafeRepresenter.add_representer(str, str_presenter)  # to use with safe_dum
 
     questions_yaml_grouped = {
-        k: yaml.dump_all(q, width=100, sort_keys=False, Dumper=mls_dumper)
+        k: yaml.safe_dump_all(q, width=200, sort_keys=False, allow_unicode=True)
         for k, q in grouped_questions.items()
     }
 
