@@ -57,9 +57,12 @@ class Question(ABC):
         question_props = {}
 
         files = {}
-        for f in element.findall("questiontext/file"):
+        for f in element.iter("file"):
             if f.get("name") in files:
-                raise ValueError(f"File {f.get('name')} already exists.")
+                if files[f.get("name")]["content"] != f.text:
+                    raise ValueError(
+                        f"File {f.get('name')} already exists with different content."
+                    )
 
             files[f.get("name")] = {
                 "encoding": f.get("encoding"),
@@ -72,11 +75,7 @@ class Question(ABC):
         question_props.update({"title": element.find("name/text").text})
         question_props.update({"question": parse_html(element.find("questiontext/text").text)})
         question_props.update(
-            {
-                "general_feedback": parse_html(
-                    element.find("generalfeedback").find("text").text or ""
-                )
-            }
+            {"general_feedback": parse_html(element.find("generalfeedback/text").text or "")}
         )
         # question_props.update({"markdown": False})
         question_props.update({"table_styling": False})
@@ -87,12 +86,14 @@ class Question(ABC):
         return question_props
 
     @staticmethod
-    def handle_file_used_in_text(question: dict, prop: str) -> None:
-        if "files" in question:
-            for name in question["files"].keys():
-                if quote(name) in question[prop]:
-                    question[prop] = question[prop].replace(f"@@PLUGINFILE@@/{quote(name)}", name)
-                    question["files"][name]["is_used"] = True
+    def handle_file_used_in_text(part: dict, prop: str, files=None) -> None:
+        files = files or part.get("files", {})
+
+        if files and isinstance(part[prop], str):
+            for name in files if files else part["files"].keys():
+                if quote(name) in part[prop]:
+                    part[prop] = part[prop].replace(f"@@PLUGINFILE@@/{quote(name)}", name)
+                    files[name]["is_used"] = True
 
 
 class AnalysisItem(NamedTuple):

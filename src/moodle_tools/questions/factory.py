@@ -64,7 +64,7 @@ class QuestionFactory:
             ].extract_properties_from_xml(element)
 
             properties["type"] = QuestionFactory.SUPPORTED_MOODLE_TO_MT[question_type]
-            properties["category"] = properties["category"].replace("$course$/top", "$module$")
+            properties["category"] = properties["category"].replace("$course$/top/", "")
 
             # TODO fix category
             return properties

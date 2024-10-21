@@ -41,7 +41,14 @@ class TrueFalseQuestion(Question):
 
     @staticmethod
     def extract_properties_from_xml(element: Element) -> dict[str, str]:
-        return Question.extract_properties_from_xml(element)
+        question = Question.extract_properties_from_xml(element)
+
+        correct_answer = (
+            e.find("text").text for e in element.findall("answer") if e.get("fraction") == "100"
+        )
+        question.update({"correct_answer": next(correct_answer) == "true"})
+
+        return question
 
 
 class TrueFalseQuestionAnalysis(QuestionAnalysis):

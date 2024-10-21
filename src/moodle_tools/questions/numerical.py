@@ -71,17 +71,32 @@ class NumericalQuestion(Question):
                     question_props.update({"answer_case_sensitive": el.text.lower() == "1"})
 
         answers = []
-        for answer in element.findall("answer"):
+        for answer_xml in element.findall("answer"):
+            answer_text = answer_xml.find("text").text
+
             answer = {
-                "answer": parse_html(answer.find("text").text),
-                "points": int(answer.get("fraction")),
-                "feedback": parse_html(answer.find("feedback").find("text").text or ""),
-            } | {e.tag: e.text for e in answer if e.tag not in ["text", "feedback"]}
+                "answer": (
+                    parse_html(answer_text)
+                    if not answer_text.replace(".", "", 1).isdigit()
+                    else float(answer_text) if "." in answer_text else int(answer_text)
+                ),
+                "points": int(answer_xml.get("fraction")),
+                "feedback": parse_html(answer_xml.find("feedback").find("text").text or ""),
+            }
 
-            answers.append(answer)
+            if answer_xml.find("tolerance") is not None:
+                answer.update({"tolerance": float(answer_xml.find("tolerance").text)})
 
-            Question.handle_file_used_in_text(answer, "answer")
-            Question.handle_file_used_in_text(answer, "feedback")
+            other_tags = {
+                e.tag: e.text
+                for e in answer_xml
+                if e.tag not in ["text", "feedback", "file", "tolerance"]
+            }
+
+            answers.append(answer | other_tags)
+
+            Question.handle_file_used_in_text(answer, "answer", question_props["files"])
+            Question.handle_file_used_in_text(answer, "feedback", question_props["files"])
 
         question_props.update({"answers": answers})
 

@@ -24,7 +24,7 @@ ITEM_ORDER = {
 
 
 def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
-    with open(in_path) as file:
+    with open(in_path, encoding="utf-8") as file:
         document = ET.parse(file)
         quiz = document.getroot()
 
@@ -33,7 +33,9 @@ def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
     for element in quiz.findall("question"):
         question_props = {}
         if element.attrib.get("type") == "category":
-            category = element.find("category").find("text").text
+            category = (
+                element.find("category").find("text").text.replace("//", "AND_OR")
+            )  # fix for slashes in category names
         else:
             question_props.update({"category": category})
             question_type = element.attrib.get("type")
@@ -43,7 +45,7 @@ def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
             yield dict(sorted(question.items(), key=lambda item: ITEM_ORDER.get(item[0], 10)))
 
 
-def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str, str]:
+def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path | None) -> dict[str, str]:
     """Generate Moodle-Tools YAML from a Moodle-XML file.
 
     Args:
@@ -67,7 +69,7 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str,
 
     min_category_diff = min(p for p in [i * int(c) for i, c in enumerate(category_diff)] if p > 0)
 
-    grouped_questions = {}
+    grouped_questions: dict[str, list] = {}
     for question in questions:
         category = pathvalidate.sanitize_filename(
             "/".join(question["category"].split("/")[min_category_diff:]), platform="universal"
@@ -101,7 +103,11 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str,
 
         del question["files"]
 
-    def str_presenter(dumper, data):
+    class IndentDumper(yaml.SafeDumper):
+        def increase_indent(self, flow=False, indentless=False) -> None:
+            super().increase_indent(flow, False)
+
+    def str_presenter(dumper, data) -> Any:
         if len(data.splitlines()) > 1:  # check for multiline string
             data = "\n".join([line.rstrip() for line in data.strip().splitlines()])
             return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
@@ -109,9 +115,10 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str,
 
     yaml.add_representer(str, str_presenter)
     yaml.representer.SafeRepresenter.add_representer(str, str_presenter)  # to use with safe_dum
+    IndentDumper.add_representer(str, str_presenter)
 
     questions_yaml_grouped = {
-        k: yaml.safe_dump_all(q, width=200, sort_keys=False, allow_unicode=True)
+        k: yaml.dump_all(q, width=200, sort_keys=False, allow_unicode=True, Dumper=IndentDumper)
         for k, q in grouped_questions.items()
     }
 
@@ -184,7 +191,7 @@ def main() -> None:
         None
         if args.output.name == "<stdout>"
         else (
-            (Path(args.output.name))
+            Path(args.output.name)
             if Path(args.output.name).is_dir()
             else Path(args.output.name).parent
         )
@@ -192,9 +199,12 @@ def main() -> None:
     moodle_tools_yaml_grouped = extract_yaml_questions(inputs, output_dir)
 
     for category, moodle_tools_yaml in moodle_tools_yaml_grouped.items():
+        if output_dir:
+            output_path = output_dir / category / f"questions_{category}.yaml"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
         print(
             moodle_tools_yaml,
-            file=(output_dir / f"{category}.yaml").open("w") if output_dir else args.output,
+            file=output_path.open("w") if output_dir else args.output,
         )
 
 
