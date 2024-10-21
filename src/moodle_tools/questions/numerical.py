@@ -2,11 +2,10 @@ from typing import Any
 from xml.etree.ElementTree import Element
 
 from loguru import logger
+
 from moodle_tools import ParsingError
 from moodle_tools.questions.question import Question, QuestionAnalysis
-from moodle_tools.utils import preprocess_text
-
-from moodle_tools.utils import parse_html
+from moodle_tools.utils import parse_html, preprocess_text
 
 
 class NumericalQuestion(Question):
@@ -16,14 +15,14 @@ class NumericalQuestion(Question):
     XML_TEMPLATE = "numerical.xml.j2"
 
     def __init__(
-            self,
-            question: str,
-            title: str,
-            answers: list[str],
-            category: str | None = None,
-            grade: float = 1.0,
-            general_feedback: str = "",
-            **flags: bool,
+        self,
+        question: str,
+        title: str,
+        answers: list[str],
+        category: str | None = None,
+        grade: float = 1.0,
+        general_feedback: str = "",
+        **flags: bool,
     ):
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
@@ -74,15 +73,15 @@ class NumericalQuestion(Question):
         answers = []
         for answer in element.findall("answer"):
             answer = {
-                               "answer": parse_html(answer.find("text").text),
-                               "points": int(answer.get("fraction")),
-                               "feedback": parse_html(answer.find("feedback").find("text").text or ""),
-                           } | {e.tag: e.text for e in answer if e.tag not in ["text", "feedback"]}
+                "answer": parse_html(answer.find("text").text),
+                "points": int(answer.get("fraction")),
+                "feedback": parse_html(answer.find("feedback").find("text").text or ""),
+            } | {e.tag: e.text for e in answer if e.tag not in ["text", "feedback"]}
 
             answers.append(answer)
 
-            Question.check_file_used_in_text(answer["answer"], question_props["files"])
-            Question.check_file_used_in_text(answer["feedback"], question_props["files"])
+            Question.handle_file_used_in_text(answer, "answer")
+            Question.handle_file_used_in_text(answer, "feedback")
 
         question_props.update({"answers": answers})
 

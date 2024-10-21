@@ -7,6 +7,11 @@ from typing import Any, Iterator
 import markdown
 import sqlparse  # type: ignore
 from loguru import logger
+from markdownify import markdownify
+
+
+class Literal(str):
+    pass
 
 
 def format_tables(text: str) -> str:
@@ -22,7 +27,8 @@ def parse_markdown(text: str) -> str:
 def parse_html(text: str) -> str:
     """Parse the question text from HTML to markdown."""
     # TODO: Implement the function.
-    return text
+    md_text = markdownify(text).strip()
+    return Literal(md_text) if md_text else md_text
 
 
 def inline_images(text: str) -> str:

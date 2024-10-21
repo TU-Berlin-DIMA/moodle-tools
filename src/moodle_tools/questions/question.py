@@ -6,6 +6,7 @@ from urllib.parse import quote
 from xml.etree.ElementTree import Element
 
 from jinja2 import Environment
+
 from moodle_tools.utils import parse_html, preprocess_text
 
 
@@ -16,13 +17,13 @@ class Question(ABC):
     XML_TEMPLATE: str
 
     def __init__(
-            self,
-            question: str,
-            title: str,
-            category: str | None,
-            grade: float = 1.0,
-            general_feedback: str = "",
-            **flags: bool,
+        self,
+        question: str,
+        title: str,
+        category: str | None,
+        grade: float = 1.0,
+        general_feedback: str = "",
+        **flags: bool,
     ) -> None:
         """General template for a question."""
         self.question = preprocess_text(question, **flags)
@@ -63,7 +64,7 @@ class Question(ABC):
             files[f.get("name")] = {
                 "encoding": f.get("encoding"),
                 "content": f.text,
-                "is_used": False
+                "is_used": False,
             }
 
         question_props.update({"files": files})
@@ -73,22 +74,27 @@ class Question(ABC):
             {"question": parse_html(element.find("questiontext").find("text").text)}
         )
         question_props.update(
-            {"general_feedback": parse_html(element.find("generalfeedback").find("text").text)}
+            {
+                "general_feedback": parse_html(
+                    element.find("generalfeedback").find("text").text or ""
+                )
+            }
         )
         question_props.update({"markdown": False})
         question_props.update({"table_styling": False})
 
-        Question.check_file_used_in_text(question_props["question"], question_props["files"])
-        Question.check_file_used_in_text(question_props["general_feedback"] or "", question_props["files"])
+        Question.handle_file_used_in_text(question_props, "question")
+        Question.handle_file_used_in_text(question_props, "general_feedback")
 
         return question_props
 
     @staticmethod
-    def check_file_used_in_text(text: str, files: dict[str, dict[str, str | bool]]) -> None:
-        for name in files.keys():
-            if quote(name) in text:
-                files[name]["is_used"] = True
-
+    def handle_file_used_in_text(question: dict, prop: str) -> None:
+        if "files" in question:
+            for name in question["files"].keys():
+                if quote(name) in question[prop]:
+                    question[prop] = question[prop].replace(f"@@PLUGINFILE@@/{quote(name)}", name)
+                    question["files"][name]["is_used"] = True
 
 
 class AnalysisItem(NamedTuple):

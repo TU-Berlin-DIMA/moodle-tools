@@ -7,13 +7,23 @@ from base64 import b64decode
 from pathlib import Path
 from typing import Any, Iterator
 
+import pathvalidate
 import yaml
 from loguru import logger
+
 from moodle_tools.questions import QuestionFactory
-from moodle_tools.utils import iterate_inputs
+from moodle_tools.utils import Literal, iterate_inputs
+
+ITEM_ORDER = {
+    "type": 0,
+    "category": 1,
+    "title": 2,
+    "question": 3,
+    "answers": 20,
+}
 
 
-def load_moodle_xml(in_path: Path, out_path: Path | None) -> Iterator[dict[str, str | Any | None]]:
+def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
     with open(in_path) as file:
         document = ET.parse(file)
         quiz = document.getroot()
@@ -30,24 +40,10 @@ def load_moodle_xml(in_path: Path, out_path: Path | None) -> Iterator[dict[str, 
             question_props.update({"type": question_type})
             question = QuestionFactory.props_from_xml(question_type, element, **question_props)
 
-            if out_path:
-                for name, file in question.get("files", {}).items():
-                    if file["is_used"]:
-                        match file["encoding"]:
-                            case "base64":
-                                filename = out_path.parent / name
-                                if filename.exists():
-                                    filename = filename.with_suffix(filename.suffix + "." + question["title"])
-                                    logger.warning(f"File {filename} already exists, saving as {filename.name} .")
-                                with filename.open("wb") as f:
-                                    f.write(b64decode(file["content"]))
-            else:
-                logger.warning("No output path provided, additional files will not be saved.")
-
-            yield question
+            yield dict(sorted(question.items(), key=lambda item: ITEM_ORDER.get(item[0], 10)))
 
 
-def extract_yaml_questions(in_paths: Iterator[Path], out_path: Path | None) -> str:
+def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path) -> dict[str, str]:
     """Generate Moodle-Tools YAML from a Moodle-XML file.
 
     Args:
@@ -58,15 +54,63 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_path: Path | None) -> s
     """
     questions: list[dict[str, str | Any | None]] = []
     for in_path in in_paths:
-        for question in load_moodle_xml(in_path, out_path):
+        for question in load_moodle_xml(in_path):
             questions.append(question)
             logger.debug(f"Question {question} loaded.")
 
     logger.info(f"Loaded {len(questions)} questions from YAML.")
 
-    questions_yaml = yaml.safe_dump_all(questions, width=1000)
+    category_parts = [list(r) for r in zip(*[q["category"].split("/") for q in questions])]
+    category_diff = [len(set(parts)) != 1 for parts in category_parts]
 
-    return questions_yaml
+    min_category_diff = min(p for p in [i * int(c) for i, c in enumerate(category_diff)] if p > 0)
+
+    grouped_questions = {}
+    for question in questions:
+        category = pathvalidate.sanitize_filename(
+            "/".join(question["category"].split("/")[min_category_diff:]), platform="universal"
+        )
+        if category not in grouped_questions:
+            grouped_questions[category] = []
+        grouped_questions[category].append(question)
+
+        if out_dir:
+            for name, file in question.get("files", {}).items():
+                if file["is_used"]:
+                    match file["encoding"]:
+                        case "base64":
+                            img_dir = out_dir / category
+                            img_dir.mkdir(parents=True, exist_ok=True)
+                            filename = img_dir / name
+
+                            content = b64decode(file["content"])
+
+                            if filename.exists() and filename.read_bytes() != content:
+                                filename = filename.with_suffix(
+                                    filename.suffix + "." + question["title"]
+                                )
+                                logger.warning(
+                                    f"File {filename} already exists, saving as {filename.name} ."
+                                )
+                            with filename.open("wb") as f:
+                                f.write(content)
+        else:
+            logger.warning("No output path provided, additional files will not be saved.")
+
+        del question["files"]
+
+    def literal_presenter(dumper, data):
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data, style=">")
+
+    mls_dumper = yaml.dumper.SafeDumper
+    mls_dumper.add_representer(Literal, literal_presenter)
+
+    questions_yaml_grouped = {
+        k: yaml.dump_all(q, width=100, sort_keys=False, Dumper=mls_dumper)
+        for k, q in grouped_questions.items()
+    }
+
+    return questions_yaml_grouped
 
 
 def parse_args() -> argparse.Namespace:
@@ -130,9 +174,23 @@ def main() -> None:
         level="ERROR",
     )
     inputs = iterate_inputs(args.input, "XML")
-    output_dir = None if args.output.name == "<stdout>" else Path(args.output.name) if Path(args.output.name).parent.is_dir() else Path(args.output.name).parent
-    moodle_tools_yaml = extract_yaml_questions(inputs, output_dir)
-    print(moodle_tools_yaml, file=args.output)
+
+    output_dir = (
+        None
+        if args.output.name == "<stdout>"
+        else (
+            (Path(args.output.name))
+            if Path(args.output.name).is_dir()
+            else Path(args.output.name).parent
+        )
+    )
+    moodle_tools_yaml_grouped = extract_yaml_questions(inputs, output_dir)
+
+    for category, moodle_tools_yaml in moodle_tools_yaml_grouped.items():
+        print(
+            moodle_tools_yaml,
+            file=(output_dir / f"{category}.yaml").open("w") if output_dir else args.output,
+        )
 
 
 if __name__ == "__main__":
