@@ -20,6 +20,7 @@ class MissingWordsQuestion(Question):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         options: list[dict[str, str | int]],

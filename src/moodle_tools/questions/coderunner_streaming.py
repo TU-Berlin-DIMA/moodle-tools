@@ -33,6 +33,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answer: str,

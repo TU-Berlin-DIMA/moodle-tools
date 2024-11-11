@@ -6,11 +6,9 @@
 
 > Describe, what this PR shouldn't achieve
 
-
 # Implementation
 
 > Describe, how this PR implements its goal
-
 
 # Challenges
 
@@ -18,3 +16,4 @@
 
 ## Option 1: Do X
 
+> Explanation

@@ -1,0 +1,32 @@
+---
+type: numerical
+title: Numerical question with eval
+question: What is 2 + 2?
+general_feedback: General feedback
+answers:
+  - answer: !eval 2 + 2
+    tolerance: 0
+    points: 100
+    feedback: Feedback for correct answer
+
+---
+
+type: numerical
+title: numerical multiline eval
+question: What is 2 + 2 + 3?
+answers:
+  - answer: !eval |
+      b = 2 + 2
+      b + 3
+    tolerance: 0
+    points: 100
+    feedback: Feedback for correct answer
+
+---
+
+type: numerical
+title: Evaluate expression
+question: What is the result of 2 + 2?
+answers:
+  - answer: !eval 2 + 2
+    feedback: !eval "f'The answer is: 2 + 2 = {2 + 2}'"
