@@ -1,0 +1,34 @@
+---
+
+type: numerical
+category: template/numerical
+title: Numerical question with Template
+question: !include question_template.yaml.j2
+answers:
+  - 3.14
+template:
+  question:
+    requested_fancy_number: "pi"
+
+---
+
+type: numerical
+category: template/numerical
+title: Numerical question with Template inline
+question: What is the value of {{ requested_fancy_number }}?
+answers:
+  - "{{ requested_fancy_number }}"
+template:
+  question:
+    requested_fancy_number: "pi"
+  answers:
+    requested_fancy_number: 3.14159
+
+---
+
+full_template: !include numerical_template.yaml.j2
+template:
+  question:
+    requested_fancy_number: "e"
+  answers:
+    correct_answer: 2.71828

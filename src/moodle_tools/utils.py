@@ -1,9 +1,12 @@
 import base64
 import re
 from pathlib import Path
+from typing import Any
 
 import markdown
 import sqlparse  # type: ignore
+import yaml
+from jinja2 import Environment
 from loguru import logger
 
 
@@ -74,6 +77,42 @@ def parse_code(code: str, parser: str | None = None) -> str:
             return sqlparse.format(code, reindent=False, keyword_case="upper")  # type: ignore
         case _:
             raise ParsingError(f"Parser not supported: {parser}")
+
+
+def update_question_from_template(
+    question: dict[str, Any], template: dict[str, Any], j2_env: Environment | None = None
+) -> dict[str, Any]:
+    """Update a question with templates values described in the template dictionary.
+
+    Args:
+        question: Question dictionary to be updated.
+        template: Template dictionary with the values to update.
+        j2_env: Jinja2 environment to use for rendering.
+
+    Returns:
+        dict: Updated question dictionary.
+    """
+    if not j2_env:
+        j2_env = Environment(lstrip_blocks=True, trim_blocks=True)
+
+    for key_outer, value_outer in template.items():
+        if isinstance(value_outer, dict):
+            template_keys = list(value_outer.keys())
+
+            for key_inner in value_outer.keys():
+                if key_inner in question.keys():
+                    template_keys.remove(key_inner)
+                    update_question_from_template(question[key_outer], template[key_outer], j2_env)
+
+            if template_keys:
+                applicable_keys = {
+                    key: value for key, value in value_outer.items() if key in template_keys
+                }
+                template_str = yaml.safe_dump(question[key_outer])
+                rendered = j2_env.from_string(template_str).render(applicable_keys)
+                question[key_outer] = yaml.safe_load(rendered)
+
+    return question
 
 
 class ParsingError(Exception):

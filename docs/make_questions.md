@@ -912,3 +912,101 @@ answers:
   - answer: !eval 2 + 2
     feedback: !eval "f'The answer is: 2 + 2 = {2 + 2}'"
 ```
+
+### Using Templates
+
+If your questions share a common structure, you can use templates to avoid redundancy.
+Moodle Tools knows two kinds of templates that can be combined.
+
+#### Structural Templates for parts of the Question
+
+First, you can define single values or parts of the YAML in a separate file.
+This file can be included in the main yaml file using the `!include` keyword.
+Template files always end on the `.yaml.j2` extension, even if do not use Jinja2 syntax.
+
+##### Base Template
+
+```yaml
+type: numerical
+category: template/numerical
+title: Numerical question with Template
+question: !include question_template_pi.yaml.j2
+answers:
+  - 3.14
+```
+
+##### question_template_pi.yaml.j2
+
+```yaml
+What is the value of π?
+```
+
+#### Structural Templates for whole Questions
+
+Second, you can define whole questions in a separate file.
+To include the question in the main yaml file, again use the `!include` keyword.
+However, as we cannot have a single string in the root of a YAML file, the include ist eh parameter of the `full_template` key.
+
+##### Base Template
+
+```yaml
+full_template: !include numerical_template.yaml.j2
+```
+
+##### numerical_template.yaml.j2
+
+```yaml
+type: numerical
+category: template/numerical
+title: Numerical question with Template
+question: What is the value of π?
+answers:
+  - 3.14
+```
+
+
+#### Placeholder Values
+
+Finally, you can replace placeholders in the template with values from the main yaml file.
+These values are defined in the `templates` key of the main yaml file.
+Placeholders are context-senstiive.
+This means, that they are defined separately for different parts of the question definition.
+moodle_tools will iterate over the template key and run the templating engine only if it does not find a key in the template key that matches the key in the main yaml file.
+
+```yaml
+type: numerical
+category: template/numerical
+title: Numerical question with Template inline
+question: What is the value of {{ requested_fancy_number }}?
+answers:
+  - {{ requested_fancy_number }}
+template:
+  question:
+    requested_fancy_number: "pi"
+  answers:
+    requested_fancy_number: 3.14
+```
+
+#### Combining Templates
+
+You can combine both kinds of templates.
+
+##### Base Template
+
+```yaml
+type: numerical
+category: template/numerical
+title: Numerical question with Template
+question: !include question_template.yaml.j2
+answers:
+  - 3.14
+template:
+  question:
+    requested_fancy_number: "pi"
+```
+
+##### question_template.yaml.j2
+
+```yaml
+What is the value of {{ requested_fancy_number }}?
+```

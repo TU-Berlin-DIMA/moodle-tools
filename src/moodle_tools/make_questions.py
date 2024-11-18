@@ -12,9 +12,10 @@ from jinja2 import Environment, PackageLoader
 from loguru import logger
 
 from moodle_tools.eval import eval_context
+from moodle_tools.loader import construct_include_context
 from moodle_tools.questions.factory import QuestionFactory
 from moodle_tools.questions.question import Question
-from moodle_tools.utils import ParsingError
+from moodle_tools.utils import ParsingError, update_question_from_template
 
 
 def load_questions(
@@ -39,6 +40,11 @@ def load_questions(
         ParsingError: If question type or title are not provided.
     """
     for document in documents:
+        if "full_template" in document:
+            template = document.pop("template")
+            document = document["full_template"]
+            document["template"] = template
+
         if "table_styling" not in document:
             document.update({"table_styling": table_styling})
         if "markdown" not in document:
@@ -52,6 +58,9 @@ def load_questions(
         if "title" not in document:
             raise ParsingError(f"Question title not provided: {document}")
         # TODO: Add further validation for required fields here
+
+        if "template" in document:
+            document = update_question_from_template(document, document["template"])
 
         if "internal_copy" in document and document["internal_copy"]:
             internal_document = document.copy()
@@ -102,7 +111,10 @@ def generate_moodle_questions(
 
     questions: list[Question] = []
     for path in paths:
-        with open(path, "r", encoding="utf-8") as file, contextlib.chdir(path.parent):
+        yaml.SafeLoader.add_constructor(
+            "!include", construct_include_context(path.parent.absolute())
+        )
+        with path.open("r", encoding="utf-8") as file, contextlib.chdir(path.parent):
             for i, question in enumerate(
                 load_questions(
                     yaml.safe_load_all(file),
@@ -115,6 +127,7 @@ def generate_moodle_questions(
                 if add_question_index:
                     question.title = f"{question.title} ({i})"
                 questions.append(question)
+
     logger.debug(f"Loaded {len(questions)} questions from YAML.")
 
     if question_filter:
