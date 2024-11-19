@@ -28,7 +28,7 @@ class Testcase(TypedDict, total=False):
 
     description: str
     code: Required[str]
-    result: str
+    result: Required[str]
     grade: float
     hiderestiffail: bool
     hidden: bool
@@ -48,6 +48,7 @@ class CoderunnerQuestion(Question):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answer: str,

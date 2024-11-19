@@ -54,6 +54,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answer: str,
@@ -143,6 +144,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answer: str,
@@ -239,6 +241,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answer: str,

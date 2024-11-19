@@ -12,6 +12,7 @@ class ShortAnswerQuestion(NumericalQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answers: list[str],
@@ -21,7 +22,15 @@ class ShortAnswerQuestion(NumericalQuestion):
         answer_case_sensitive: bool = True,
         **flags: bool,
     ) -> None:
-        super().__init__(question, title, answers, category, grade, general_feedback, **flags)
+        super().__init__(
+            question=question,
+            title=title,
+            answers=answers,
+            category=category,
+            grade=grade,
+            general_feedback=general_feedback,
+            **flags,
+        )
         self.answer_case_sensitive = answer_case_sensitive
 
         self.inline_answer_box()

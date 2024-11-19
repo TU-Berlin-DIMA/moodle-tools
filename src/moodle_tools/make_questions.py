@@ -10,6 +10,7 @@ import yaml
 from jinja2 import Environment, PackageLoader
 from loguru import logger
 
+from moodle_tools.eval import eval_context
 from moodle_tools.questions.factory import QuestionFactory
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError, iterate_inputs
@@ -73,12 +74,14 @@ def load_questions(
 
 
 def generate_moodle_questions(
+    *,
     paths: Iterator[Path],
     skip_validation: bool = False,
     parse_markdown: bool = True,
     add_question_index: bool = False,
     question_filter: list[str] | None = None,
     table_styling: bool = True,
+    allow_eval: bool = False,
 ) -> str:
     """Generate Moodle XML from a list of paths to YAML documents.
 
@@ -87,12 +90,15 @@ def generate_moodle_questions(
         skip_validation: Skip strict validation (default False).
         parse_markdown: Parse question and answer text as Markdown (default True).
         add_question_index: Extend each question title with an increasing number (default False).
-        filter: Filter questions to export by name.
+        question_filter: Filter questions to export by name.
         table_styling: Add Bootstrap style classes to table tags (default True).
+        allow_eval: Allows to evaluate math expressions (default False).
 
     Returns:
         str: Moodle XML for all questions in the YAML file.
     """
+    yaml.SafeLoader.add_constructor("!eval", eval_context(allow_eval))
+
     questions: list[Question] = []
     for path in paths:
         with open(path, "r", encoding="utf-8") as file, contextlib.chdir(path.parent):
@@ -181,6 +187,11 @@ def parse_args() -> argparse.Namespace:
         choices=["DEBUG", "INFO", "ERROR"],
         help="Set the log level (default: %(default)s)",
     )
+    parser.add_argument(
+        "--allow-eval",
+        action="store_true",
+        help="Allows to evaluate math expressions (default: %(default)s)",
+    )
 
     return parser.parse_args()
 
@@ -214,6 +225,7 @@ def main() -> None:
         skip_validation=args.skip_validation,
         add_question_index=args.add_question_index,
         question_filter=args.filter,
+        allow_eval=args.allow_eval,
     )
     print(question_xml, file=args.output)
 

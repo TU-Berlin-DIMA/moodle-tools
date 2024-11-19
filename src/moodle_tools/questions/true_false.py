@@ -12,6 +12,7 @@ class TrueFalseQuestion(Question):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         category: str | None = None,

@@ -14,6 +14,7 @@ class MultipleTrueFalseQuestion(Question):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answers: Sequence[dict[str, Any]],

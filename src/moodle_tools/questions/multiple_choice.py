@@ -11,6 +11,7 @@ class MultipleChoiceQuestion(NumericalQuestion):
 
     def __init__(
         self,
+        *,
         question: str,
         title: str,
         answers: list[str],
@@ -23,7 +24,15 @@ class MultipleChoiceQuestion(NumericalQuestion):
         shuffle_answers: bool = True,
         **flags: bool,
     ) -> None:
-        super().__init__(question, title, answers, category, grade, general_feedback, **flags)
+        super().__init__(
+            question=question,
+            title=title,
+            answers=answers,
+            category=category,
+            grade=grade,
+            general_feedback=general_feedback,
+            **flags,
+        )
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.partially_correct_feedback = preprocess_text(partially_correct_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)

@@ -868,3 +868,47 @@ This is the order created by the Markdown converter.
 Inlining can theoretically lead to an XML file that exceeds the 50 MB file size limit.
 In this case, you should split up your yaml file to instances smaller than 50MB or reduce the file size of the images.
 The images are encoded in base64, so the encoded size is larger than the actual file size.
+
+
+### Evaluating expressions
+
+Sometimes, the correct answer of a question is the result of a (mathematical) expression.
+In this case, it is possible to evaluate the expression and use the result as the correct answer.
+This is done by explicitly setting a string to be evaluated by adding the `!eval` prefix.
+Evaluation is done using the [asteval](https://lmfit.github.io/asteval/) library.
+
+```yaml
+type: numerical
+title: Evaluate expression
+question: What is the result of 2 + 2?
+answers:
+  - !eval 2 + 2
+```
+
+
+It is also possible to evaluate multiline expressions, and use eval in any part of the YAML file.
+
+```yaml
+type: numerical
+title: Evaluate expression
+question: What is the result of 2 + 2 + 3?
+answers:
+  - answer: !eval |
+       b = 2 + 2
+       b + 3
+    feedback: !eval 2 + 2 + 3
+
+```
+
+**Note:** While locked down, this feature may have uninteded side effects and therefore is disabled by default. To enable it, set the `--allow-eval` flag.
+
+If you want to combine evaluating a specific field with a more verbose description, you can use f-strings:
+
+```yaml
+type: numerical
+title: Evaluate expression
+question: What is the result of 2 + 2?
+answers:
+  - answer: !eval 2 + 2
+    feedback: !eval "f'The answer is: 2 + 2 = {2 + 2}'"
+```
