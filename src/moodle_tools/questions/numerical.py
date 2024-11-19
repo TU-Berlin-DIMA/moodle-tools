@@ -74,13 +74,15 @@ class NumericalQuestion(Question):
         for answer_xml in element.findall("answer"):
             answer_text = answer_xml.find("text").text
 
+            fraction = answer_xml.get("fraction")
+
             answer = {
                 "answer": (
                     parse_html(answer_text)
                     if not answer_text.replace(".", "", 1).isdigit()
                     else float(answer_text) if "." in answer_text else int(answer_text)
                 ),
-                "points": int(answer_xml.get("fraction")),
+                "points": float(fraction) if "." in fraction else int(fraction),
                 "feedback": parse_html(answer_xml.find("feedback").find("text").text or ""),
             }
 
