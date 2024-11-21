@@ -4,11 +4,12 @@ import argparse
 import contextlib
 import os
 import sys
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 import yaml
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, PackageLoader, select_autoescape
 from loguru import logger
 
 from moodle_tools.eval import eval_context
@@ -53,7 +54,7 @@ def load_questions(
             raise ParsingError(f"Question title not provided: {document}")
         # TODO: Add further validation for required fields here
 
-        if "internal_copy" in document and document["internal_copy"]:
+        if document.get("internal_copy"):
             internal_document = document.copy()
             internal_document["title"] += " (intern \U0001f92b)"
             document.pop("internal_copy")
@@ -66,8 +67,7 @@ def load_questions(
             if errors:
                 message = (
                     "The following question did not pass strict validation:\n"
-                    + f"{yaml.safe_dump(document)}\n"
-                    + "\n- ".join(errors)
+                    f"{yaml.safe_dump(document)}\n" + "\n- ".join(errors)
                 )
                 logger.error(message)
                 continue
@@ -130,7 +130,10 @@ def generate_moodle_questions(
             sys.exit(1)
 
     env = Environment(
-        loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
+        loader=PackageLoader("moodle_tools.questions"),
+        lstrip_blocks=True,
+        trim_blocks=True,
+        autoescape=select_autoescape(),
     )
     template = env.get_template("quiz.xml.j2")
     xml = template.render(questions=[question.to_xml(env) for question in questions])
@@ -145,7 +148,7 @@ def iterate_inputs(
 
     Args:
         files: An iterator of file paths or directory paths.
-        strict: If True, raise an IOError if a path is neither a file nor a directory.
+        strict: If True, raise an OSError if a path is neither a file nor a directory.
                 If False, ignore such paths.
 
     Yields:
@@ -164,7 +167,7 @@ def iterate_inputs(
                     if filename.endswith(".yml") or filename.endswith(".yaml"):
                         yield Path(dirpath) / filename
         elif strict:
-            raise IOError(f"Not a file or folder: {file}")
+            raise OSError(f"Not a file or folder: {file}")
         else:
             logger.debug(f"{file} is neither a file nor a folder - ignoring.")
 

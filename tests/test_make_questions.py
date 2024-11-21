@@ -84,7 +84,7 @@ class TestIterateInputs:
 
     def test_not_a_file_or_folder_strict(self) -> None:
         """Raise an exception on inputs that are not files or folders."""
-        with pytest.raises(IOError):
+        with pytest.raises(OSError, match="Not a file or folder"):
             list(iterate_inputs(iter(["file1.yml", "unknown", "folder2"]), strict=True))
 
 
@@ -123,7 +123,7 @@ class TestFilterQuestions:
 
         captured = capsys.readouterr()
         assert "Filter returned fewer questions than expected. Exiting." in captured.out
-        assert pwe.type == SystemExit
+        assert pwe.type is SystemExit
         assert pwe.value.code == 1
 
     def test_filter_no_match(self, capsys: pytest.CaptureFixture[str]) -> None:
@@ -134,7 +134,7 @@ class TestFilterQuestions:
 
         captured = capsys.readouterr()
         assert "Filter returned 0 questions. Exiting." in captured.out
-        assert pwe.type == SystemExit
+        assert pwe.type is SystemExit
         assert pwe.value.code == 1
 
     def test_automatic_numbering_error(self, capsys: pytest.CaptureFixture[str]) -> None:
@@ -153,7 +153,7 @@ class TestFilterQuestions:
 
         captured = capsys.readouterr()
         assert "Filter returned 0 questions. Exiting." in captured.out
-        assert pwe.type == SystemExit
+        assert pwe.type is SystemExit
         assert pwe.value.code == 1
 
     def test_automatic_numbering(self, capsys: pytest.CaptureFixture[str]) -> None:

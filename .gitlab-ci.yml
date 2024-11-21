@@ -1,24 +1,22 @@
 ---
+variables:
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+
 default:
-  image: python:3.11
+  image: ghcr.io/astral-sh/uv:0.5-python3.12-alpine
   cache:
     paths:
-      - .cache/pip
+      - .cache/uv
   before_script:
-    - python --version ; pip --version  # For debugging
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
-    - pip install ".[dev]"
-
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    - apk add git
+    - python --version; uv --version  # For debugging
 
 pytest:
   stage: test
+  image: ghcr.io/astral-sh/uv:0.5-python$PY_VERSION-alpine
   script:
-    # Run tests with coverage
-    - pytest --cov=moodle_tools --cov-report term-missing:skip-covered --junitxml=pytest.xml tests
+    - uv sync --extra test
+    - uv run pytest --cov=moodle_tools --cov-report term-missing:skip-covered --junitxml=pytest.xml tests
   artifacts:
     when: always
     paths:
@@ -31,17 +29,21 @@ pytest:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     # Run for all changes to the default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  parallel:
+    matrix:
+      - PY_VERSION: ["3.11", "3.12", "3.13"]
 
-pages:
+docs:
   stage: deploy
   script:
+    - uv sync --extra docs
     - mv docs/assets public
-    - pdoc
+    - uv run pdoc
       -o "public"
       --docformat google
-      --favicon "/isda/isda-streaming/favicon.ico"
+      --favicon "/moodle-tools/favicon.ico"
       --footer-text "Moodle Tools, © 2024 DIMA."
-      --logo "/isda/isda-streaming/dima_logo.svg"
+      --logo "/moodle-tools/dima_logo.svg"
       --logo-link https://tu.berlin/dima
       ./src/moodle_tools
   artifacts:
@@ -49,5 +51,5 @@ pages:
       # The folder that contains the files to be exposed at the Page URL
       - public
   rules:
-    # This ensures that only pushes to the default branch will trigger a pages deploy
+    # This ensures that only pushes to the default branch will trigger a documentation build
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

@@ -62,7 +62,6 @@ class MissingWordsQuestion(Question):
         """If not all options contain an ordinal field, add ordinals."""
         # check if all options contain an ordinal field. If so, skip this step
         if not all("ordinal" in option for option in self.options):
-
             if not all(isinstance(option.get("ordinal", 0), int) for option in self.options):
                 logger.error("Ordinal values must be integers.")
                 sys.exit(1)

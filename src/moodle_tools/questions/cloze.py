@@ -21,8 +21,7 @@ class ClozeQuestion(Question):
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
     def validate(self) -> list[str]:
-        errors = super().validate()
-        return errors
+        return super().validate()
 
 
 class ClozeQuestionAnalysis(MultipleResponseQuestionAnalysis):

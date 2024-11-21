@@ -1,4 +1,5 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
@@ -42,7 +43,7 @@ class MultipleTrueFalseQuestion(Question):
         for answer in self.answers:
             if not answer["feedback"]:
                 errors.append(f"The answer {answer['answer']!r} has no feedback.")
-            if not answer["choice"] in self.choices:
+            if answer["choice"] not in self.choices:
                 errors.append(f"The answer {answer['answer']!r} does not use a valid choice.")
         return errors
 

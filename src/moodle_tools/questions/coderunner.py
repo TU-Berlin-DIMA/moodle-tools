@@ -162,8 +162,7 @@ class CoderunnerQuestion(Question):
         return True
 
     def validate(self) -> list[str]:
-        errors = super().validate()
-        return errors
+        return super().validate()
 
     def to_xml(self, env: Environment) -> str:
         """Generate a Moodle XML export of the question."""

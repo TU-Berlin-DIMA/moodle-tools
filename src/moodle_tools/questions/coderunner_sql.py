@@ -10,7 +10,7 @@ from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
 import duckdb
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 from moodle_tools.utils import ParsingError, preprocess_text
@@ -22,7 +22,10 @@ DB_CONNECTION_ERROR = (
 )
 
 env = Environment(
-    loader=PackageLoader("moodle_tools.questions"), lstrip_blocks=True, trim_blocks=True
+    loader=PackageLoader("moodle_tools.questions"),
+    lstrip_blocks=True,
+    trim_blocks=True,
+    autoescape=select_autoescape(),
 )
 
 
@@ -38,8 +41,8 @@ def open_tmp_db_connection(path: str | Path) -> Generator[duckdb.DuckDBPyConnect
     """
     with tempfile.NamedTemporaryFile("wb") as tmp_db:
         shutil.copy2(path, tmp_db.name)
+        con = duckdb.connect(tmp_db.name, config={"threads": 1})
         try:
-            con = duckdb.connect(tmp_db.name, config={"threads": 1})
             yield con
         finally:
             con.close()
@@ -161,7 +164,6 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         database_connection: bool = True,
         **flags: bool,
     ) -> None:
-
         super().__init__(
             question=question,
             title=title,

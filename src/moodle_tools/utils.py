@@ -51,8 +51,7 @@ def preprocess_text(text: str | None, **flags: bool) -> str:
 
     text = parse_markdown(text) if flags["markdown"] else text
     text = inline_images(text)
-    text = format_tables(text) if flags["table_styling"] else text
-    return text
+    return format_tables(text) if flags["table_styling"] else text
 
 
 def parse_code(code: str, parser: str | None = None) -> str:
@@ -65,7 +64,7 @@ def parse_code(code: str, parser: str | None = None) -> str:
     Returns:
         str: Code that has been parsed with the selected parser.
     """
-    match (parser):
+    match parser:
         case None:
             return code
         case "sqlparse":

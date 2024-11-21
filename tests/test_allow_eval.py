@@ -32,5 +32,5 @@ class TestAllowEval:
 
         # Assert the output is as expected
         assert "Explicit evaluation is not allowed but used" in captured.err
-        assert pwe.type == SystemExit
+        assert pwe.type is SystemExit
         assert pwe.value.code == 1

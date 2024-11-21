@@ -124,7 +124,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
         try:
             with redirect_stdout(stdout_capture):
-                exec(combined_code, {})  # pylint: disable=exec-used
+                exec(combined_code, {})  # noqa: S102
         except Exception as e:
             # Error occurred during execution of the test code
             error_type = type(e).__name__
