@@ -34,6 +34,9 @@ def construct_include_context(base_path: Path) -> Callable[[SafeLoader, yaml.Sca
         filename = base_path / Path(loader.construct_scalar(node))
 
         with filename.open("r") as file:
-            return yaml.load(file, SafeLoader)
+            if filename.suffix in [".yaml", ".yml", ".yaml.j2", ".yml.j2"]:
+                return yaml.load(file, SafeLoader)
+
+            return file.read()
 
     return construct_include
