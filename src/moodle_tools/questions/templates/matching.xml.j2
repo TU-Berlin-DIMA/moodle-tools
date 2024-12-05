@@ -16,7 +16,7 @@
     <shownumcorrect/>
     {% for option in options %}
     <subquestion format="html">
-        <text>{{ option.question }}</text>
+        <text>{{ "<![CDATA[{}]]>".format(option.question) if option.question }}</text>
         <answer>
             <text>{{ option.answer }}</text>
         </answer>

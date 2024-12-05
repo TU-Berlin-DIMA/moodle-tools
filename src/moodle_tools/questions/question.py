@@ -77,8 +77,6 @@ class Question(ABC):
         question_props.update(
             {"general_feedback": parse_html(element.find("generalfeedback/text").text or "")}
         )
-        # question_props.update({"markdown": False})
-        question_props.update({"table_styling": False})
 
         Question.handle_file_used_in_text(question_props, "question")
         Question.handle_file_used_in_text(question_props, "general_feedback")

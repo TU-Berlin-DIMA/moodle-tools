@@ -11,6 +11,7 @@ import pathvalidate
 import yaml
 from loguru import logger
 
+from moodle_tools.enums import ShuffleAnswersEnum
 from moodle_tools.questions import QuestionFactory
 from moodle_tools.utils import iterate_inputs
 
@@ -23,7 +24,10 @@ ITEM_ORDER = {
 }
 
 
-def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
+def load_moodle_xml(
+    in_path: Path,
+    table_styling: bool = True,
+) -> Iterator[dict[str, str | Any | None]]:
     with open(in_path, encoding="utf-8") as file:
         document = ET.parse(file)
         quiz = document.getroot()
@@ -40,23 +44,31 @@ def load_moodle_xml(in_path: Path) -> Iterator[dict[str, str | Any | None]]:
             question_props.update({"category": category})
             question_type = element.attrib.get("type")
             question_props.update({"type": question_type})
+            question_props.update({"table_styling": table_styling})
+
             question = QuestionFactory.props_from_xml(question_type, element, **question_props)
 
             yield dict(sorted(question.items(), key=lambda item: ITEM_ORDER.get(item[0], 10)))
 
 
-def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path | None) -> dict[str, str]:
+def extract_yaml_questions(
+    in_paths: Iterator[Path],
+    out_dir: Path | None,
+    table_styling: bool = True,
+) -> dict[str, str]:
     """Generate Moodle-Tools YAML from a Moodle-XML file.
 
     Args:
         path: Input XML file as path.
+        out_dir: Output directory for additional files.
+        table_styling: Add Bootstrap style classes to table tags (default True).
 
     Returns:
         str: Moodle-Tools YAML for all questions in the XML file.
     """
     questions: list[dict[str, str | Any | None]] = []
     for in_path in in_paths:
-        for question in load_moodle_xml(in_path):
+        for question in load_moodle_xml(in_path, table_styling):
             questions.append(question)
             logger.debug(f"Question {question} loaded.")
 
@@ -113,9 +125,15 @@ def extract_yaml_questions(in_paths: Iterator[Path], out_dir: Path | None) -> di
             return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
         return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
+    def sae_representer(dumper, data) -> Any:
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data.upper())
+
     yaml.add_representer(str, str_presenter)
+    yaml.add_representer(ShuffleAnswersEnum, sae_representer)
     yaml.representer.SafeRepresenter.add_representer(str, str_presenter)  # to use with safe_dum
+    yaml.representer.SafeRepresenter.add_representer(ShuffleAnswersEnum, sae_representer)
     IndentDumper.add_representer(str, str_presenter)
+    IndentDumper.add_representer(ShuffleAnswersEnum, sae_representer)
 
     questions_yaml_grouped = {
         k: yaml.dump_all(q, width=200, sort_keys=False, allow_unicode=True, Dumper=IndentDumper)
@@ -158,6 +176,12 @@ def parse_args() -> argparse.Namespace:
         choices=["DEBUG", "INFO", "ERROR"],
         help="Set the log level (default: %(default)s)",
     )
+    parser.add_argument(
+        "--table-styling",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enable table styling (default: %(default)s)",
+    )
 
     return parser.parse_args()
 
@@ -196,7 +220,7 @@ def main() -> None:
             else Path(args.output.name).parent
         )
     )
-    moodle_tools_yaml_grouped = extract_yaml_questions(inputs, output_dir)
+    moodle_tools_yaml_grouped = extract_yaml_questions(inputs, output_dir, args.table_styling)
 
     for category, moodle_tools_yaml in moodle_tools_yaml_grouped.items():
         if output_dir:
