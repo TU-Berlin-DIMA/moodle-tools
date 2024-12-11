@@ -60,4 +60,20 @@
     <penalty>0</penalty>
     <hidden>0</hidden>
 </question>
+<question type="cloze">
+    <name>
+        <text>Numerical cloze question using build_cloze</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Enter the correct value: {2:NUMERICAL:%100%5.57:0.01#Some Feedback~%0%99999}.</p>
+<p>This value is known as {1:MULTICHOICE:%0%e#Wrong answer~%100%pi#Correct answer}.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+</question>
 </quiz>

@@ -606,6 +606,54 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
+To make development of Cloze questions easier, moodle_tools supports outsourcing the Cloze question definition into a separate subquestion key within the question.
+It identifies locations where subquestions should be added by using the same placeholders as already known from [Missing Words Questions](#missing-words-questions).
+
+
+```yaml
+type: cloze
+category: category/subcategory/cloze
+title: Numerical cloze question with outsourced subquestions
+question: >-
+  Enter the correct value: [["NUMQUEST"]]
+general_feedback: General feedback
+subquestions:
+  NUMQUEST:
+    type: numerical
+    weight: 2
+    width: 10
+    answers:
+      - answer: 3.14159
+        tolerance: 0.00001
+        points: 100
+        feedback: "Correct"
+      - answer: 3.1416
+        tolerance: 0.0001
+        points: 50
+        feedback: "Rounded up"
+```
+
+moodle_tools supports all subquestion types also supported in Cloze.
+Whenever possible, it uses structures that are similar to other question types available in moodle_tools.
+For each subquestion we can define a width of the answer box, the weight of the subquestion compared to the other subquestions, and the feedback for each answer.
+
+Compared to the original Cloze syntax, this extension allows for easy use together with the [Evaluating expressions extension](#evaluating-expressions).
+
+#### Supported Questiontypes and Attributes
+
+| Attribute             | `numerical` | `shortanswer` | `multichoice` | `multiresponse` | Possible Values                          | Default Value                                                                  | Defined for each |
+|-----------------------|:-----------:|:-------------:|:-------------:|:---------------:|------------------------------------------|--------------------------------------------------------------------------------|------------------|
+| weight                |      ✅      |       ✅       |       ✅       |        ✅        | integer                                  | `''` (equivalent to `1`)                                                       | subquestion      |
+| width                 |      ✅      |       ✅       |       -       |        -        | integer                                  | Empty (equivalent to length of longest answer)                                 | subquestion      |
+| display_format        |      -      |       -       |       ✅       |        ✅        | `dropdown`, `horizontal`, `vertical`     | None (equivalent to `dropdown` in multichoice and `vertical` in multiresponse) | subquestion      |
+| shuffle_answers       |      -      |       -       |       ✅       |        ✅        | `shuffle`, `in_order`, `lexicographical` | None (equivalent to `in_order`)                                                | subquestion      |
+| answer_case_sensitive |      -      |       ✅       |       -       |        -        | `True`, `False`                          | `False`                                                                        | subquestion      |
+| answer                |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
+| tolerance             |      ✅      |       -       |       -       |        -        | float                                    | `0`                                                                            | answer           |
+| points                |      ✅      |       ✅       |       ✅       |        ✅        | float                                    | No default                                                                     | answer           |
+| feedback              |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
+
+
 ### Coderunner questions
 
 This is an abstract question type for three types of concrete questions: `sql_ddl`, `sql_dql`, and `isda_streaming`.

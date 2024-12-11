@@ -30,3 +30,32 @@ question: >-
   Select the correct value:
   {1:MULTICHOICE:=Cache Hit#Correct answer~Cache Miss#Wrong answer}
   </p>
+---
+type: cloze
+title: Numerical cloze question using build_cloze
+question: |
+  Enter the correct value: [["NUMQUEST"]].
+
+  This value is known as [["NUMTYPE"]].
+general_feedback: General feedback
+subquestions:
+  NUMQUEST:
+    type: numerical
+    weight: 2
+    width: 5
+    answers:
+      - answer: 5.57
+        tolerance: 0.01
+        points: 100
+        feedback: Some Feedback
+  NUMTYPE:
+    type: multichoice
+    weight: 1
+    shuffle_answers: lexicographical
+    answers:
+      - answer: pi
+        points: 100
+        feedback: Correct answer
+      - answer: e
+        points: 0
+        feedback: Wrong answer
