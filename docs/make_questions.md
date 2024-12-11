@@ -576,6 +576,34 @@ The options in this yaml file will generate the following xml output:
 
 **Note**: This only works properly, if the groups are not scrambled in the yaml file.
 
+### Matching questions
+
+In the [matching questiontype](https://docs.moodle.org/en/Matching_question_type), the student has to match one or multiple given strings to a set of predefined strings.
+
+The full YAML format for a matching question is as follows:
+
+```yaml
+type: matching  # Mandatory
+category: category/subcategory/matching  # Optional
+title: Simple matching question # Mandatory
+question: |- # Mandatory
+  To which part of a SQL query do these keywords belong to?
+shuffle_answers: SHUFFLE # Optional, Alternatives: IN_ORDER, LEXICOGRAPHICAL
+general_feedback: General feedback  # Mandatory in strict mode
+options: # Mandatory
+  - question: SELECT # Mandatory at least 2 times
+    answer: DQL # Mandatory at least 3 times
+  - question: ALTER
+    answer: DDL
+  - question: INSERT
+    answer: DML
+  - answer: DCL
+  - answer: TCL
+  ```
+
+This YAML content is rendered as follows in Moodle:
+
+![Matching question](assets/matching.png)
 
 ### Cloze questions
 

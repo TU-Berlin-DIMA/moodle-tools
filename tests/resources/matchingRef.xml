@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="matching">
+    <name>
+        <text>Simple matching question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>To which part of a SQL query do these keywords belong to?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>This is a general feedback for the question.</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+    1
+    </shuffleanswers>
+    <correctfeedback format="html">
+    <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+    <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+    <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <subquestion format="html">
+        <text>SELECT</text>
+        <answer>
+            <text>DQL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text>ALTER</text>
+        <answer>
+            <text>DDL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text>INSERT</text>
+        <answer>
+            <text>DML</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text></text>
+        <answer>
+            <text>DCL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text></text>
+        <answer>
+            <text>TCL</text>
+        </answer>
+    </subquestion>
+</question>
+<question type="matching">
+    <name>
+        <text>Simple matching question with order</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>To which part of a SQL query do these keywords belong to?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+    0
+    </shuffleanswers>
+    <correctfeedback format="html">
+    <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+    <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+    <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <subquestion format="html">
+        <text></text>
+        <answer>
+            <text>DCL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text>ALTER</text>
+        <answer>
+            <text>DDL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text>INSERT</text>
+        <answer>
+            <text>DML</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text>SELECT</text>
+        <answer>
+            <text>DQL</text>
+        </answer>
+    </subquestion>
+    <subquestion format="html">
+        <text></text>
+        <answer>
+            <text>TCL</text>
+        </answer>
+    </subquestion>
+</question>
+</quiz>

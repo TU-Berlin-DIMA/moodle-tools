@@ -1,0 +1,32 @@
+---
+type: matching
+title: Simple matching question
+question: |-
+  To which part of a SQL query do these keywords belong to?
+shuffle_answers: SHUFFLE
+general_feedback: This is a general feedback for the question.
+options:
+  - question: SELECT
+    answer: DQL
+  - question: ALTER
+    answer: DDL
+  - question: INSERT
+    answer: DML
+  - answer: DCL
+  - answer: TCL
+
+---
+type: matching
+title: Simple matching question with order
+question: |-
+  To which part of a SQL query do these keywords belong to?
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - question: SELECT
+    answer: DQL
+  - question: ALTER
+    answer: DDL
+  - question: INSERT
+    answer: DML
+  - answer: DCL
+  - answer: TCL
