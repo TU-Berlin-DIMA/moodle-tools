@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "moodle_tools"
 dynamic = ["version", "readme"]
 description = "A collection of tools to simplify working with Moodle quizzes."
-requires-python = ">=3.11,<=3.13"
+requires-python = ">=3.11,<3.14"
 license = { file = "LICENSE" }
 authors = [
     { name = "Viktor Rosenfeld", email = "viktor.rosenfeld@tu-berlin.de" },

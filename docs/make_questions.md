@@ -856,6 +856,14 @@ For CSS background-images, the inlining process checks for the following regular
 background-image:\s*url\('([^"']*)\)'
 ```
 
+You can also add styling to the image using markdown syntax like this:
+
+```markdown
+![Alt text](image.png){style="width: 50%"}
+```
+
+**Note:** `style` is the only supported attribute for images in Markdown syntax due to the above-mentioned limitations for the parsing regex.
+
 For HTML Tag images, while the CSS `style` tag is optional, the `alt` tag (the image description) is mandatory.
 You should use a different description for every image.
 That is because the contents of the `alt` tag are used when exporting the quiz responses.
