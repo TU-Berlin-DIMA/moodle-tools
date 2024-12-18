@@ -570,7 +570,7 @@ The options in this yaml file will generate the following xml output:
 <selectoption>
     <text>WHERE</text>
     <group>3</group>
-    <!-- ordinal: 4, group: C -->
+    <!-- ordinal: 6, group: C -->
 </selectoption>
 ```
 
