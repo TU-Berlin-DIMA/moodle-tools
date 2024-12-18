@@ -46,6 +46,7 @@ docs:
       --logo "/moodle-tools/dima_logo.svg"
       --logo-link https://tu.berlin/dima
       ./src/moodle_tools
+  pages: true
   artifacts:
     paths:
       # The folder that contains the files to be exposed at the Page URL
