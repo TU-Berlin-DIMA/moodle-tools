@@ -1,5 +1,3 @@
-import re
-
 from moodle_tools.questions.numerical import NumericalQuestion
 from moodle_tools.questions.question import QuestionAnalysis
 
@@ -32,16 +30,6 @@ class ShortAnswerQuestion(NumericalQuestion):
             **flags,
         )
         self.answer_case_sensitive = answer_case_sensitive
-
-        self.inline_answer_box()
-
-    def inline_answer_box(self) -> None:
-        re_box = re.compile(r"\[\[ANSWERBOX(?:|=(\d+))\]\]")
-        answerbox = re.search(re_box, self.question)
-
-        if answerbox:
-            answerbox_length = max(int(answerbox.group(1)), 5) if answerbox.group(1) else 10
-            self.question = re.sub(re_box, "_" * answerbox_length, self.question)
 
 
 class ShortAnswerQuestionAnalysis(QuestionAnalysis):
