@@ -50,24 +50,22 @@ class QuestionFactory:
     def is_valid_type(question_type: str) -> bool:
         return question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES
 
-    @staticmethod
-    def create_from_xml(question_type: str, element: Element, **properties: Any) -> Question:
-        return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](
-            **QuestionFactory.props_from_xml(question_type, element, **properties)
-        )
+    # @staticmethod
+    # def create_from_xml(question_type: str, element: Element, **properties: Any) -> Question:
+    #     return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](
+    #         **QuestionFactory.props_from_xml(question_type, element, **properties)
+    #     )
 
     @staticmethod
     def props_from_xml(
         question_type: str, element: Element, **properties: Any
     ) -> dict[str, str | Any | None]:
-        if question_type in QuestionFactory.SUPPORTED_MOODLE_TYPES:
-            properties = properties | QuestionFactory.SUPPORTED_MOODLE_TYPES[
-                question_type
-            ].extract_properties_from_xml(element)
+        properties = properties | QuestionFactory.SUPPORTED_MOODLE_TYPES[
+            question_type
+        ].extract_properties_from_xml(element)
 
-            properties["type"] = QuestionFactory.SUPPORTED_MOODLE_TO_MT[question_type]
-            properties["category"] = properties["category"].replace("$course$/top/", "")
+        properties["type"] = QuestionFactory.SUPPORTED_MOODLE_TO_MT[question_type]
+        properties["category"] = properties["category"].replace("$course$/top/", "")
 
-            # TODO fix category
-            return properties
-        raise ParsingError(f"Unsupported Question Type: {question_type}.")
+        # TODO fix category
+        return properties

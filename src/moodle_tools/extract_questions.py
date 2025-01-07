@@ -16,7 +16,7 @@ from yaml import Dumper, ScalarNode
 
 from moodle_tools.enums import ShuffleAnswersEnum
 from moodle_tools.questions import QuestionFactory
-from moodle_tools.utils import iterate_inputs
+from moodle_tools.utils import ParsingError, iterate_inputs
 
 ITEM_ORDER = {
     "type": 0,
@@ -30,6 +30,7 @@ ITEM_ORDER = {
 def load_moodle_xml(
     in_path: Path,
     table_styling: bool = True,
+    skip_unsupported: bool = False,
 ) -> Iterator[dict[str, str | Any | None]]:
     with open(in_path, encoding="utf-8") as file:
         document = ET.parse(file)
@@ -39,11 +40,22 @@ def load_moodle_xml(
     category = ""
     for element in quiz.findall("question"):
         question_props = {}
-        if element.attrib.get("type") == "category":
+        question_type = str(element.attrib.get("type"))
+        if question_type == "category":
             category = (
                 element.find("category").find("text").text.replace("//", "AND_OR")
             )  # fix for slashes in category names
         else:
+            if not question_type in QuestionFactory.SUPPORTED_MOODLE_TYPES:
+                errortext = f"question with type {question_type}: {element.find('name/text').text} from category {category}."
+                if skip_unsupported:
+                    logger.warning(f"Skipping unsupported {errortext}.")
+                    continue
+
+                raise ParsingError(
+                    f"Unsupported {errortext}. Skip this question with --skip-unsupported."
+                )
+
             question_props.update({"category": category})
             question_type = str(element.attrib.get("type"))
             question_props.update({"type": str(question_type)})
@@ -83,6 +95,7 @@ def extract_yaml_questions(
     in_paths: Iterator[Path],
     out_dir: Path | None,
     table_styling: bool = True,
+    skip_unsupported: bool = False,
 ) -> dict[str, str]:
     """Generate Moodle-Tools YAML from a Moodle-XML file.
 
@@ -90,13 +103,14 @@ def extract_yaml_questions(
         path: Input XML file as path.
         out_dir: Output directory for additional files.
         table_styling: Add Bootstrap style classes to table tags (default True).
+        skip_unsupported: Skip unsupported question types (default False).
 
     Returns:
         str: Moodle-Tools YAML for all questions in the XML file.
     """
     questions: list[dict[str, str | Any | None]] = []
     for in_path in in_paths:
-        for question in load_moodle_xml(in_path, table_styling):
+        for question in load_moodle_xml(in_path, table_styling, skip_unsupported):
             questions.append(question)
             logger.debug(f"Question {question} loaded.")
 
@@ -219,9 +233,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-o",
         "--output",
-        default=sys.stdout,
-        type=argparse.FileType("w", encoding="utf-8"),
-        help="Output file (default: stdout)",
+        default=".",
+        type=Path,
+        help="Output directory (default: .)",
     )
     parser.add_argument(
         "--log-level",
@@ -235,6 +249,12 @@ def parse_args() -> argparse.Namespace:
         action=argparse.BooleanOptionalAction,
         default=True,
         help="Enable table styling (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--skip-unsupported",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Skip unsupported question types (default: %(default)s)",
     )
 
     return parser.parse_args()
@@ -265,21 +285,14 @@ def main() -> None:
     )
     inputs = iterate_inputs(args.input, "XML")
 
-    output_dir = (
-        None
-        if args.output.name == "<stdout>"
-        else (
-            Path(args.output.name)
-            if Path(args.output.name).is_dir()
-            else Path(args.output.name).parent
-        )
+    output_dir = args.output
+    moodle_tools_yaml_grouped = extract_yaml_questions(
+        inputs, output_dir, args.table_styling, args.skip_unsupported
     )
-    moodle_tools_yaml_grouped = extract_yaml_questions(inputs, output_dir, args.table_styling)
 
     for category, moodle_tools_yaml in moodle_tools_yaml_grouped.items():
-        if output_dir:
-            output_path = output_dir / category / f"questions_{category.split('/')[-1]}.yaml"
-            output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / category / f"questions_{category.split('/')[-1]}.yaml"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         print(
             moodle_tools_yaml,
             file=output_path.open("w") if output_dir else args.output,
