@@ -46,8 +46,11 @@ def load_moodle_xml(
                 element.find("category").find("text").text.replace("//", "AND_OR")
             )  # fix for slashes in category names
         else:
-            if not question_type in QuestionFactory.SUPPORTED_MOODLE_TYPES:
-                errortext = f"question with type {question_type}: {element.find('name/text').text} from category {category}."
+            if question_type not in QuestionFactory.SUPPORTED_MOODLE_TYPES:
+                errortext = (
+                    f"question with type {question_type}: "
+                    f"{element.find('name/text').text} from category {category}."
+                )
                 if skip_unsupported:
                     logger.warning(f"Skipping unsupported {errortext}.")
                     continue
@@ -88,7 +91,7 @@ def write_sidecar_files(quest: dict[str | Any | None, str], out_dir: Path) -> No
     else:
         logger.warning("No output path provided, additional files will not be saved.")
 
-        del quest["files"]
+    del quest["files"]
 
 
 def extract_yaml_questions(
