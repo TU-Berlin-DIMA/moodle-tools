@@ -69,6 +69,57 @@ def load_moodle_xml(
             yield dict(sorted(question.items(), key=lambda item: ITEM_ORDER.get(item[0], 10)))
 
 
+def build_cat_tree(children: list[dict[str, Any]], last_cat_level: str) -> dict[str, Any]:
+    curr_cat_questions = [c["question"] for c in children if len(c["cat_parts"]) == 0]
+
+    new_children = {c["cat_parts"][0]: [] for c in children if len(c["cat_parts"]) > 0}
+
+    if len(new_children) == 0:
+        return {"children": {}, "cat_name": last_cat_level, "questions": curr_cat_questions}
+
+    for c in children:
+        if len(c["cat_parts"]) > 0:
+            cat_name = c["cat_parts"].pop(0)
+            new_children[cat_name].append(c)
+
+    return {
+        "children": {k: build_cat_tree(v, k) for k, v in new_children.items()},
+        "cat_name": last_cat_level,
+        "questions": curr_cat_questions,
+    }
+
+
+def remove_1_child_levels(cat_node: dict[str, Any] | None) -> dict[str, Any] | None:
+    if cat_node is None:
+        return None
+    if len(cat_node["children"]) == 1:
+        return remove_1_child_levels(list(cat_node["children"].values())[0])
+
+    return cat_node
+
+
+def build_paths(
+    cat_node: dict[str, Any] | None, path: str
+) -> dict[str, list[dict[str, str | Any | None]]]:
+    if cat_node is None:
+        return {}
+
+    path = path + "/" + cat_node["cat_name"] if path else cat_node["cat_name"]
+    curr_quest = {}
+    if cat_node["questions"]:
+        new_cat = pathvalidate.sanitize_filepath(path, platform="universal")
+        new_cat = new_cat if not cat_node["children"] else new_cat + "/in_category"
+        for q in cat_node["questions"]:
+            q["category"] = new_cat
+
+        curr_quest = {new_cat: cat_node["questions"]}
+
+    if len(cat_node["children"]) == 0:
+        return curr_quest
+
+    return curr_quest | reduce(ior, [build_paths(c, path) for c in cat_node["children"].values()])
+
+
 def write_sidecar_files(quest: dict[str | Any | None, str], out_dir: Path) -> None:
     if out_dir:
         for name, file in quest.get("files", {}).items():
@@ -122,61 +173,11 @@ def extract_yaml_questions(
     for question in questions:
         question["category"] = question["category"].replace("//", "::")
 
-    def build_cat_tree(children: list[dict[str, Any]], last_cat_level: str) -> dict[str, Any]:
-        curr_cat_questions = [c["question"] for c in children if len(c["cat_parts"]) == 0]
-
-        new_children = {c["cat_parts"][0]: [] for c in children if len(c["cat_parts"]) > 0}
-
-        if len(new_children) == 0:
-            return {"children": {}, "cat_name": last_cat_level, "questions": curr_cat_questions}
-
-        for c in children:
-            if len(c["cat_parts"]) > 0:
-                cat_name = c["cat_parts"].pop(0)
-                new_children[cat_name].append(c)
-
-        return {
-            "children": {k: build_cat_tree(v, k) for k, v in new_children.items()},
-            "cat_name": last_cat_level,
-            "questions": curr_cat_questions,
-        }
-
     cat_root = build_cat_tree(
         [{"cat_parts": q["category"].split("/"), "question": q} for q in questions], "root"
     )
 
-    def remove_1_child_levels(cat_node: dict[str, Any] | None) -> dict[str, Any] | None:
-        if cat_node is None:
-            return None
-        if len(cat_node["children"]) == 1:
-            return remove_1_child_levels(list(cat_node["children"].values())[0])
-
-        return cat_node
-
     cat_root = remove_1_child_levels(cat_root)
-
-    def build_paths(
-        cat_node: dict[str, Any] | None, path: str
-    ) -> dict[str, list[dict[str, str | Any | None]]]:
-        if cat_node is None:
-            return {}
-
-        path = path + "/" + cat_node["cat_name"] if path else cat_node["cat_name"]
-        curr_quest = {}
-        if cat_node["questions"]:
-            new_cat = pathvalidate.sanitize_filepath(path, platform="universal")
-            new_cat = new_cat if not cat_node["children"] else new_cat + "/in_category"
-            for q in cat_node["questions"]:
-                q["category"] = new_cat
-
-            curr_quest = {new_cat: cat_node["questions"]}
-
-        if len(cat_node["children"]) == 0:
-            return curr_quest
-
-        return curr_quest | reduce(
-            ior, [build_paths(c, path) for c in cat_node["children"].values()]
-        )
 
     paths = build_paths(cat_root, "")
 
