@@ -11,5 +11,4 @@ class DropDownQuestionAnalysis(MultipleResponseQuestionAnalysis):
 
     def normalize_question(self, question_text: str) -> str:
         question_text = question_text.replace("\n", " ")
-        question_text = re.sub("{.*} -> {.*}", "", question_text, flags=re.DOTALL)
-        return question_text
+        return re.sub("{.*} -> {.*}", "", question_text, flags=re.DOTALL)

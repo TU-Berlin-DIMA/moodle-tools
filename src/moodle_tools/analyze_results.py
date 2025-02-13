@@ -3,9 +3,10 @@
 import argparse
 import csv
 import sys
+from collections.abc import Sequence
 from io import TextIOWrapper
 from statistics import median, stdev
-from typing import Literal, Sequence
+from typing import Literal
 
 from loguru import logger
 
@@ -28,10 +29,10 @@ TRANSLATIONS = {
 
 
 def detect_language(headers: Sequence[str] | None) -> Literal["en", "de"]:
-    """Detect the language of the responses export.
+    """Detect the language of the responses export by checking its headers.
 
     Args:
-        row: A row of the CSV file.
+        headers: Headers of a CSV file.
 
     Returns:
         Literal["en", "de"]: The detected language.
@@ -224,7 +225,7 @@ def main() -> None:
     logger.add(sys.stdout, format="{time:YYYY-MM-DD HH:mm:ss} | <level>{message}</level>")
 
     for handler in args.handlers:
-        if isinstance(handler, (ClozeQuestionAnalysis, NumericalQuestionAnalysis)):
+        if isinstance(handler, ClozeQuestionAnalysis | NumericalQuestionAnalysis):
             logger.warning(
                 "Grade calculation and outlier detection for numerical and cloze questions is "
                 "bugged. You should not rely on it."

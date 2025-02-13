@@ -37,7 +37,6 @@ test_cases = {
 
 class TestGeneralQuestion:
     def test_question_type_property(self) -> None:
-
         # Input from a true_false question type
         input_yaml_with_property = dedent(
             """

@@ -570,12 +570,40 @@ The options in this yaml file will generate the following xml output:
 <selectoption>
     <text>WHERE</text>
     <group>3</group>
-    <!-- ordinal: 4, group: C -->
+    <!-- ordinal: 6, group: C -->
 </selectoption>
 ```
 
 **Note**: This only works properly, if the groups are not scrambled in the yaml file.
 
+### Matching questions
+
+In the [matching questiontype](https://docs.moodle.org/en/Matching_question_type), the student has to match one or multiple given strings to a set of predefined strings.
+
+The full YAML format for a matching question is as follows:
+
+```yaml
+type: matching  # Mandatory
+category: category/subcategory/matching  # Optional
+title: Simple matching question # Mandatory
+question: |- # Mandatory
+  To which part of a SQL query do these keywords belong to?
+shuffle_answers: SHUFFLE # Optional, Alternatives: IN_ORDER, LEXICOGRAPHICAL
+general_feedback: General feedback  # Mandatory in strict mode
+options: # Mandatory
+  - question: SELECT # Mandatory at least 2 times
+    answer: DQL # Mandatory at least 3 times
+  - question: ALTER
+    answer: DDL
+  - question: INSERT
+    answer: DML
+  - answer: DCL
+  - answer: TCL
+  ```
+
+This YAML content is rendered as follows in Moodle:
+
+![Matching question](assets/matching.png)
 
 ### Cloze questions
 
@@ -605,6 +633,54 @@ This YAML content is rendered as follows in Moodle:
 
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
+
+To make development of Cloze questions easier, moodle_tools supports outsourcing the Cloze question definition into a separate subquestion key within the question.
+It identifies locations where subquestions should be added by using the same placeholders as already known from [Missing Words Questions](#missing-words-questions).
+
+
+```yaml
+type: cloze
+category: category/subcategory/cloze
+title: Numerical cloze question with outsourced subquestions
+question: >-
+  Enter the correct value: [["NUMQUEST"]]
+general_feedback: General feedback
+subquestions:
+  NUMQUEST:
+    type: numerical
+    weight: 2
+    width: 10
+    answers:
+      - answer: 3.14159
+        tolerance: 0.00001
+        points: 100
+        feedback: "Correct"
+      - answer: 3.1416
+        tolerance: 0.0001
+        points: 50
+        feedback: "Rounded up"
+```
+
+moodle_tools supports all subquestion types also supported in Cloze.
+Whenever possible, it uses structures that are similar to other question types available in moodle_tools.
+For each subquestion we can define a width of the answer box, the weight of the subquestion compared to the other subquestions, and the feedback for each answer.
+
+Compared to the original Cloze syntax, this extension allows for easy use together with the [Evaluating expressions extension](#evaluating-expressions).
+
+#### Supported Questiontypes and Attributes
+
+| Attribute             | `numerical` | `shortanswer` | `multichoice` | `multiresponse` | Possible Values                          | Default Value                                                                  | Defined for each |
+|-----------------------|:-----------:|:-------------:|:-------------:|:---------------:|------------------------------------------|--------------------------------------------------------------------------------|------------------|
+| weight                |      ✅      |       ✅       |       ✅       |        ✅        | integer                                  | `''` (equivalent to `1`)                                                       | subquestion      |
+| width                 |      ✅      |       ✅       |       -       |        -        | integer                                  | Empty (equivalent to length of longest answer)                                 | subquestion      |
+| display_format        |      -      |       -       |       ✅       |        ✅        | `dropdown`, `horizontal`, `vertical`     | None (equivalent to `dropdown` in multichoice and `vertical` in multiresponse) | subquestion      |
+| shuffle_answers       |      -      |       -       |       ✅       |        ✅        | `shuffle`, `in_order`, `lexicographical` | None (equivalent to `in_order`)                                                | subquestion      |
+| answer_case_sensitive |      -      |       ✅       |       -       |        -        | `True`, `False`                          | `False`                                                                        | subquestion      |
+| answer                |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
+| tolerance             |      ✅      |       -       |       -       |        -        | float                                    | `0`                                                                            | answer           |
+| points                |      ✅      |       ✅       |       ✅       |        ✅        | float                                    | No default                                                                     | answer           |
+| feedback              |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
+
 
 ### Coderunner questions
 
@@ -855,6 +931,14 @@ For CSS background-images, the inlining process checks for the following regular
 ```pythonregexp
 background-image:\s*url\('([^"']*)\)'
 ```
+
+You can also add styling to the image using markdown syntax like this:
+
+```markdown
+![Alt text](image.png){style="width: 50%"}
+```
+
+**Note:** `style` is the only supported attribute for images in Markdown syntax due to the above-mentioned limitations for the parsing regex.
 
 For HTML Tag images, while the CSS `style` tag is optional, the `alt` tag (the image description) is mandatory.
 You should use a different description for every image.
