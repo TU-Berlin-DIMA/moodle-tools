@@ -92,14 +92,14 @@ def update_question_from_template(
         dict: Updated question dictionary.
     """
     if not j2_env:
-        j2_env = Environment(lstrip_blocks=True, trim_blocks=True)
+        j2_env = Environment(lstrip_blocks=True, trim_blocks=True, autoescape=True)
 
     for key_outer, value_outer in template.items():
         if isinstance(value_outer, dict):
             template_keys = list(value_outer.keys())
 
-            for key_inner in value_outer.keys():
-                if key_inner in question.keys():
+            for key_inner in value_outer:
+                if key_inner in question:
                     template_keys.remove(key_inner)
                     update_question_from_template(question[key_outer], template[key_outer], j2_env)
 
