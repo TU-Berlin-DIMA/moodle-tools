@@ -116,7 +116,6 @@ def analyze_questions(
         )
         row.update(grade)
         writer.writerow(row)
-    print(type(outfile))
     logger.debug(f"Wrote analysis report to {outfile.name}")
 
 

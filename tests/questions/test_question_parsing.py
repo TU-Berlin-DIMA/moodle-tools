@@ -128,7 +128,7 @@ class TestGeneralQuestion:
         # Change to the directory containing the test resources
         with contextlib.chdir(Path(__file__).parent / "../../examples"):
             # Load content from the file
-            with open(test_data[0], "r", encoding="utf-8") as f:
+            with Path(test_data[0]).open(encoding="utf-8") as f:
                 reference_yaml = f.read().strip()
 
             questions = load_questions(

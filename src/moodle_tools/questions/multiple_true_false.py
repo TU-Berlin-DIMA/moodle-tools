@@ -24,7 +24,7 @@ class MultipleTrueFalseQuestion(Question):
         choices: Sequence[str] = ("True", "False"),
         shuffle_answers: bool = True,
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
         self.answers = answers
         self.choices = choices
@@ -49,5 +49,5 @@ class MultipleTrueFalseQuestion(Question):
 
 
 class MultipleTrueFalseQuestionAnalysis(MultipleResponseQuestionAnalysis):
-    def __init__(self, question_id: str):
+    def __init__(self, question_id: str) -> None:
         super().__init__(question_id, r"(.*?)\n?: (False|Falsch|True|Wahr)", "; ")

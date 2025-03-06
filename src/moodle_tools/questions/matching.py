@@ -23,7 +23,7 @@ class MatchingQuestion(Question):
         incorrect_feedback: str = "",
         shuffle_answers: ShuffleAnswersEnum = ShuffleAnswersEnum.SHUFFLE,
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
         self.options = options

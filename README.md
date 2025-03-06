@@ -10,7 +10,7 @@ This repository contains a collection of tools to simplify working with Moodle q
 ## Installation
 
 `moodle-tools` is distributed as a Python package.
-These instructions assume that you already installed `pip` and `virtualenv`.
+These instructions assume that you already installed `uv` or `pip` and `virtualenv`.
 Either clone the repository:
 
 ```bash

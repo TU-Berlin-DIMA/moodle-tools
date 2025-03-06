@@ -23,7 +23,7 @@ class NumericalQuestion(Question):
         grade: float = 1.0,
         general_feedback: str = "",
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
         self.answers = self.expand_answers_from_list(answers)

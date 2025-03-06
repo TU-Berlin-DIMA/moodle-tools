@@ -25,7 +25,7 @@ class TestDescription:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "description.xml", "r", encoding="utf-8") as f:
+        with (test_resources_dir / "description.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -44,7 +44,7 @@ class TestDescription:
         # Call the main function
         main()
 
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
 
         # Assert the output is as expected

@@ -102,7 +102,7 @@ def generate_moodle_questions(
 
     questions: list[Question] = []
     for path in paths:
-        with open(path, "r", encoding="utf-8") as file, contextlib.chdir(path.parent):
+        with path.open("r", encoding="utf-8") as file, contextlib.chdir(path.parent):
             for i, question in enumerate(
                 load_questions(
                     yaml.safe_load_all(file),
@@ -164,7 +164,7 @@ def iterate_inputs(
             for dirpath, _, filenames in os.walk(path):
                 for filename in filenames:
                     # Only process YAML files in folders, to exclude resources, like images.
-                    if filename.endswith(".yml") or filename.endswith(".yaml"):
+                    if filename.endswith((".yml", ".yaml")):
                         yield Path(dirpath) / filename
         elif strict:
             raise OSError(f"Not a file or folder: {file}")

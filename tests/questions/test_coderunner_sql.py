@@ -67,9 +67,7 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(
-            test_resources_dir / "coderunner-dql-wo_connection.xml", "r", encoding="utf-8"
-        ) as f:
+        with (test_resources_dir / "coderunner-dql-wo_connection.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -89,7 +87,7 @@ class TestCoderunnerQuestionSQL:
         main()
 
         # Assert the output is as expected by loading the created xml file into a string object
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml
 
@@ -98,9 +96,7 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(
-            test_resources_dir / "coderunner-dql-w_connection.xml", "r", encoding="utf-8"
-        ) as f:
+        with (test_resources_dir / "coderunner-dql-w_connection.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -120,7 +116,7 @@ class TestCoderunnerQuestionSQL:
         main()
 
         # Assert the output is as expected by loading the created xml file into a string object
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml
 
@@ -129,10 +125,8 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(
-            test_resources_dir / "coderunner-ddl_replace_tablecorrectness.xml",
-            "r",
-            encoding="utf-8",
+        with (test_resources_dir / "coderunner-ddl_replace_tablecorrectness.xml").open(
+            encoding="utf-8"
         ) as f:
             reference_xml = f.read().strip()
 
@@ -152,7 +146,7 @@ class TestCoderunnerQuestionSQL:
         main()
 
         # Assert the output is as expected by loading the created xml file into a string object
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml
 
@@ -161,11 +155,7 @@ class TestCoderunnerQuestionSQL:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(
-            test_resources_dir / "coderunner-ddl-intern.xml",
-            "r",
-            encoding="utf-8",
-        ) as f:
+        with (test_resources_dir / "coderunner-ddl-intern.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -184,6 +174,6 @@ class TestCoderunnerQuestionSQL:
         main()
 
         # Assert the output is as expected by loading the created xml file into a string object
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml

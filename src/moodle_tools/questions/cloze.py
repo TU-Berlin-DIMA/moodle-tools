@@ -1,6 +1,6 @@
 import re
 import sys
-from typing import Any
+from typing import Any, TypeVar
 
 from loguru import logger
 
@@ -8,6 +8,7 @@ from moodle_tools.enums import ClozeTypeEnum, DisplayFormatEnum, ShuffleAnswersE
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
 
+T = TypeVar("T", str, int, float, bool)
 re_id = re.compile(r"""\[\[\"([^\"]*)\"\]\]""")
 
 
@@ -25,22 +26,19 @@ class ClozeQuestion(Question):
         category: str | None = None,
         grade: float = 1.0,
         general_feedback: str = "",
-        subquestions: dict[str, Any] | None = None,
+        subquestions: dict[str, dict[str, Any]] | None = None,
         **flags: bool,
     ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
-        self.subquestions = subquestions if subquestions else {}
+        self.subquestions = self.build_cloze(subquestions if subquestions else {})
 
-        self.build_cloze()
         self.fill_in_cloze()
 
     def validate(self) -> list[str]:
         return super().validate()
 
-    def build_cloze(self) -> None:
-        self.subquestions = {
-            qid: self.__build_subquestion(qid, sq) for qid, sq in self.subquestions.items()
-        }
+    def build_cloze(self, subquestions: dict[str, dict[str, Any]]) -> dict[str, str]:
+        return {qid: self.__build_subquestion(qid, sq) for qid, sq in subquestions.items()}
 
     def fill_in_cloze(self) -> None:
         for match in re.finditer(re_id, self.question):
@@ -121,12 +119,9 @@ class ClozeQuestion(Question):
                 qtype_final += f"{'_C' if answer_case_sensitive else ''}"
                 disp_warn = disp_format != DisplayFormatEnum.NONE
                 shuffle_warn = shuffle_answers != ShuffleAnswersEnum.NONE
-            case (
-                (ClozeTypeEnum.MULTICHOICE, DisplayFormatEnum.DROPDOWN)
-                | (
-                    ClozeTypeEnum.MULTICHOICE,
-                    DisplayFormatEnum.NONE,
-                )
+            case (ClozeTypeEnum.MULTICHOICE, DisplayFormatEnum.DROPDOWN) | (
+                ClozeTypeEnum.MULTICHOICE,
+                DisplayFormatEnum.NONE,
             ):
                 qtype_final += f"{'_S' if shuffle_answers == ShuffleAnswersEnum.SHUFFLE else ''}"
                 case_warn = answer_case_sensitive
@@ -160,9 +155,7 @@ class ClozeQuestion(Question):
         return qtype_final
 
     @staticmethod
-    def __escape_cloze(
-        text: str | int | float | bool, is_answer: bool
-    ) -> str | int | float | bool:
+    def __escape_cloze(text: T, is_answer: bool) -> T:
         """Escape special characters"""
         if not isinstance(text, str):
             return text

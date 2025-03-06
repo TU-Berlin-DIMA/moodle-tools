@@ -11,6 +11,7 @@ from pathlib import Path
 
 import duckdb
 from jinja2 import Environment, PackageLoader, select_autoescape
+from loguru import logger
 
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 from moodle_tools.utils import ParsingError, preprocess_text
@@ -125,7 +126,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 
     @property
     def files(self) -> list[dict[str, str]]:
-        with open(self.database_path, "rb") as file:
+        with self.database_path.open("rb") as file:
             files = {
                 "name": self.database_path.name,
                 "encoding": b64encode(file.read()).decode("utf-8"),
@@ -334,8 +335,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
                     item_split.append("ASC")
                 column_orderings.update({item_split[0]: item_split[1]})
         else:
-            # TODO: Migrate this to a proper log statement once we have a logging system
-            print(
+            logger.warning(
                 "No ORDER BY statement found in the query. Please ensure that this was intended. "
                 "CodeRunner only performs string comparisons between solutions so usually an "
                 "ordering is necessary to ensure solution robustness."

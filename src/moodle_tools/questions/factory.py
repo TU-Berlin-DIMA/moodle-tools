@@ -35,7 +35,7 @@ class QuestionFactory:
     )
 
     @staticmethod
-    def create_question(question_type: str, **properties: Any) -> Question:
+    def create_question(question_type: str, **properties: Any) -> Question:  # noqa: ANN401
         if question_type in QuestionFactory.SUPPORTED_QUESTION_TYPES:
             return QuestionFactory.SUPPORTED_QUESTION_TYPES[question_type](**properties)
         raise ParsingError(f"Unsupported Question Type: {question_type}.")

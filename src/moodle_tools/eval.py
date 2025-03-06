@@ -17,7 +17,7 @@ def eval_context(allow_eval: bool) -> Callable[[SafeLoader, ScalarNode], Any]:
         function: Custom constructor for evaluating math expressions.
     """
 
-    def eval_constructor(loader: SafeLoader, node: ScalarNode) -> Any:
+    def eval_constructor(loader: SafeLoader, node: ScalarNode) -> Any:  # noqa: ANN401
         value = loader.construct_scalar(node)
         if not allow_eval:
             logger.error(

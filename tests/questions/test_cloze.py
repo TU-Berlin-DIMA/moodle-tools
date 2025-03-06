@@ -46,7 +46,7 @@ class TestCloze:
         captured = capsys.readouterr()
 
         # Assert the output is as expected
-        assert '{2:NUMERICAL:%100%5.57:0.01#Some Feedback~%0%99999}' in captured.out
+        assert "{2:NUMERICAL:%100%5.57:0.01#Some Feedback~%0%99999}" in captured.out
         assert '[["NUMQUEST"]]' not in captured.out
 
     def test_e2e_cli_make_question(self, tmp_path: Path) -> None:
@@ -54,7 +54,7 @@ class TestCloze:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "clozeRef.xml", "r", encoding="utf-8") as f:
+        with (test_resources_dir / "clozeRef.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -73,7 +73,7 @@ class TestCloze:
         # Call the main function
         main()
 
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
 
         # Assert the output is as expected

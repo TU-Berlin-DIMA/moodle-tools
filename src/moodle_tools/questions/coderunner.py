@@ -94,8 +94,8 @@ class CoderunnerQuestion(Question):
         # Apply consistent formatting to the answer code
         self.answer = parse_code(self.answer, parser=self.parser)
 
-        with open(
-            Path(__file__).parent / "templates" / self.TEST_TEMPLATE, "r", encoding="utf-8"
+        with (Path(__file__).parent / "templates" / self.TEST_TEMPLATE).open(
+            "r", encoding="utf-8"
         ) as file:
             self.test_logic = file.read()
 

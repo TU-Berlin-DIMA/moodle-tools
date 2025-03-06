@@ -20,7 +20,7 @@ class TrueFalseQuestion(Question):
         incorrect_feedback: str = "",
         correct_answer: bool = True,
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
         self.correct_feedback = preprocess_text(correct_feedback, **flags)
         self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)

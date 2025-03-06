@@ -37,7 +37,7 @@ class TestShortAnswer:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "shortanswerRef.xml", "r", encoding="utf-8") as f:
+        with (test_resources_dir / "shortanswerRef.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -56,7 +56,7 @@ class TestShortAnswer:
         # Call the main function
         main()
 
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
 
         # Assert the output is as expected
@@ -77,7 +77,7 @@ answers:
 
         # create temporary yaml file
         yaml_file_path = tmp_path / "shortanswer.yaml"
-        with open(yaml_file_path, "w", encoding="utf-8") as f:
+        with yaml_file_path.open("w", encoding="utf-8") as f:
             f.write(yaml_base.replace("{{abph}}", "[[ANSWERBOX]]"))
             f.write(yaml_base.replace("{{abph}}", "[[ANSWERBOX=8]]"))
             f.write(yaml_base.replace("{{abph}}", "[[ANSWERBOX=4]]"))

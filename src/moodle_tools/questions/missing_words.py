@@ -32,7 +32,7 @@ class MissingWordsQuestion(Question):
         incorrect_feedback: str = "",
         shuffle_answers: ShuffleAnswersEnum = ShuffleAnswersEnum.SHUFFLE,
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
         self.options = options
@@ -80,12 +80,10 @@ class MissingWordsQuestion(Question):
                 )  # 1-indexed
 
         for option in self.options:
-            if isinstance(option["group"], str):
-                # """if group is a letter, parse to number"""
-                if option.get("group") and option["group"].isalpha():
-                    option["group"] = ord(option["group"].lower()) - 96
-            elif isinstance(option["group"], int):
-                option["group"] = option["group"]
+            group = option.get("group")
+            if isinstance(group, str) and group.isalpha():
+                # if group is a letter, parse to number
+                option["group"] = ord(group.lower()) - 96
 
     def resolve_ids(self) -> None:
         """Resolve IDs in the question text to solution reference numbers as required by moodle."""

@@ -51,7 +51,7 @@ class TestCoderunnerQuestionStreaming:
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with open(test_resources_dir / "coderunner-streaming.xml", "r", encoding="utf-8") as f:
+        with (test_resources_dir / "coderunner-streaming.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -71,6 +71,6 @@ class TestCoderunnerQuestionStreaming:
         main()
 
         # Assert the output is as expected by loading the created xml file into a string object
-        with open(output_file_path, "r", encoding="utf-8") as f:
+        with output_file_path.open("r", encoding="utf-8") as f:
             generated_xml = f.read().strip()
         assert reference_xml == generated_xml

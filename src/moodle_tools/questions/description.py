@@ -16,7 +16,7 @@ class Description(Question):
         grade: float = 0.0,
         general_feedback: str = "",
         **flags: bool,
-    ):
+    ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
 
     def validate(self) -> list[str]:

@@ -2,7 +2,6 @@
 
 import inspect
 import io
-import os
 import shutil
 from base64 import b64encode
 from contextlib import redirect_stdout
@@ -106,7 +105,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
                 "encoding": b64encode(inspect.getsource(synopsis).encode()).decode("utf-8"),
             }
         )
-        with open(self.input_stream, "r", encoding="utf-8") as file:
+        with self.input_stream.open("r", encoding="utf-8") as file:
             files.append(
                 {
                     "name": self.input_stream.name,
@@ -143,6 +142,6 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
                 ------------------------------"""
             ) from e
         finally:
-            os.remove(self.input_stream.name)
+            Path(self.input_stream.name).unlink()
 
         return stdout_capture.getvalue()
