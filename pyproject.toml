@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "asteval~=1.0",
     "duckdb==1.2.1",
-    "isda-streaming @ git+https://git.tu-berlin.de/dima/isda/isda-streaming",
+    "isda-streaming==1.2.0",
     "Jinja2~=3.1",
     "loguru~=0.7.0",
     "markdown~=3.4",
@@ -57,9 +57,6 @@ Repository = "https://git.tu-berlin.de/dima/moodle-tools"
 
 [tool.hatch.version]
 path = "src/moodle_tools/__init__.py"
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.ruff]
 line-length = 99
