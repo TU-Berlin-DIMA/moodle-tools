@@ -55,3 +55,6 @@ activate `pre-commit` in your copy of the repository before making a commit.
 pip install -e ".[dev]"
 pre-commit install
 ```
+
+The source code for Moodle's XML parser is located [here](https://github.com/moodle/moodle/tree/main/question/format/xml)
+in case we need to reverse engineer behavior changes.
