@@ -37,7 +37,8 @@ docs:
   stage: deploy
   script:
     - uv sync --extra docs
-    - mv docs/assets public
+    - mv docs/logo public
+    - mv docs/assets public/assets
     - uv run pdoc
       -o "public"
       --docformat google

@@ -7,7 +7,7 @@ from typing import Required, TypedDict
 from jinja2 import Environment
 
 from moodle_tools.questions.question import Question
-from moodle_tools.utils import ParsingError, parse_code
+from moodle_tools.utils import ParsingError, format_code
 
 
 class Testcase(TypedDict, total=False):
@@ -92,7 +92,7 @@ class CoderunnerQuestion(Question):
         )
 
         # Apply consistent formatting to the answer code
-        self.answer = parse_code(self.answer, parser=self.parser)
+        self.answer = format_code(self.answer, formatter=self.parser)
 
         with (Path(__file__).parent / "templates" / self.TEST_TEMPLATE).open(
             "r", encoding="utf-8"
@@ -125,7 +125,7 @@ class CoderunnerQuestion(Question):
                 testcase["show"] = "HIDE"
 
             # Apply consistent formatting to each testcase code, same parser as answer
-            testcase["code"] = parse_code(testcase["code"], parser=self.parser)
+            testcase["code"] = format_code(testcase["code"], formatter=self.parser)
 
             self.testcases.append(testcase)
 

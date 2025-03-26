@@ -105,6 +105,9 @@ At the moment, the following question types are supported.
 - Short Answer questions
 - Missing words questions
 - Cloze questions
+
+The following question types are supported if you install the `isda` extra dependencies:
+
 - CodeRunner SQL-DQL
 - CodeRunner SQL-DDL/DML
 - CodeRunner ISDA Streaming
@@ -391,7 +394,6 @@ The answerbox will always have a width of at least 5.
 For furter information on the answerbox, see the [Moodle documentation](https://docs.moodle.org/404/en/Short-Answer_question_type).
 Using underscores in the answer to specify the length of the answer box is not recommended, as non-escaped underscores will be interpreted by the markdown parser as italics or bold text.
 
-
 It is possible to shorten the specification to only include the question type, the question text, and the answers.
 The first answer is assumed to be correct (100 points), the remaining answers are assumed to be false (0 points).
 Note how we are using the `[[ANSWERBOX]]` placeholder in the question text.
@@ -453,6 +455,7 @@ Furthermore, the choices `SELECT`, `FROM`, and `PROJECT` all belong to group 1 a
 The third drop-down box consists of the choices `WHERE` and `SIGMA` which belong to group 2.
 
 Shuffle can be one of three values: `SHUFFLE`, `IN_ORDER`, or `LEXICOGRAPHICAL`.
+
 - `SHUFFLE` tasks moodle to shuffle the options in each group.
 - `IN_ORDER` leaves the order of the options as they are defined in the YAML file.
 - `LEXICOGRAPHICAL` sorts the options in each group lexicographically.
@@ -645,7 +648,6 @@ The general feedback is always shown.
 To make development of Cloze questions easier, moodle_tools supports outsourcing the Cloze question definition into a separate subquestion key within the question.
 It identifies locations where subquestions should be added by using the same placeholders as already known from [Missing Words Questions](#missing-words-questions).
 
-
 ```yaml
 type: cloze
 category: category/subcategory/cloze
@@ -688,7 +690,6 @@ Compared to the original Cloze syntax, this extension allows for easy use togeth
 | tolerance             |      ✅      |       -       |       -       |        -        | float                                    | `0`                                                                            | answer           |
 | points                |      ✅      |       ✅       |       ✅       |        ✅        | float                                    | No default                                                                     | answer           |
 | feedback              |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
-
 
 ### Coderunner questions
 
@@ -831,7 +832,6 @@ It is also possible to use shell redirection for the output but the input must b
 
 It is possible to export only some questions from one or multiple YAML files by specifying the to-be-exported question titles with one or multiple `-f` flags.
 
-
 ### Question numbers
 
 It is possible to automatically number each question in a YAML file with the command line switch `--add-question-index`.
@@ -961,7 +961,6 @@ Inlining can theoretically lead to an XML file that exceeds the 50 MB file size 
 In this case, you should split up your yaml file to instances smaller than 50MB or reduce the file size of the images.
 The images are encoded in base64, so the encoded size is larger than the actual file size.
 
-
 ### Evaluating expressions
 
 Sometimes, the correct answer of a question is the result of a (mathematical) expression.
@@ -976,7 +975,6 @@ question: What is the result of 2 + 2?
 answers:
   - !eval 2 + 2
 ```
-
 
 It is also possible to evaluate multiline expressions, and use eval in any part of the YAML file.
 

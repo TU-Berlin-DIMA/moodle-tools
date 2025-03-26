@@ -14,10 +14,10 @@ class TestMultipleTrueFalse:
         # Call the main function
         main()
         captured = capsys.readouterr()
-        # Assert the output is as expected
 
-        assert '<question type="mtf">' in captured.out
-        assert "The following question did not pass strict validation:" in captured.err
+        # Assert the output is as expected
+        assert "The following question did not pass strict validation" in captured.err
+        assert "type: multiple_true_false" in captured.err
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments

@@ -16,9 +16,8 @@ class TestMarkdownMultipleChoiceQuestion:
         captured = capsys.readouterr()
 
         # Assert the output is as expected
-        assert '<question type="multichoice">' not in captured.out
-        assert "<text>Multiple choice question with Markdown</text>" not in captured.out
-        assert "The following question did not pass strict validation:" in captured.err
+        assert "The following question did not pass strict validation" in captured.err
+        assert "type: multiple_choice" in captured.err
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments

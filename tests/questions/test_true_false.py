@@ -16,8 +16,8 @@ class TestTrueFalse:
         captured = capsys.readouterr()
 
         # Assert the output is as expected
-        assert '<question type="truefalse">' in captured.out
-        assert "The following question did not pass strict validation:" in captured.err
+        assert "The following question did not pass strict validation" in captured.err
+        assert "type: true_false" in captured.err
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments

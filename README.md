@@ -10,7 +10,14 @@ This repository contains a collection of tools to simplify working with Moodle q
 ## Installation
 
 `moodle-tools` is distributed as a Python package.
-These instructions assume that you already installed `uv` or `pip` and `virtualenv`.
+You can install it from PyPI using `pip`:
+
+```bash
+pip install moodle-tools
+```
+
+### Local Installation
+
 Either clone the repository:
 
 ```bash
@@ -27,7 +34,24 @@ Or directly install it from GitLab:
 pip install git+https://git.tu-berlin.de/dima/moodle-tools
 ```
 
-Afterwards, you can access the tools as Python modules or via the command line utilities.
+### Optional Question Types
+
+Specialized question types that require additional dependencies are not installed by
+default. To use them, you need to install the respective dependency group with
+`pip install "moodle-tools[GROUPNAME]"`. The following groups are available:
+
+- `isda`: Adds support for `CoderunnerDDLQuestion`, `CoderunnerDQLQuestion`, and `CoderunnerStreamingQuestion` questions.
+
+For example, to install the `isda` questions execute:
+
+```bash
+pip install "moodle-tools[isda]"
+```
+
+## Usage
+
+Once installed, you can access the tools as Python modules or via their command line
+interface.
 
 ```python
 from moodle_tools import make_questions, analyze_results
@@ -40,12 +64,13 @@ analyze-results -h
 
 ## Documentation
 
-The [API documentation](https://dima.gitlab-pages.tu-berlin.de/moodle-tools) of `moodle-tools` is hosted via GitLab pages.
+The [API documentation](https://dima.gitlab-pages.tu-berlin.de/moodle-tools) of
+`moodle-tools` is hosted on GitLab pages.
 
 ## Contributing
 
 If you want to contribute a bug fix or feature to `moodle-tools`, please open an issue
-first to ensure that your intended contribution fits into the project.
+first to ensure that your intended contribution aligns with the project.
 
 Different to a user installation, you also need to install the `dev` requirements and
 activate `pre-commit` in your copy of the repository before making a commit.

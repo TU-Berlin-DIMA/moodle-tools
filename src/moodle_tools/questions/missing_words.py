@@ -66,7 +66,9 @@ class MissingWordsQuestion(Question):
                 logger.error("Ordinal values must be integers.")
                 sys.exit(1)
 
-            max_ordinal: int = max(cast(int, option.get("ordinal", 0)) for option in self.options)
+            max_ordinal: int = max(
+                cast("int", option.get("ordinal", 0)) for option in self.options
+            )
 
             visited_groups: set[str | int] = set()
             for i, option in enumerate(self.options):
@@ -132,7 +134,7 @@ class MissingWordsQuestion(Question):
             sys.exit(1)
 
         # """get all ordinals"""
-        ordinals = [cast(int, option["ordinal"]) for option in self.options]
+        ordinals = [cast("int", option["ordinal"]) for option in self.options]
 
         if min(ordinals) < 1:
             logger.error("Ordinal values must be positive integers.")
@@ -140,7 +142,7 @@ class MissingWordsQuestion(Question):
 
         options_copy = self.options.copy()
 
-        all_groups = {cast(int, option["group"]) for option in self.options}
+        all_groups = {cast("int", option["group"]) for option in self.options}
         unused_groups = set(range(1, 20 + 1)) - all_groups
 
         if len(unused_groups) == 0:
@@ -157,7 +159,7 @@ class MissingWordsQuestion(Question):
 
         # """add group_letter field for debugging"""
         for option in options_copy:
-            option["group_letter"] = str(chr(cast(int, option["group"]) + 64))
+            option["group_letter"] = str(chr(cast("int", option["group"]) + 64))
 
         self.options = sorted(options_copy, key=lambda x: x["ordinal"])
 

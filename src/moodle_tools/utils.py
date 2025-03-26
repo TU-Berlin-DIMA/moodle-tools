@@ -3,8 +3,12 @@ import re
 from pathlib import Path
 
 import markdown
-import sqlparse  # type: ignore
 from loguru import logger
+
+try:
+    import sqlparse  # type: ignore
+except ImportError:
+    sqlparse = None
 
 
 def format_tables(text: str) -> str:
@@ -54,30 +58,32 @@ def preprocess_text(text: str | None, **flags: bool) -> str:
     return format_tables(text) if flags["table_styling"] else text
 
 
-def parse_code(code: str, parser: str | None = None) -> str:
-    """Parses code with a chosen parser.
+def format_code(code: str, formatter: str | None = None) -> str:
+    """Format code with a chosen formatter.
 
     Args:
         code: code to be parsed.
-        parser: parser to be used.
+        formatter: formatter to be used.
 
     Returns:
-        str: Code that has been parsed with the selected parser.
+        str: Code that has been parsed with the selected formatter.
     """
-    match parser:
+    match formatter:
         case None:
             return code
         case "sqlparse":
+            if sqlparse is None:
+                logger.error("sqlparse is not installed. Please install it to format code.")
+                return code
             return sqlparse.format(code, reindent=True, keyword_case="upper")  # type: ignore
         case "sqlparse-no-indent":
+            if sqlparse is None:
+                logger.error("sqlparse is not installed. Please install it to format code.")
+                return code
             return sqlparse.format(code, reindent=False, keyword_case="upper")  # type: ignore
         case _:
-            raise ParsingError(f"Parser not supported: {parser}")
+            raise ParsingError(f"Formatter not supported: {formatter}")
 
 
 class ParsingError(Exception):
     """Exception raised when a YAML file fails to parse into its designated question type."""
-
-
-class ValidationError(Exception):
-    """Exception raised when a question does not pass strict validation."""

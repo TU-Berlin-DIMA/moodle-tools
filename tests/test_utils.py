@@ -245,7 +245,7 @@ class TestUtils:
         """
         ).strip()
 
-        output = utils.parse_code(input_code).strip()
+        output = utils.format_code(input_code).strip()
 
         assert output == expected_none_output
 
@@ -259,7 +259,7 @@ class TestUtils:
         """
         ).strip()
 
-        output = utils.parse_code(input_code, parser="sqlparse-no-indent").strip()
+        output = utils.format_code(input_code, formatter="sqlparse-no-indent").strip()
 
         assert output == expected_no_indent_output
 
@@ -275,6 +275,6 @@ class TestUtils:
         """
         ).strip()
 
-        output = utils.parse_code(input_code, parser="sqlparse").strip()
+        output = utils.format_code(input_code, formatter="sqlparse").strip()
 
         assert output == expected_indent_output

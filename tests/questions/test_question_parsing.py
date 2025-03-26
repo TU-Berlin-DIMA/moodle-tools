@@ -8,18 +8,15 @@ import yaml
 
 from moodle_tools import ParsingError
 from moodle_tools.make_questions import load_questions, main
-from moodle_tools.questions import (
-    ClozeQuestion,
-    CoderunnerDDLQuestion,
-    CoderunnerDQLQuestion,
-    CoderunnerStreamingQuestion,
-    MissingWordsQuestion,
-    MultipleChoiceQuestion,
-    MultipleTrueFalseQuestion,
-    NumericalQuestion,
-    Question,
-    TrueFalseQuestion,
-)
+from moodle_tools.questions.cloze import ClozeQuestion
+from moodle_tools.questions.coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
+from moodle_tools.questions.coderunner_streaming import CoderunnerStreamingQuestion
+from moodle_tools.questions.missing_words import MissingWordsQuestion
+from moodle_tools.questions.multiple_choice import MultipleChoiceQuestion
+from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestion
+from moodle_tools.questions.numerical import NumericalQuestion
+from moodle_tools.questions.question import Question
+from moodle_tools.questions.true_false import TrueFalseQuestion
 
 # Dictionary with a correspondance between input file and tests references
 test_cases = {

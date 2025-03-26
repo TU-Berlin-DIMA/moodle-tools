@@ -5,6 +5,7 @@ import contextlib
 import os
 import sys
 from collections.abc import Iterator
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from loguru import logger
 
 from moodle_tools.eval import eval_context
-from moodle_tools.questions.factory import QuestionFactory
+from moodle_tools.questions import create_question
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError
 
@@ -58,15 +59,15 @@ def load_questions(
             internal_document = document.copy()
             internal_document["title"] += " (intern \U0001f92b)"
             document.pop("internal_copy")
-            yield QuestionFactory.create_question(question_type, **internal_document)
+            yield create_question(question_type, **internal_document)
 
-        question = QuestionFactory.create_question(question_type, **document)
+        question = create_question(question_type, **document)
         logger.debug(f"Parsed `{type(question).__name__}` question.")
         if strict_validation:
             errors = question.validate()
             if errors:
                 message = (
-                    "The following question did not pass strict validation:\n"
+                    "The following question did not pass strict validation and has been ignored:\n"
                     f"{yaml.safe_dump(document)}\n" + "\n- ".join(errors)
                 )
                 logger.error(message)
@@ -254,15 +255,25 @@ def main() -> None:
         level="ERROR",
     )
 
-    inputs = iterate_inputs(args.input, not args.skip_validation)
-    question_xml = generate_moodle_questions(
-        paths=inputs,
-        skip_validation=args.skip_validation,
-        add_question_index=args.add_question_index,
-        question_filter=args.filter,
-        allow_eval=args.allow_eval,
-    )
-    print(question_xml, file=args.output)
+    if find_spec("isda_streaming") is None or find_spec("duckdb") is None:
+        logger.debug(
+            "ISDA questions are not available. If you need them, install the `isda` extra."
+        )
+
+    try:
+        inputs = iterate_inputs(args.input, not args.skip_validation)
+        question_xml = generate_moodle_questions(
+            paths=inputs,
+            skip_validation=args.skip_validation,
+            add_question_index=args.add_question_index,
+            question_filter=args.filter,
+            allow_eval=args.allow_eval,
+        )
+        print(question_xml, file=args.output)
+    except ParsingError as e:
+        logger.error("Parsing failed because of the following error:")
+        logger.error(e)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

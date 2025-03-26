@@ -10,14 +10,16 @@ from typing import Literal
 
 from loguru import logger
 
-from moodle_tools.questions.cloze import ClozeQuestionAnalysis
-from moodle_tools.questions.drop_down import DropDownQuestionAnalysis
-from moodle_tools.questions.missing_words import MissingWordsQuestionAnalysis
-from moodle_tools.questions.multiple_choice import MultipleChoiceQuestionAnalysis
-from moodle_tools.questions.multiple_true_false import MultipleTrueFalseQuestionAnalysis
-from moodle_tools.questions.numerical import NumericalQuestionAnalysis
-from moodle_tools.questions.question import QuestionAnalysis
-from moodle_tools.questions.true_false import TrueFalseQuestionAnalysis
+from moodle_tools.questions import (
+    ClozeQuestionAnalysis,
+    DropDownQuestionAnalysis,
+    MissingWordsQuestionAnalysis,
+    MultipleChoiceQuestionAnalysis,
+    MultipleTrueFalseQuestionAnalysis,
+    NumericalQuestionAnalysis,
+    QuestionAnalysis,
+    TrueFalseQuestionAnalysis,
+)
 
 __all__ = ["analyze_questions"]
 
