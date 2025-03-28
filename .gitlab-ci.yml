@@ -37,13 +37,14 @@ docs:
   stage: deploy
   script:
     - uv sync --extra docs
-    - mv docs/logo public
-    - mv docs/assets public/assets
+    - mkdir -p public/moodle_tools/assets
+    - cp docs/logo/* public
+    - cp docs/assets/* public/moodle_tools/assets
     - uv run pdoc
       -o "public"
       --docformat google
       --favicon "/moodle-tools/favicon.ico"
-      --footer-text "Moodle Tools, © 2024 DIMA."
+      --footer-text "Moodle Tools, © 2025 DIMA."
       --logo "/moodle-tools/dima_logo.svg"
       --logo-link https://tu.berlin/dima
       ./src/moodle_tools
