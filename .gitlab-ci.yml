@@ -29,6 +29,12 @@ pytest:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     # Run for all changes to the default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Only run if the source code or the CI configuration has changed
+    - changes:
+        - src/**/*
+        - tests/**/*
+        - .gitlab-ci.yml
+        - uv.lock
   parallel:
     matrix:
       - PY_VERSION: ["3.11", "3.12", "3.13"]
@@ -37,9 +43,7 @@ docs:
   stage: deploy
   script:
     - uv sync --extra docs
-    - mkdir -p public/moodle_tools/assets
     - cp docs/logo/* public
-    - cp docs/assets/* public/moodle_tools/assets
     - uv run pdoc
       -o "public"
       --docformat google
