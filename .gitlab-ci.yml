@@ -43,7 +43,6 @@ docs:
   stage: deploy
   script:
     - uv sync --extra docs
-    - cp docs/logo/* public
     - uv run pdoc
       -o "public"
       --docformat google
@@ -52,6 +51,7 @@ docs:
       --logo "/moodle-tools/dima_logo.svg"
       --logo-link https://tu.berlin/dima
       ./src/moodle_tools
+    - cp docs/logo/* public
   pages: true
   artifacts:
     paths:
