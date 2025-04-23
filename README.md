@@ -23,7 +23,7 @@ Either clone the repository:
 ```bash
 git clone https://git.tu-berlin.de/dima/moodle-tools
 cd moodle-tools
-virtualenv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install .
 ```
