@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="essay">
+    <name>
+        <text>Essay question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Write a short essay about your favorite SQL statement.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>This is a general feedback for the question.</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>10</responsefieldlines>
+    <minwordlimit>50</minwordlimit>
+    <maxwordlimit>500</maxwordlimit>
+    <attachments>1</attachments>
+    <attachmentsrequired>1</attachmentsrequired>
+    <maxbytes>15360</maxbytes>
+    <filetypeslist>document,.pdf,.docx</filetypeslist>
+    <graderinfo format="html">
+      <text><![CDATA[<p>I'll say it twice: Don't be nice.
+I'll say it twice: Don't be nice.</p>]]></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text> <![CDATA[<p>It was a beautiful day when CREATE …</p>]]></text>
+    </responsetemplate>
+</question>
+<question type="essay">
+    <name>
+        <text>Essay question without file upload</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Write a short essay about your favorite SQL statement.</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>This is a general feedback for the question.</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <responseformat>plain</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>10</responsefieldlines>
+    <minwordlimit></minwordlimit>
+    <maxwordlimit></maxwordlimit>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxbytes>0</maxbytes>
+    <filetypeslist></filetypeslist>
+    <graderinfo format="html">
+      <text></text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text> <![CDATA[<p>It was a beautiful day when CREATE …</p>]]></text>
+    </responsetemplate>
+</question>
+</quiz>

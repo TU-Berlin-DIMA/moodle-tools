@@ -1,0 +1,19 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <responseformat>{{ response_format | lower }}</responseformat>
+    <responserequired>{{ "1" if text_response.required else "0" or "0" }}</responserequired>
+    <responsefieldlines>{{ text_response.lines_shown or "10" }}</responsefieldlines>
+    <minwordlimit>{{ text_response.min_words or "" }}</minwordlimit>
+    <maxwordlimit>{{ text_response.max_words or ""}}</maxwordlimit>
+    <attachments>{{ file_response.number_allowed or "0" }}</attachments>
+    <attachmentsrequired>{{ file_response.number_required or "0" }}</attachmentsrequired>
+    <maxbytes>{{ file_response.max_size_bytes or "0" }}</maxbytes>
+    <filetypeslist>{{ file_response.accepted_types | join(",") | lower }}</filetypeslist>
+    <graderinfo format="html">
+      <text>{{ "<![CDATA[{}]]>".format(grader_info) if grader_info }}</text>
+    </graderinfo>
+    <responsetemplate format="html">
+      <text> {{ "<![CDATA[{}]]>".format(text_response.template) if text_response.template }}</text>
+    </responsetemplate>
+{% endblock%}

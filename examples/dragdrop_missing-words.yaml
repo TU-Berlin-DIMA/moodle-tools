@@ -1,0 +1,36 @@
+---
+type: dragdrop_missing_words
+title: Drag-Drop Missing words question
+question: |-
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]] [[6]]
+general_feedback: General feedback
+correct_feedback: Correct feedback
+partial_feedback: Partial feedback
+incorrect_feedback: Incorrect feedback
+options:
+  - answer: SELECT
+    group: 1
+  - answer: FROM
+    group: 1
+  - answer: WHERE
+    group: 2
+  - answer: PROJECT
+    group: 1
+  - answer: SIGMA
+    group: 2
+    infinite: true
+  - answer: JOIN
+    group: 3
+---
+type: dragdrop_missing_words
+title: Simple Drag-Drop missing words question
+question: |-
+  The main clauses of a SQL query are: [["SELECT"]] [["FROM"]] [["WHERE"]]
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - answer: SELECT
+    group: A
+  - answer: FROM
+    group: A
+  - answer: WHERE
+    group: A

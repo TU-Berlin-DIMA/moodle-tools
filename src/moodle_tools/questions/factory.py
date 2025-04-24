@@ -4,11 +4,14 @@ from moodle_tools.utils import ParsingError
 
 from .cloze import ClozeQuestion
 from .description import Description
+from .dragdrop_missing_words import DragDropMissingWordsQuestion
+from .essay import EssayQuestion
 from .matching import MatchingQuestion
 from .missing_words import MissingWordsQuestion
 from .multiple_choice import MultipleChoiceQuestion
 from .multiple_true_false import MultipleTrueFalseQuestion
 from .numerical import NumericalQuestion
+from .ordering import OrderingQuestion
 from .question import Question
 from .shortanswer import ShortAnswerQuestion
 from .true_false import TrueFalseQuestion
@@ -23,6 +26,9 @@ SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
     "description": Description,
     "shortanswer": ShortAnswerQuestion,
     "matching": MatchingQuestion,
+    "essay": EssayQuestion,
+    "ordering": OrderingQuestion,
+    "dragdrop_missing_words": DragDropMissingWordsQuestion,
 }
 
 try:

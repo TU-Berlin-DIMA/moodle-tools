@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="ddwtos">
+    <name>
+        <text>Drag-Drop Missing words question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[1]] [[2]] [[3]] [[6]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        1
+    </shuffleanswers>
+    <correctfeedback format="html">
+    <text><![CDATA[<p>Correct feedback</p>]]></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+    <text><![CDATA[<p>Partial feedback</p>]]></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+    <text><![CDATA[<p>Incorrect feedback</p>]]></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <dragbox>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </dragbox>
+    <dragbox>
+        <text>FROM</text>
+        <group>1</group>
+        <!-- ordinal: 2, group: A -->
+    </dragbox>
+    <dragbox>
+        <text>WHERE</text>
+        <group>2</group>
+        <!-- ordinal: 3, group: B -->
+    </dragbox>
+    <dragbox>
+        <text>PROJECT</text>
+        <group>1</group>
+        <!-- ordinal: 4, group: A -->
+    </dragbox>
+    <dragbox>
+        <text>SIGMA</text>
+        <group>2</group>
+        <infinite/>
+        <!-- ordinal: 5, group: B -->
+    </dragbox>
+    <dragbox>
+        <text>JOIN</text>
+        <group>3</group>
+        <!-- ordinal: 6, group: C -->
+    </dragbox>
+</question>
+<question type="ddwtos">
+    <name>
+        <text>Simple Drag-Drop missing words question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>The main clauses of a SQL query are: [[2]] [[1]] [[3]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <shuffleanswers>
+        0
+    </shuffleanswers>
+    <correctfeedback format="html">
+    <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+    <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+    <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    <dragbox>
+        <text>FROM</text>
+        <group>1</group>
+        <!-- ordinal: 1, group: A -->
+    </dragbox>
+    <dragbox>
+        <text>SELECT</text>
+        <group>1</group>
+        <!-- ordinal: 2, group: A -->
+    </dragbox>
+    <dragbox>
+        <text>WHERE</text>
+        <group>1</group>
+        <!-- ordinal: 3, group: A -->
+    </dragbox>
+</question>
+</quiz>

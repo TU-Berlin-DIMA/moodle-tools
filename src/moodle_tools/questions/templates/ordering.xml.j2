@@ -1,0 +1,29 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+
+    <layouttype>{{ layout_type }}</layouttype>
+    <selecttype>{{ select_type }}</selecttype>
+    <selectcount>{{ subset_size }}</selectcount>
+    <gradingtype>{{ grading_type }}</gradingtype>
+    <showgrading>{{ "1" if show_grading_details else "0" }}</showgrading>
+    <numberingstyle>{{ numbering_style }}</numberingstyle>
+
+    <correctfeedback format="html">
+        <text>{{ "<![CDATA[{}]]>".format(correct_feedback) if correct_feedback }}</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text>{{ "<![CDATA[{}]]>".format(partial_feedback) if partial_feedback }}</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text>{{ "<![CDATA[{}]]>".format(incorrect_feedback) if incorrect_feedback }}</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+
+    {% for answer in answers %}
+    <answer fraction="{{ answer.idx }}" format="html">
+        <text><![CDATA[{{ answer.answer }}]]></text>
+    </answer>
+    {% endfor %}
+
+{% endblock%}

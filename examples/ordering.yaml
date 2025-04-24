@@ -1,0 +1,27 @@
+---
+type: ordering
+title: Ordering question
+question: Order the SQL keywords by appearance in a DQL query
+general_feedback: General feedback
+answers:
+  - SELECT
+  - DISTINCT
+  - FROM
+  - WHERE
+  - GROUP BY
+
+---
+type: ordering
+title: Ordering with subset
+question: Order the SQL keywords by appearance in a DQL query
+general_feedback: General feedback
+subset_size: 3
+grading_type: relative_position
+show_grading_details: true
+numbering_style: numbers
+answers:
+  - SELECT
+  - DISTINCT
+  - FROM
+  - WHERE
+  - GROUP BY

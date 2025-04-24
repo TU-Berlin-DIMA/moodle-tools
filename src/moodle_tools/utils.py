@@ -85,5 +85,35 @@ def format_code(code: str, formatter: str | None = None) -> str:
             raise ParsingError(f"Formatter not supported: {formatter}")
 
 
+def parse_filesize(size: str | int) -> int:
+    """Parse a human-readable filesize into bytes.
+
+    Args:
+        size: Human-readable filesize.
+
+    Returns:
+        int: Filesize in bytes.
+    """
+    if isinstance(size, int):
+        return size
+
+    if size.isdigit():
+        return int(size)
+
+    pattern = r"(^\d*[.]?\d+)\s*([KMGTP])*(i)*([Bb])"
+
+    match = re.match(pattern, size)
+    if not match:
+        raise ValueError(f"Invalid filesize: {size}")
+
+    num, exp, power, unit = match.groups()
+    if not num or not unit:
+        raise ValueError(f"Invalid filesize: {size}")
+
+    exp = exp if exp else " "
+    size_float = float(num) * (1024 if power == "i" else 1000) ** " KMGTPE".index(exp)
+    return int(size_float) if unit == "B" else int(size_float / 8)
+
+
 class ParsingError(Exception):
     """Exception raised when a YAML file fails to parse into its designated question type."""

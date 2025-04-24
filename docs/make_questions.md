@@ -105,6 +105,9 @@ At the moment, the following question types are supported.
 - Short Answer questions
 - Missing words questions
 - Cloze questions
+- Essay questions
+- Ordering questions
+- Drag and drop into text questions
 
 The following question types are supported if you install the `isda` extra dependencies:
 
@@ -690,6 +693,195 @@ Compared to the original Cloze syntax, this extension allows for easy use togeth
 | tolerance             |      ✅      |       -       |       -       |        -        | float                                    | `0`                                                                            | answer           |
 | points                |      ✅      |       ✅       |       ✅       |        ✅        | float                                    | No default                                                                     | answer           |
 | feedback              |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
+
+
+### Essay questions
+
+The [essay question type](https://docs.moodle.org/en/Essay_question_type) allows the student to write a longer text as an answer or upload files as an answer.
+
+The full YAML format for an essay question is as follows:
+
+```yaml
+type: essay # Mandatory
+title: Essay question # Mandatory
+question: |- # Mandatory
+  Write a short essay about your favorite SQL statement.
+general_feedback: This is a general feedback for the question. # Mandatory in strict mode
+response_format: editor # Optional, default: editorfilepicker
+text_response:
+  required: Yes # Optional, default: Yes
+  lines_shown: 10 # Optional, default: 10
+  template: |- # Optional
+    It was a beautiful day when CREATE …
+  min_words: 50 # Optional
+  max_words: 500 # Optional
+  allow_media_in_text: Yes # Optional, default: No
+file_response:
+  number_allowed: 1 # Optional, default: 1
+  number_required: 1 # Optional
+  max_size: 15 KiB # Optional, default: Maximum allowed size (i.e., 0)
+  accepted_types: # Optional, default: empty (i.e., all types)
+    - .pdf # types with leading dot
+    - .docx
+    - document # predefined groups according to moodle
+grader_info: |- # Mandatory in strict mode
+  I'll say it twice: Don't be nice.
+  I'll say it twice: Don't be nice.
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Essay question](assets/essay.png)
+
+`grader_info` is a text that is shown to the grader when grading the essay.
+`template` is the initial value of the essay textarea.
+
+#### Details on `response_format`
+
+The `response_format` attribute determines how the student can respond to the question.
+The following values are possible:
+
+- `editor`: The student can write a text in a TinyMCE text box, allowing them to apply markup to their text.
+- `editorfilepicker`: The same as `editor`, but additionally students can upload media files. Can also be achieved by setting `allow_media_in_text` to `true`.
+- `plain`: The student can write a text in a text box without formatting. Depending on the Moodle instance no word count is shown.
+- `monospaced`: The same as `plain`, but the text box is in a monospaced font.
+- `noinline`: No text box is shown. Only useful if `file_response` is provided.
+
+#### Details on `text_response`
+
+The `text_response` attribute determines what answers should be accepted for the essay to be written.
+
+#### Details on `file_response`
+
+The `file_response` attribute determines what files should be accepted for upload.
+Depending on the Moodle instance, some attributes can not be chosen flexibly.
+
+The `accepted_types` attribute can be used to specify which file types are accepted.
+There exists a list of predefined file types in Moodle, which can be used by specifying the name of the type without a leading dot.
+A list of predefined types can be found in the [PredefinedFileTypes Enum](../src/moodle_tools/enums.py).
+
+### Ordering questions
+
+<div style="color: #8a6d3b; background-color: #fcf8e3; border-color: #faebcc; padding: 10px">
+
+**Important:** Currently, the settings of this questiontype may not get imported correctly. Please check the settings after importing the question.
+
+</div>
+
+
+The [ordering question type](https://docs.moodle.org/en/Ordering_question_type) requires the student to correctly order a list of items.
+
+The full YAML format for an ordering question is as follows:
+
+```yaml
+type: ordering # Mandatory
+title: Ordering with subset # Mandatory
+question: Order the SQL keywords by appearance in a DQL query # Mandatory
+general_feedback: General feedback # Mandatory in strict mode
+layout: horizontal # Optional, default: vertical
+numbering_style: numbers # Optional, default: numbers
+select_type: all_elements # Optional, default: all_elements
+subset_size: 3 # Optional, required to be >= 2 if select_type is random_elements or connected_elements
+grading_type: relative_position # Optional, default: all_or_nothing
+show_grading_details: true # Optional, default: false
+show_num_correct: false # Optional, default: true
+answers: # Mandatory
+  - SELECT
+  - DISTINCT
+  - FROM
+  - WHERE
+  - GROUP BY
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Ordering question](assets/ordering.png)
+
+#### Details on `numbering_style`
+
+The `numbering_style` attribute determines how the items are numbered.
+The following values are possible:
+
+- `numbers`: The items are numbered with numbers (1, 2, 3, ...).
+- `alphabet_lower`: The items are numbered with lowercase letters (a, b, c, ...).
+- `alphabet_upper`: The items are numbered with uppercase letters (A, B, C, ...).
+- `roman_lower`: The items are numbered with lowercase roman numbers (i, ii, iii, ...).
+- `roman_upper`: The items are numbered with uppercase roman numbers (I, II, III, ...).
+- `none`: The items are not numbered.
+
+#### Details on `select_type`
+
+The `select_type` attribute determines how many items are selected for the question.
+The following values are possible:
+
+- `all_elements`: All items are selected for the question.
+- `random_elements`: A random subset of items is selected for the question. The size of the subset is determined by the `subset_size` attribute.
+- `connected_elements`: A random subset of items is selected for the question. The size of the subset is determined by the `subset_size` attribute.
+
+#### Details on `grading_type`
+
+The `grading_type` attribute determines how the question is graded.
+The following values are possible. As they are not well documented, we only list them without further explanation:
+
+- `all_or_nothing`
+- `absolute_position`
+- `relative_position`
+- `relative_to_next_exclusive`
+- `relative_to_next_inclusive`
+- `relative_to_neighbours`
+- `relative_to_siblings`
+- `longest_ordered_subsequence`
+- `longest_connected_subsequence`
+
+
+### Drag and drop into text questions
+
+The [drag and drop into text question type](https://docs.moodle.org/en/Drag_and_drop_into_text_question_type) allows the student to drag and drop items into a text.
+This question type is similar to the [missing words question type](#missing-words-questions), and therefore uses the same API, except that it is possible to specify if an item can be used more than once.
+Thus, in moodle-tools, we call the question type `dragdrop_missing_words`.
+The full YAML format for a drag and drop into text question is as follows:
+
+
+```yaml
+type: dragdrop_missing_words  # Mandatory
+category: category/subcategory/missing_words  # Optional
+title: Drag and Drop Missing words question  # Mandatory
+shuffle_answers: SHUFFLE # Optional, Alternatives: IN_ORDER, LEXICOGRAPHICAL
+question: |-  # Mandatory
+  The main clauses of a SQL query are: [[1]] [[2]] [[3]] [[6]]
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
+options:  # Mandatory
+  - answer: SELECT  # Mandatory
+    group: 1  # Mandatory
+    ordinal: 1  # Optional
+  - answer: FROM  # Mandatory
+    group: 1  # Mandatory
+    ordinal: 2  # Optional
+  - answer: WHERE  # Mandatory
+    group: 2  # Mandatory
+    ordinal: 3  # Optional
+  - answer: PROJECT  # Mandatory
+    group: 1  # Mandatory
+    ordinal: 4  # Optional
+  - answer: SIGMA  # Mandatory
+    group: 2  # Mandatory
+    ordinal: 5  # Optional
+    infinite: true  # Optional
+  - answer: JOIN  # Mandatory
+    group: 1  # Mandatory
+    ordinal: 6  # Optional
+```
+
+Note that the `infinite` attribute is optional and can be set to `true` or `false`.
+By default, it is set to `false`.
+
+This YAML content is rendered as follows in Moodle:
+
+![Drag and drop into text question](assets/dd_mw.png)
+
 
 ### Coderunner questions
 

@@ -1,0 +1,41 @@
+---
+type: essay
+title: Essay question
+question: |-
+  Write a short essay about your favorite SQL statement.
+general_feedback: This is a general feedback for the question.
+response_format: editor  # plain, editor, noinline, monospaced
+text_response:
+  required: true
+  lines_shown: 10
+  template: |-
+    It was a beautiful day when CREATE …
+  min_words: 50
+  max_words: 500
+  allow_media_in_text: false
+file_response:
+  number_allowed: 1  # int or unlimited
+  number_required: 1
+  max_size: 15 KiB
+  accepted_types:  # list of strings
+    - .pdf  # types with leading dot
+    - .docx
+    - document  # predefined groups according to moodle
+grader_info: |-
+  I'll say it twice: Don't be nice.
+  I'll say it twice: Don't be nice.
+
+---
+
+type: essay
+title: Essay question without file upload
+question: |-
+  Write a short essay about your favorite SQL statement.
+general_feedback: This is a general feedback for the question.
+response_format: plain  # plain, editor, noinline, monospaced
+text_response:
+  required: true
+  lines_shown: 10
+  template: |-
+    It was a beautiful day when CREATE …
+  allow_media_in_text: false

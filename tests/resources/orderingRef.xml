@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="ordering">
+    <name>
+        <text>Ordering question</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Order the SQL keywords by appearance in a DQL query</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+
+    <layouttype>0</layouttype>
+    <selecttype>2</selecttype>
+    <selectcount>-1</selectcount>
+    <gradingtype>-1</gradingtype>
+    <showgrading>0</showgrading>
+    <numberingstyle>123</numberingstyle>
+
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+
+    <answer fraction="1" format="html">
+        <text><![CDATA[<p>SELECT</p>]]></text>
+    </answer>
+    <answer fraction="2" format="html">
+        <text><![CDATA[<p>DISTINCT</p>]]></text>
+    </answer>
+    <answer fraction="3" format="html">
+        <text><![CDATA[<p>FROM</p>]]></text>
+    </answer>
+    <answer fraction="4" format="html">
+        <text><![CDATA[<p>WHERE</p>]]></text>
+    </answer>
+    <answer fraction="5" format="html">
+        <text><![CDATA[<p>GROUP BY</p>]]></text>
+    </answer>
+
+</question>
+<question type="ordering">
+    <name>
+        <text>Ordering with subset</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Order the SQL keywords by appearance in a DQL query</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text><![CDATA[<p>General feedback</p>]]></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+
+    <layouttype>0</layouttype>
+    <selecttype>2</selecttype>
+    <selectcount>3</selectcount>
+    <gradingtype>7</gradingtype>
+    <showgrading>1</showgrading>
+    <numberingstyle>123</numberingstyle>
+
+    <correctfeedback format="html">
+        <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+        <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+        <text></text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+
+    <answer fraction="1" format="html">
+        <text><![CDATA[<p>SELECT</p>]]></text>
+    </answer>
+    <answer fraction="2" format="html">
+        <text><![CDATA[<p>DISTINCT</p>]]></text>
+    </answer>
+    <answer fraction="3" format="html">
+        <text><![CDATA[<p>FROM</p>]]></text>
+    </answer>
+    <answer fraction="4" format="html">
+        <text><![CDATA[<p>WHERE</p>]]></text>
+    </answer>
+    <answer fraction="5" format="html">
+        <text><![CDATA[<p>GROUP BY</p>]]></text>
+    </answer>
+
+</question>
+</quiz>
