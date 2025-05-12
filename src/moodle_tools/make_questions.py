@@ -72,6 +72,9 @@ def load_questions(
                 )
                 logger.error(message)
                 continue
+
+        question.cleanup()
+
         yield question
 
 

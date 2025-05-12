@@ -969,11 +969,11 @@ testcases:
 In addition to the general fields, Coderunner SQL questions recognize the following YAML fields:
 
 ```yaml
-database_path: ./eshop.db
+database_path: ./eshop.db  # or ":memory:"
 database_connection: false
 ```
 
-- `database_path` must always be provided.
+- `database_path` must always be provided. Can be ":memory:" if the question should use an empty database. In this case, no database file is written into the output XML.
 - `database_connection` is optional and determines whether `moodle_tools` connects to the provided database during XML generation (default `True`)
 
 #### Coderunner Streaming Questions

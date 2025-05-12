@@ -1,8 +1,11 @@
 """This module implements SQL questions in Moodle CodeRunner."""
 
 import io
+import random
 import re
 import shutil
+import string
+import sys
 import tempfile
 from base64 import b64encode
 from collections.abc import Generator
@@ -98,11 +101,22 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             flags: Additional flags that can be used to control the behavior of the
                 question.
         """
-        self.database_path = Path(database_path).absolute()
-        self.database_connection = database_connection
+        self.inmemory_db = database_path == ":memory:"
 
-        if not self.database_path.exists():
-            raise FileNotFoundError(f"Provided database path does not exist: {self.database_path}")
+        if self.inmemory_db:
+            self.database_path = Path(
+                f"db-{''.join(random.choices(string.digits, k=12))}.db"  # noqa: S311
+            ).absolute()
+            duckdb.connect(self.database_path, config={"threads": 1}).close()
+
+        else:
+            self.database_path = Path(database_path).absolute()
+            if not self.database_path.exists():
+                raise FileNotFoundError(
+                    f"Provided database path does not exist: {self.database_path}"
+                )
+
+        self.database_connection = database_connection
 
         answer = answer.strip()
 
@@ -129,12 +143,21 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 
     @property
     def files(self) -> list[dict[str, str]]:
+        if self.inmemory_db:
+            # If the database is in memory, we don't need to send it
+            return []
         with self.database_path.open("rb") as file:
             files = {
                 "name": self.database_path.name,
                 "encoding": b64encode(file.read()).decode("utf-8"),
             }
+
         return [files]
+
+    def cleanup(self) -> None:
+        if self.inmemory_db:
+            # remove temporary file that stood inplace of the inmemory-db
+            self.database_path.unlink()
 
 
 class CoderunnerDDLQuestion(CoderunnerSQLQuestion):

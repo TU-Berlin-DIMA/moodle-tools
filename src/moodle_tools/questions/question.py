@@ -49,6 +49,10 @@ class Question(ABC):
         template = env.get_template(self.XML_TEMPLATE)
         return template.render(self.__dict__ | {"type": self.QUESTION_TYPE})
 
+    def cleanup(self) -> None:  # noqa
+        """Cleanup any resources used by the question."""
+        pass  # noqa
+
 
 class AnalysisItem(NamedTuple):
     question_id: str
