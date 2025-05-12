@@ -13,10 +13,10 @@ import yaml
 from jinja2 import Environment, PackageLoader, select_autoescape
 from loguru import logger
 
-from moodle_tools.eval import eval_context
 from moodle_tools.questions import create_question
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError
+from moodle_tools.yaml_constructors import construct_include_context, eval_context
 
 
 def load_questions(
@@ -99,10 +99,14 @@ def generate_moodle_questions(
     Returns:
         str: Moodle XML for all questions in the YAML file.
     """
+    path_dict = {"base_path": Path()}
     yaml.SafeLoader.add_constructor("!eval", eval_context(allow_eval))
+    yaml.SafeLoader.add_constructor("!include", construct_include_context(path_dict))
 
     questions: list[Question] = []
     for path in paths:
+        path_dict["base_path"] = path.parent.absolute()
+
         with path.open("r", encoding="utf-8") as file, contextlib.chdir(path.parent):
             for i, question in enumerate(
                 load_questions(
@@ -116,6 +120,7 @@ def generate_moodle_questions(
                 if add_question_index:
                     question.title = f"{question.title} ({i})"
                 questions.append(question)
+
     logger.debug(f"Loaded {len(questions)} questions from YAML.")
 
     if question_filter:

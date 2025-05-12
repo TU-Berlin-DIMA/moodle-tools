@@ -1,0 +1,13 @@
+---
+type: numerical
+category: template/numerical
+title: Numerical question with included string
+question: !include question_pi.txt
+answers:
+  - 3.14
+---
+type: cloze
+category: template/cloze
+title: Cloze question with included object
+question: The value of pi is [["pi_value"]].
+subquestions: !include subquestions_pi.yaml

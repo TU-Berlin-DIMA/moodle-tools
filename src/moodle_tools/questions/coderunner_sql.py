@@ -103,6 +103,9 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 
         if not self.database_path.exists():
             raise FileNotFoundError(f"Provided database path does not exist: {self.database_path}")
+
+        answer = answer.strip()
+
         if answer[-1] != ";":
             raise ParsingError(
                 f"SQL queries must end with a ';' symbol. But the last symbol was: {answer[-1]}"

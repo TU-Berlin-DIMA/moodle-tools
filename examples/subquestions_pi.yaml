@@ -1,0 +1,8 @@
+---
+pi_value:
+  type: numerical
+  answers:
+    - answer: 3.14
+      tolerance: 0.01
+      points: 100
+      feedback: Some Feedback

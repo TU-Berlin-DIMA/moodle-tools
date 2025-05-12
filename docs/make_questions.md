@@ -1194,3 +1194,44 @@ answers:
   - answer: !eval 2 + 2
     feedback: !eval "f'The answer is: 2 + 2 = {2 + 2}'"
 ```
+
+### Including external files in questions
+
+You can include other files to reuse parts of the YAML file or, e.g., out-source code in order to edit it in an editor native to the language.
+Files are included in the main yaml file using the `!include` keyword, followed by an absolute or relative path.
+Template files can have any extension.
+Their content is included inplace of the `!include` statement.
+If the file ends on `.yaml`, `.yml`, `.yaml.j2`, or `.yml.j2`, the content is included as an object instead of a raw string
+
+#### Example
+
+In this example, we want to out-source the question text and one subquestion into a separate file.
+
+
+##### Base file
+
+```yaml
+type: cloze
+category: template/numerical
+title: Numerical question with Template
+question: !include question_pi.txt
+subquestions: !include subquestion_pi_value.yaml
+```
+
+##### question_pi.txt
+
+```yaml
+The value of π is [["pi_value"]].
+```
+
+##### subquestion_pi_value.yaml
+
+```yaml
+pi_value:
+  type: numerical
+  answers:
+    - answer: 3.14
+      tolerance: 0.01
+      points: 100
+      feedback: "Correct"
+```
