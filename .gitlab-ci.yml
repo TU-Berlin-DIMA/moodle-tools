@@ -3,7 +3,7 @@ variables:
   UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
 
 default:
-  image: ghcr.io/astral-sh/uv:0.6-python3.12-alpine
+  image: ghcr.io/astral-sh/uv:0.7-python3.12-alpine
   cache:
     paths:
       - .cache/uv
@@ -13,9 +13,9 @@ default:
 
 pytest:
   stage: test
-  image: ghcr.io/astral-sh/uv:0.6-python$PY_VERSION-alpine
+  image: ghcr.io/astral-sh/uv:0.7-python$PY_VERSION-alpine
   script:
-    - uv sync --extra test
+    - uv sync --frozen --no-dev --group test
     - uv run pytest --cov=moodle_tools --cov-report term-missing:skip-covered --junitxml=pytest.xml tests
   artifacts:
     when: always
@@ -42,7 +42,7 @@ pytest:
 docs:
   stage: deploy
   script:
-    - uv sync --extra docs
+    - uv sync --frozen --no-dev --group docs
     - uv run pdoc
       -o "public"
       --docformat google
