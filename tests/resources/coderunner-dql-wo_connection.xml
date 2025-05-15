@@ -20,7 +20,7 @@
     <defaultgrade>2.0</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
-    <coderunnertype>PROTOTYPE_duckdb_dql</coderunnertype>
+    <coderunnertype>python3</coderunnertype>
     <prototypetype>0</prototypetype>
     <allornothing>1</allornothing>
     <penaltyregime>0</penaltyregime>

@@ -52,6 +52,16 @@ for statement in statements:
     try:
         res = con.sql(statement)
         res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+    except duckdb.ConstraintException as e:
+        # DuckDB prints the individual constraint implementation in the error message
+        # so we have to filter it out.
+        match = re.search(
+            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+        )
+        if match:
+            print(f"CHECK constraint failed on table {match.group(1)}")
+        else:
+            print(e)
     except duckdb.Error as e:
         print(e)
     except Exception as e:

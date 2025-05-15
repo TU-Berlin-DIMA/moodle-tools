@@ -5,7 +5,6 @@ import random
 import re
 import shutil
 import string
-import sys
 import tempfile
 from base64 import b64encode
 from collections.abc import Generator
@@ -163,7 +162,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
     """Template for a SQL DDL/DML question in Moodle CodeRunner."""
 
-    CODERUNNER_TYPE = "PROTOTYPE_duckdb_ddl"
+    CODERUNNER_TYPE = "python3"
     RESULT_COLUMNS_DEFAULT = """[["Testfall", "extra"], ["Bewertung", "awarded"]]"""
     RESULT_COLUMNS_DEBUG = (
         """[["Beschreibung", "extra"], """
@@ -251,9 +250,19 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                 try:
                     res = con.sql(statement)
                     if res:
-                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
+                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)
                     else:
                         print(res)
+                except duckdb.ConstraintException as e:
+                    # DuckDB prints the individual constraint implementation in the error message
+                    # so we have to filter it out.
+                    match = re.search(
+                        r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+                    )
+                    if match:
+                        print(f"CHECK constraint failed on table {match.group(1)}")
+                    else:
+                        print(e)
                 except duckdb.Error as e:
                     print(e)
 
@@ -263,7 +272,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
     """Template for a SQL DQL question in Moodle CodeRunner."""
 
-    CODERUNNER_TYPE = "PROTOTYPE_duckdb_dql"
+    CODERUNNER_TYPE = "python3"
     RESULT_COLUMNS_DEFAULT = ""  # TODO
     RESULT_COLUMNS_DEBUG = ""  # TODO
     TEST_TEMPLATE = "testlogic_dql.py.j2"
@@ -326,7 +335,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             con.sql(test_code)
             res = con.sql(self.answer)
             if res:
-                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
+                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)
             else:
                 print(res)
 

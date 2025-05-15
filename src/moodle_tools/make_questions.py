@@ -2,6 +2,7 @@
 
 import argparse
 import contextlib
+import copy
 import os
 import sys
 from collections.abc import Iterator
@@ -19,7 +20,7 @@ from moodle_tools.utils import ParsingError
 from moodle_tools.yaml_constructors import construct_include_context, eval_context
 
 
-def load_questions(
+def load_questions(  # noqa: C901
     documents: Iterator[dict[str, Any]],
     strict_validation: bool = True,
     parse_markdown: bool = True,
@@ -55,11 +56,16 @@ def load_questions(
             raise ParsingError(f"Question title not provided: {document}")
         # TODO: Add further validation for required fields here
 
+        internal_question = None
         if document.get("internal_copy"):
-            internal_document = document.copy()
-            internal_document["title"] += " (intern \U0001f92b)"
-            document.pop("internal_copy")
-            yield create_question(question_type, **internal_document)
+            internal_document = copy.deepcopy(document)
+            internal_document["title"] += " (internal \U0001f92b)"
+            if document.get("category"):
+                document["category"] += "/public"
+                internal_document["category"] += "/internal"
+            del document["internal_copy"]
+
+            internal_question = create_question(question_type, **internal_document)
 
         question = create_question(question_type, **document)
         logger.debug(f"Parsed `{type(question).__name__}` question.")
@@ -73,8 +79,11 @@ def load_questions(
                 logger.error(message)
                 continue
 
-        question.cleanup()
+        if internal_question:
+            internal_question.cleanup()
+            yield internal_question
 
+        question.cleanup()
         yield question
 
 

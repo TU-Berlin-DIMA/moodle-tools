@@ -2,12 +2,12 @@
 <quiz>
 <question type="category">
     <category>
-        <text>$module$/DDL-DML</text>
+        <text>$module$/DDL-DML/internal</text>
     </category>
 </question>
 <question type="coderunner">
     <name>
-        <text>DDL-DB (intern 🤫)</text>
+        <text>DDL-DB (internal 🤫)</text>
     </name>
     <questiontext format="html">
         <text><![CDATA[<p>This is a DDL question</p>]]></text>
@@ -19,7 +19,7 @@
     <defaultgrade>8.0</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
-    <coderunnertype>PROTOTYPE_duckdb_ddl</coderunnertype>
+    <coderunnertype>python3</coderunnertype>
     <prototypetype>0</prototypetype>
     <allornothing>0</allornothing>
     <penaltyregime>0</penaltyregime>
@@ -86,6 +86,16 @@ for statement in statements:
     try:
         res = con.sql(statement)
         res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+    except duckdb.ConstraintException as e:
+        # DuckDB prints the individual constraint implementation in the error message
+        # so we have to filter it out.
+        match = re.search(
+            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+        )
+        if match:
+            print(f"CHECK constraint failed on table {match.group(1)}")
+        else:
+            print(e)
     except duckdb.Error as e:
         print(e)
     except Exception as e:
@@ -297,7 +307,7 @@ ORDER BY name;]]></text>
 </question>
 <question type="category">
     <category>
-        <text>$module$/DDL-DML</text>
+        <text>$module$/DDL-DML/public</text>
     </category>
 </question>
 <question type="coderunner">
@@ -314,7 +324,7 @@ ORDER BY name;]]></text>
     <defaultgrade>8.0</defaultgrade>
     <penalty>0</penalty>
     <hidden>0</hidden>
-    <coderunnertype>PROTOTYPE_duckdb_ddl</coderunnertype>
+    <coderunnertype>python3</coderunnertype>
     <prototypetype>0</prototypetype>
     <allornothing>0</allornothing>
     <penaltyregime>0</penaltyregime>
@@ -381,6 +391,16 @@ for statement in statements:
     try:
         res = con.sql(statement)
         res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+    except duckdb.ConstraintException as e:
+        # DuckDB prints the individual constraint implementation in the error message
+        # so we have to filter it out.
+        match = re.search(
+            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+        )
+        if match:
+            print(f"CHECK constraint failed on table {match.group(1)}")
+        else:
+            print(e)
     except duckdb.Error as e:
         print(e)
     except Exception as e:

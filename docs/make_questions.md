@@ -694,7 +694,6 @@ Compared to the original Cloze syntax, this extension allows for easy use togeth
 | points                |      ✅      |       ✅       |       ✅       |        ✅        | float                                    | No default                                                                     | answer           |
 | feedback              |      ✅      |       ✅       |       ✅       |        ✅        | string                                   | `''`                                                                           | answer           |
 
-
 ### Essay questions
 
 The [essay question type](https://docs.moodle.org/en/Essay_question_type) allows the student to write a longer text as an answer or upload files as an answer.
@@ -762,12 +761,9 @@ A list of predefined types can be found in the [PredefinedFileTypes Enum](../src
 
 ### Ordering questions
 
-<div style="color: #8a6d3b; background-color: #fcf8e3; border-color: #faebcc; padding: 10px">
-
-**Important:** Currently, the settings of this questiontype may not get imported correctly. Please check the settings after importing the question.
-
-</div>
-
+> [!WARNING]
+> Currently, the settings of this question type may not get imported correctly.
+> Please check the settings after importing the question.
 
 The [ordering question type](https://docs.moodle.org/en/Ordering_question_type) requires the student to correctly order a list of items.
 
@@ -833,14 +829,12 @@ The following values are possible. As they are not well documented, we only list
 - `longest_ordered_subsequence`
 - `longest_connected_subsequence`
 
-
 ### Drag and drop into text questions
 
 The [drag and drop into text question type](https://docs.moodle.org/en/Drag_and_drop_into_text_question_type) allows the student to drag and drop items into a text.
 This question type is similar to the [missing words question type](#missing-words-questions), and therefore uses the same API, except that it is possible to specify if an item can be used more than once.
 Thus, in moodle-tools, we call the question type `dragdrop_missing_words`.
 The full YAML format for a drag and drop into text question is as follows:
-
 
 ```yaml
 type: dragdrop_missing_words  # Mandatory
@@ -881,7 +875,6 @@ By default, it is set to `false`.
 This YAML content is rendered as follows in Moodle:
 
 ![Drag and drop into text question](assets/dd_mw.png)
-
 
 ### Coderunner questions
 
@@ -1206,7 +1199,6 @@ If the file ends on `.yaml`, `.yml`, `.yaml.j2`, or `.yml.j2`, the content is in
 #### Example
 
 In this example, we want to out-source the question text and one subquestion into a separate file.
-
 
 ##### Base file
 
