@@ -1,6 +1,5 @@
 import itertools
 import re
-import sys
 from typing import cast
 
 from loguru import logger
@@ -8,7 +7,7 @@ from loguru import logger
 from moodle_tools.enums import ShuffleAnswersEnum
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
-from moodle_tools.utils import preprocess_text
+from moodle_tools.utils import ParsingError, preprocess_text
 
 re_solution_ref_number = re.compile(r"\[\[(\d+)\]\]")
 re_id = re.compile(r"""\[\[\"([^\"]*)\"\]\]""")
@@ -63,8 +62,7 @@ class MissingWordsQuestion(Question):
         # check if all options contain an ordinal field. If so, skip this step
         if not all("ordinal" in option for option in self.options):
             if not all(isinstance(option.get("ordinal", 0), int) for option in self.options):
-                logger.error("Ordinal values must be integers.")
-                sys.exit(1)
+                raise ParsingError("Ordinal values must be integers.")
 
             max_ordinal: int = max(
                 cast("int", option.get("ordinal", 0)) for option in self.options
@@ -126,19 +124,16 @@ class MissingWordsQuestion(Question):
     def fill_missing_ordinals(self) -> None:
         """Fill missing ordinals with blanks."""
         if not all(isinstance(option.get("ordinal", 0), int) for option in self.options):
-            logger.error("Ordinal values must be integers.")
-            sys.exit(1)
+            raise ParsingError("Ordinal values must be integers.")
 
         if not all(isinstance(option.get("group", 0), int) for option in self.options):
-            logger.error("Group values must be integers at this stage.")
-            sys.exit(1)
+            raise ParsingError("Group values must be integers at this stage.")
 
         # """get all ordinals"""
         ordinals = [cast("int", option["ordinal"]) for option in self.options]
 
         if min(ordinals) < 1:
-            logger.error("Ordinal values must be positive integers.")
-            sys.exit(1)
+            raise ParsingError("Ordinal values must be positive integers.")
 
         options_copy = self.options.copy()
 
@@ -146,10 +141,9 @@ class MissingWordsQuestion(Question):
         unused_groups = set(range(1, 20 + 1)) - all_groups
 
         if len(unused_groups) == 0:
-            logger.error(
+            raise ParsingError(
                 "All groups are already used. Cannot insert placeholders with unused group."
             )
-            sys.exit(1)
 
         max_unused_group = max(unused_groups, default=20)
 

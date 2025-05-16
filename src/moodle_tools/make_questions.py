@@ -68,15 +68,14 @@ def load_questions(  # noqa: C901
             internal_question = create_question(question_type, **internal_document)
 
         question = create_question(question_type, **document)
-        logger.debug(f"Parsed `{type(question).__name__}` question.")
         if strict_validation:
             errors = question.validate()
             if errors:
-                message = (
-                    "The following question did not pass strict validation and has been ignored:\n"
-                    f"{yaml.safe_dump(document)}\n" + "\n- ".join(errors)
+                logger.error(
+                    "The following question did not pass strict validation and has been skipped:"
+                    "\n{}",
+                    f"{yaml.safe_dump(document)}\n" + "\n- ".join(errors),
                 )
-                logger.error(message)
                 continue
 
         if internal_question:
@@ -133,11 +132,11 @@ def generate_moodle_questions(
                     question.title = f"{question.title} ({i})"
                 questions.append(question)
 
-    logger.debug(f"Loaded {len(questions)} questions from YAML.")
+    logger.debug("Loaded {} questions from YAML.", len(questions))
 
     if question_filter:
         questions = [question for question in questions if question.title in question_filter]
-        logger.debug(f"{len(questions)} questions remained after running filter.")
+        logger.debug("{} questions remained after running filter.", len(questions))
 
         if not questions:
             logger.warning("Filter returned 0 questions. Exiting.")
@@ -155,7 +154,7 @@ def generate_moodle_questions(
     )
     template = env.get_template("quiz.xml.j2")
     xml = template.render(questions=[question.to_xml(env) for question in questions])
-    logger.info(f"Generated {len(questions)} Moodle XML questions.")
+    logger.info("Generated {} Moodle XML questions.", len(questions))
     return xml
 
 
@@ -187,7 +186,7 @@ def iterate_inputs(
         elif strict:
             raise OSError(f"Not a file or folder: {file}")
         else:
-            logger.debug(f"{file} is neither a file nor a folder - ignoring.")
+            logger.debug("{} is neither a file nor a folder - ignoring.", file)
 
 
 def parse_args() -> argparse.Namespace:

@@ -1,0 +1,8 @@
+-- Unique constraint
+SELECT unnest(constraint_column_names) AS name_unique
+from duckdb_constraints()
+where
+    schema_name='main'
+  and constraint_type = 'UNIQUE'
+  and table_name='{{ tablename }}'
+ORDER BY name_unique;

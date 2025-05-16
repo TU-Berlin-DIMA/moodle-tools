@@ -1,5 +1,4 @@
 import re
-import sys
 from typing import Any, TypeVar
 
 from loguru import logger
@@ -7,6 +6,7 @@ from loguru import logger
 from moodle_tools.enums import ClozeTypeEnum, DisplayFormatEnum, ShuffleAnswersEnum
 from moodle_tools.questions.multiple_response import MultipleResponseQuestionAnalysis
 from moodle_tools.questions.question import Question
+from moodle_tools.utils import ParsingError
 
 T = TypeVar("T", str, int, float, bool)
 re_id = re.compile(r"""\[\[\"([^\"]*)\"\]\]""")
@@ -47,7 +47,7 @@ class ClozeQuestion(Question):
                 self.question = self.question.replace(match.group(0), cloze)
             else:
                 logger.warning(
-                    f"Unable to find matching subquestion for placeholder {match.group(0)}."
+                    "Unable to find matching subquestion for placeholder {}.", match.group(0)
                 )
 
     @staticmethod
@@ -88,10 +88,9 @@ class ClozeQuestion(Question):
             answers.sort(key=lambda x: x["answer"])
 
         if not any(a.get("points", 0) == 100 for a in answers):
-            logger.error(
-                f"In subquestion {subquestion_id}: At least one answer must have 100 points."
+            raise ParsingError(
+                "In subquestion {}: At least one answer must have 100 points.", subquestion_id
             )
-            sys.exit(1)
 
         answers = "~".join([ClozeQuestion.__build_answer(a) for a in answers])
 
@@ -144,13 +143,13 @@ class ClozeQuestion(Question):
                 case_warn = answer_case_sensitive
 
         if disp_warn:
-            logger.warning(f"`display_format` is not supported for {qtype} questions.")
+            logger.warning("`display_format` is not supported for {} questions.", qtype)
         if shuffle_warn:
-            logger.warning(f"`shuffle_answers` is not supported for {qtype} questions.")
+            logger.warning("`shuffle_answers` is not supported for {} questions.", qtype)
         if case_warn:
-            logger.warning(f"`answer_case_sensitive` is not supported for {qtype} questions.")
+            logger.warning("`answer_case_sensitive` is not supported for {} questions.", qtype)
         if dropdown_warn:
-            logger.warning(f"`display_format: dropdown` is not supported for {qtype} questions.")
+            logger.warning("`display_format: dropdown` is not supported for {} questions.", qtype)
 
         return qtype_final
 

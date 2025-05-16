@@ -592,7 +592,7 @@ The options in this yaml file will generate the following xml output:
 
 ### Matching questions
 
-In the [matching questiontype](https://docs.moodle.org/en/Matching_question_type), the student has to match one or multiple given strings to a set of predefined strings.
+In the [matching question type](https://docs.moodle.org/en/Matching_question_type), the student has to match one or multiple given strings to a set of predefined strings.
 
 The full YAML format for a matching question is as follows:
 
@@ -648,7 +648,7 @@ This YAML content is rendered as follows in Moodle:
 Note that the feedback for the wrong answer is revealed when the user hovers the mouse over the red X.
 The general feedback is always shown.
 
-To make development of Cloze questions easier, moodle_tools supports outsourcing the Cloze question definition into a separate subquestion key within the question.
+To make development of Cloze questions easier, moodle-tools supports outsourcing the Cloze question definition into a separate subquestion key within the question.
 It identifies locations where subquestions should be added by using the same placeholders as already known from [Missing Words Questions](#missing-words-questions).
 
 ```yaml
@@ -674,13 +674,13 @@ subquestions:
         feedback: "Rounded up"
 ```
 
-moodle_tools supports all subquestion types also supported in Cloze.
-Whenever possible, it uses structures that are similar to other question types available in moodle_tools.
+moodle-tools supports all subquestion types also supported in Cloze.
+Whenever possible, it uses structures that are similar to other question types available in moodle-tools.
 For each subquestion we can define a width of the answer box, the weight of the subquestion compared to the other subquestions, and the feedback for each answer.
 
 Compared to the original Cloze syntax, this extension allows for easy use together with the [Evaluating expressions extension](#evaluating-expressions).
 
-#### Supported Questiontypes and Attributes
+#### Supported question types and attributes
 
 | Attribute             | `numerical` | `shortanswer` | `multichoice` | `multiresponse` | Possible Values                          | Default Value                                                                  | Defined for each |
 |-----------------------|:-----------:|:-------------:|:-------------:|:---------------:|------------------------------------------|--------------------------------------------------------------------------------|------------------|
@@ -935,6 +935,7 @@ The following fields are optional, and therefore do not need to be provided:
   - `hidden` defaults to `False`
 - `all_or_nothing` defaults to `True` for `sql_dql` and `isda_streaming` and `False` for `sql_ddl`
 - `check_results` (if results are provided manually, the provided `answer` is run against the database and the results are compared)
+- `extra` additional information for question generation (currently, this is ony used for [Coderunner DDL/DML templates](#coderunner-ddldml-questions))
 
 Therefore, a minimal version of the above `.yml` file looks as follows:
 
@@ -967,7 +968,64 @@ database_connection: false
 ```
 
 - `database_path` must always be provided. Can be ":memory:" if the question should use an empty database. In this case, no database file is written into the output XML.
-- `database_connection` is optional and determines whether `moodle_tools` connects to the provided database during XML generation (default `True`)
+- `database_connection` is optional and determines whether moodle-tools connects to the provided database during XML generation (default `True`)
+
+##### Coderunner DDL/DML Questions
+
+For SQL DDL/DML questions, moodle-tools comes with some templates that simplify checking for regularly used database structures.
+To use them, you have to write `MT_<template_name> <params>` instead of a SQL statement into a test case's `code` field.
+
+As of now, moodle-tools only offers the template `MT_testtablecorrectness`, which can be configured with a list of parameters:
+
+- `name`: checks the name of the columns
+- `types`: checks the types of the columns (can check for multiple types, see below)
+- `notnull`: checks for not null columns
+- `unique`: checks for unique columns
+- `primarykeys`: checks for primary key columns
+- `foreignkeys`: checks for foreign key columns
+
+The following exemplary test cases show how to use the template:
+
+```yaml
+testcases:
+  - code: |-
+      MT_testtablecorrectness Produkt  # this runs all available tests
+    grade: 1.0
+    hiderestiffail: false
+    description: Test with template
+  - code: |-
+      MT_testtablecorrectness Produkt name  # this tests only the name of the columns
+    grade: 1.0
+    hiderestiffail: false
+    description: Test with template and test types
+  - code: |-
+      MT_testtablecorrectness Produkt primarykeys, foreignkeys  # this tests only the primary and foreign keys
+    grade: 1.0
+    hiderestiffail: false
+    description: Test with template and test types
+```
+
+If you want to use the `types` check, you can optionally provide a list of types for each column in the `extra` field to allow multiple correct types as part of the test case.
+In the following example, both `REAL` and `DECIMAL(10, 2)` are accepted as correct types for the `Preis` column:
+
+```yaml
+answer: |-
+  CREATE TABLE Produkt (
+    Name TEXT,
+    Preis REAL,
+    PRIMARY KEY (Name)
+  );
+testcases:
+  - code: |-
+      MT_testtablecorrectness Produkt types
+    grade: 1.0
+    description: Test with template and test types
+    extra:
+      flex_datatypes:
+        Preis:
+          - REAL
+          - DECIMAL(10, 2)
+```
 
 #### Coderunner Streaming Questions
 

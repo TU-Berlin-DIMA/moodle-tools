@@ -4,6 +4,7 @@ from collections import Counter
 from typing import Any, NamedTuple
 
 from jinja2 import Environment
+from loguru import logger
 
 from moodle_tools.utils import preprocess_text
 
@@ -24,6 +25,8 @@ class Question(ABC):
         **flags: bool,
     ) -> None:
         """General template for a question."""
+        logger.debug("Parsing {} '{}'", self.__class__.__name__, question)
+
         self.question = preprocess_text(question, **flags)
         self.title = title
         self.category = category
@@ -49,9 +52,9 @@ class Question(ABC):
         template = env.get_template(self.XML_TEMPLATE)
         return template.render(self.__dict__ | {"type": self.QUESTION_TYPE})
 
-    def cleanup(self) -> None:  # noqa
+    def cleanup(self) -> None:  # noqa: B027
         """Cleanup any resources used by the question."""
-        pass  # noqa
+        pass  # noqa: PIE790
 
 
 class AnalysisItem(NamedTuple):

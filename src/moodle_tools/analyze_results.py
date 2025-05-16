@@ -40,22 +40,26 @@ def detect_language(headers: Sequence[str] | None) -> Literal["en", "de"]:
         Literal["en", "de"]: The detected language.
     """
     if headers is None:
-        logger.error("The input file does not contain any headers.")
-        sys.exit(1)
+        raise ValueError("The input file does not contain any headers.")
     if "Nachname" in headers and "Vorname" in headers:
         return "de"
     if "Last name" in headers and "First name" in headers:
         return "en"
 
-    logger.error(f"The input file language could not be detected via the CSV headers: {headers}")
-    sys.exit(1)
+    raise ValueError(
+        f"The input file language could not be detected via the CSV headers: {headers}"
+    )
 
 
 def analyze_questions(
     infile: TextIOWrapper, outfile: TextIOWrapper, handlers: list[QuestionAnalysis]
 ) -> None:
     csv_reader = csv.DictReader(infile, delimiter=",", quotechar='"')
-    lang = detect_language(csv_reader.fieldnames)
+    try:
+        lang = detect_language(csv_reader.fieldnames)
+    except ValueError as e:
+        logger.error("Could not detect language: {}", e)
+        sys.exit(1)
 
     # Process responses from input CSV file
     for row in csv_reader:
@@ -69,7 +73,7 @@ def analyze_questions(
                 )
             except KeyError as e:
                 logger.error(
-                    f"Could not find question with key {e} in CSV headers: {list(row.keys())}"
+                    "Could not find question with key {} in CSV headers: {}", e, list(row.keys())
                 )
                 sys.exit(1)
 
@@ -92,7 +96,7 @@ def analyze_questions(
         "mad": median([abs(grade - m) for grade in grades]),  # Median absolute deviation
     }
     logger.info(
-        f"Grade stats (%): {{{', '.join(f'{key}: {value:1.2f}' for key, value in stats.items())}}}"
+        "Grade stats (%): {}", ", ".join(f"{key}: {value:1.2f}" for key, value in stats.items())
     )
 
     # Write normalized results as CSV file
@@ -118,7 +122,7 @@ def analyze_questions(
         )
         row.update(grade)
         writer.writerow(row)
-    logger.debug(f"Wrote analysis report to {outfile.name}")
+    logger.debug("Wrote analysis report to {}", outfile.name)
 
 
 def parse_args() -> argparse.Namespace:

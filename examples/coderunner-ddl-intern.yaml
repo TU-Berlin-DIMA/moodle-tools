@@ -24,7 +24,7 @@ testcases:
     code: MT_testtablecorrectness thisisatest
     grade: 0.5
   - description: Korrektheit Attribute thisisatest
-    code: MT_testtablecorrectness_name thisisatest
+    code: MT_testtablecorrectness thisisatest name
     grade: 0.5
 check_results: false
 database_connection: true

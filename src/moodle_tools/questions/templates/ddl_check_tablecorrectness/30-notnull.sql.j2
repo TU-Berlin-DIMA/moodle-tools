@@ -1,0 +1,5 @@
+-- Not null columns
+SELECT name AS name_notnull
+FROM pragma_table_info("{{ tablename }}")
+WHERE "notnull"
+ORDER BY name;

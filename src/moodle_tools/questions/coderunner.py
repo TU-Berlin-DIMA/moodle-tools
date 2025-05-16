@@ -2,9 +2,10 @@
 
 import abc
 from pathlib import Path
-from typing import Required, TypedDict
+from typing import Any, Required, TypedDict
 
 from jinja2 import Environment
+from loguru import logger
 
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError, format_code
@@ -23,6 +24,7 @@ class Testcase(TypedDict, total=False):
         hiderestiffail: If True, all following tests are hidden if the test fails (default False).
         hidden: If True, the test hidden. Otherwise, it is shown to students (default False).
         show: If the test is hidden, this is set to "HIDE". Otherwise, it is set to "SHOW".
+        extra: Extra information for the test case (this can be used during output generation).
     """
 
     description: str
@@ -32,6 +34,7 @@ class Testcase(TypedDict, total=False):
     hiderestiffail: bool
     hidden: bool
     show: str
+    extra: dict[str, str | dict[str, Any]] | None
 
 
 class CoderunnerQuestion(Question):
@@ -101,11 +104,14 @@ class CoderunnerQuestion(Question):
 
         # Execute test cases and fetch results
         self.testcases: list[Testcase] = []
+
         for i, testcase in enumerate(testcases):
+            logger.debug("Processing test case '{}'", testcase.get("description", "Untitled test"))
+
             if "code" not in testcase:
                 raise ParsingError(
-                    "A testcase must include the key code. Leave it empty if no changes are "
-                    "needed."
+                    "A testcase must include the field 'code'. Provide an empty string if no "
+                    "changes are needed."
                 )
             if "result" not in testcase:
                 if check_results:
@@ -113,6 +119,12 @@ class CoderunnerQuestion(Question):
                         "You must provide a result for each test case if check_results is True."
                     )
                 testcase["result"] = self.fetch_expected_result(testcase["code"])
+
+                logger.debug("Test code:\n{}", testcase["code"])
+                logger.debug("Test result:\n{}", testcase["result"])
+
+                self.validate_query(testcase)
+
             if "grade" not in testcase:
                 testcase["grade"] = 1.0
             if "hiderestiffail" not in testcase:
@@ -160,6 +172,10 @@ class CoderunnerQuestion(Question):
                     f"result from the provided 'answer':\n{result}"
                 )
         return True
+
+    def validate_query(self, testcase: Testcase) -> None:
+        """Check if anything within the query is bogus."""
+        pass  # noqa
 
     def validate(self) -> list[str]:
         return super().validate()

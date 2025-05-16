@@ -1,13 +1,14 @@
 """This module implements SQL questions in Moodle CodeRunner."""
 
 import io
+import json
 import random
 import re
 import shutil
 import string
 import tempfile
 from base64 import b64encode
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
@@ -24,7 +25,7 @@ DB_CONNECTION_ERROR = (
     "result from the database."
 )
 
-env = Environment(
+JinjaEnv = Environment(
     loader=PackageLoader("moodle_tools.questions"),
     lstrip_blocks=True,
     trim_blocks=True,
@@ -154,8 +155,10 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         return [files]
 
     def cleanup(self) -> None:
+        logger.debug("Cleaning up {}.", self.__class__.__name__)
+
         if self.inmemory_db:
-            # remove temporary file that stood inplace of the inmemory-db
+            logger.debug("Removing temporary DB file.")
             self.database_path.unlink()
 
 
@@ -213,27 +216,69 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
     @staticmethod
     def render_test_templates(testcases: list[Testcase]) -> list[Testcase]:
-        """Replace test template placeholders with the respective Jinja templates.
+        """Replace test templates with the respective Jinja templates and render them.
+
+        The tests are modified in-place. The function returns the same list it received.
 
         Args:
-            testcases: List of testcases to render.
+            testcases: List of testcases.
 
         Returns:
-            list[Testcase]: List of rendered testcases.
+            list[Testcase]: List of testcases with rendered templated.
         """
         for testcase in testcases:
-            match testcase["code"].split(" "):
-                case ["MT_testtablecorrectness", table_name]:
-                    testcase["code"] = env.get_template(
-                        "ddl_check_table_correctness.sql.j2"
-                    ).render(tablename=table_name)
-                case ["MT_testtablecorrectness_name", table_name]:
-                    testcase["code"] = env.get_template(
-                        "ddl_check_table_correctness_name.sql.j2"
-                    ).render(tablename=table_name)
-                case _:
-                    # TODO: Add a debug statement here that no matching test template was found
-                    pass
+            rendered_statements = []
+
+            test_statements = [t.strip() for t in testcase["code"].split(";") if t.strip()]
+            for statement in test_statements:
+                match statement.split(" "):
+                    case ["MT_testtablecorrectness", table_name, *tests]:
+                        extra = testcase.get("extra", {})
+
+                        flex_datatypes: dict[str, list[str]] = {}
+                        if not isinstance(extra, dict):
+                            logger.warning("`extra` is not a dictionary. Ignoring.")
+                        elif "flex_datatypes" in extra and isinstance(
+                            extra["flex_datatypes"], dict
+                        ):
+                            flex_datatypes = extra["flex_datatypes"]
+
+                        templates: Iterable[Path] = [
+                            Path(template)
+                            for template in JinjaEnv.list_templates(
+                                filter_func=lambda n: n.startswith("ddl_check_tablecorrectness/")
+                            )
+                        ]
+
+                        # If tests are provided, filter the templates to only include those
+                        if tests:
+                            templates = filter(
+                                lambda t: t.name.split(".")[0].split("-")[1] in tests, templates
+                            )
+
+                        rendered_statements.append(
+                            "\n\n----------\n\n".join(
+                                [
+                                    JinjaEnv.get_template(str(template)).render(
+                                        tablename=table_name,
+                                        flex_datatypes=json.dumps(flex_datatypes)
+                                        .replace("'", "''")
+                                        .replace('"', "'"),
+                                    )
+                                    for template in templates
+                                ]
+                            )
+                        )
+
+                    case _:
+                        if statement.startswith("MT_"):
+                            logger.warning(
+                                "Test code {} does not match any known template.", testcase["code"]
+                            )
+                        else:
+                            rendered_statements.append(statement + ";")
+
+            testcase["code"] = "\n\n".join(rendered_statements)
 
         return testcases
 
@@ -267,6 +312,14 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                     print(e)
 
         return stdout_capture.getvalue()
+
+    def validate_query(self, testcase: Testcase) -> None:
+        if "## non_viable_flex_type ##" in testcase["result"]:
+            logger.warning(
+                "Non-viable flex type detected in test case {}. "
+                "Please check that the set of possible types matches the sample solution.",
+                testcase.get("description", "Untitled test"),
+            )
 
 
 class CoderunnerDQLQuestion(CoderunnerSQLQuestion):

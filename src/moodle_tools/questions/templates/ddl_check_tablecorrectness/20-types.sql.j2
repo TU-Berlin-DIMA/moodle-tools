@@ -1,0 +1,37 @@
+-- Column types
+-- fixed types
+with flex_cols as (
+    select unnest( map_keys( MAP {{ flex_datatypes }} ) ) as name_type
+),
+     student_datatype as (
+         SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name
+     )
+SELECT name_type, datatype
+from student_datatype
+         ANTI JOIN flex_cols on student_datatype.name_type = flex_cols.name_type
+ORDER BY name_type;
+
+-- flexible types
+WITH
+    flextype_table as (
+        select unnest( map_entries( MAP {{ flex_datatypes }} ), recursive := true)
+    ),
+    student_datatype as (
+        SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name
+    ),
+    flextype_flat as (
+        select "key" as col, unnest("value") as datatype
+        from flextype_table
+    ),
+    correct_types as (select flextype_flat.col as flexible_column_name
+                      from flextype_flat
+                               join student_datatype
+                                    on flextype_flat.col = student_datatype.name_type
+                                        AND flextype_flat.datatype = student_datatype.datatype)
+SELECT flexible_column_name, '## viable_flex_type ##' as flex_type
+FROM correct_types
+UNION ALL
+SELECT DISTINCT flextype_flat.col as flexible_column_name, '## non_viable_flex_type ##' as flex_type
+FROM flextype_flat
+         ANTI JOIN correct_types
+                   on flextype_flat.col = correct_types.flexible_column_name;

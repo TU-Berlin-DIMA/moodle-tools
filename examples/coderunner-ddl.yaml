@@ -4,7 +4,7 @@ category: DDL-DML
 title: DDL-DB
 parser: sqlparse
 internal_copy: false
-question: |
+question: |-
   This is a DDL question
 grade: 8.0
 general_feedback: Die Beschreibungen der Tests geben Ihnen Hinweise auf die Korrektheit Ihrer Lösung.
@@ -24,7 +24,7 @@ testcases:
     code: MT_testtablecorrectness thisisatest
     grade: 0.5
   - description: Korrektheit Attribute thisisatest
-    code: MT_testtablecorrectness_name thisisatest
+    code: MT_testtablecorrectness thisisatest name
     grade: 0.5
 check_results: false
 database_connection: true
@@ -54,7 +54,18 @@ testcases:
     code: MT_testtablecorrectness thisisatest
     grade: 0.5
   - description: Korrektheit Attribute thisisatest
-    code: MT_testtablecorrectness_name thisisatest
+    code: MT_testtablecorrectness thisisatest name
     grade: 0.5
+  - description: Korrektheit thisisatest primarykeys foreignkeys
+    code: MT_testtablecorrectness thisisatest primarykeys foreignkeys
+    grade: 0.5
+  - code: MT_testtablecorrectness thisisatest types
+    grade: 1.0
+    description: Test with template and test types
+    extra:
+      flex_datatypes:
+        id:
+          - INTEGER
+          - UINTEGER
 check_results: false
 database_connection: true

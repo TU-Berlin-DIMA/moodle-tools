@@ -1,10 +1,8 @@
-import sys
 from typing import TypedDict
-from venv import logger
 
 from moodle_tools.enums import EditorType, PredefinedFileTypes
 from moodle_tools.questions.question import Question
-from moodle_tools.utils import parse_filesize, preprocess_text
+from moodle_tools.utils import ParsingError, parse_filesize, preprocess_text
 
 
 class TextResponse(TypedDict, total=False):
@@ -62,8 +60,7 @@ class EssayQuestion(Question):
         resp = self.text_response
 
         if resp and self.response_format == EditorType.NOINLINE:
-            logger.error("Response format NOINLINE does not support text response.")
-            sys.exit(1)
+            raise ParsingError("Response format NOINLINE does not support text response.")
 
         if not resp:
             self.text_response = {
@@ -83,17 +80,15 @@ class EssayQuestion(Question):
             self.response_format not in [EditorType.EDITOR, EditorType.EDITORFILEPICKER]
             and allow_media_in_text
         ):
-            logger.error(
-                f"Response format {self.response_format} does not support media in text response."
+            raise ParsingError(
+                "Response format {} does not support media in text response.", self.response_format
             )
-            sys.exit(1)
-        elif not allow_media_in_text and self.response_format == EditorType.EDITORFILEPICKER:
-            logger.error(
+        if not allow_media_in_text and self.response_format == EditorType.EDITORFILEPICKER:
+            raise ParsingError(
                 "You chose the response format EDITORFILEPICKER and do not want to "
                 "allow media in text. This is not allowed."
             )
-            sys.exit(1)
-        elif self.response_format == EditorType.EDITOR and allow_media_in_text:
+        if self.response_format == EditorType.EDITOR and allow_media_in_text:
             self.response_format = EditorType.EDITORFILEPICKER
 
         if (
@@ -101,8 +96,7 @@ class EssayQuestion(Question):
             and resp.get("max_words")
             and int(resp.get("min_words", 0)) > int(resp.get("max_words", 1))
         ):
-            logger.error("Minimum words cannot be greater than maximum words.")
-            sys.exit(1)
+            raise ParsingError("Minimum words cannot be greater than maximum words.")
 
     def handle_file_response(self) -> None:
         resp = self.file_response
@@ -123,17 +117,15 @@ class EssayQuestion(Question):
         ]
 
         if any(pt == PredefinedFileTypes.NONE for pt in predefined_types):
-            logger.error("Predefined file types cannot be NONE.")
-            sys.exit(1)
+            raise ParsingError("Predefined file types cannot be NONE.")
 
         file_endings = [f for f in accepted_types if f.startswith(".")]
         resp["accepted_types"] = predefined_types + file_endings
 
         if number_allowed > number_required and number_allowed != -1:
-            logger.error(
+            raise ParsingError(
                 "Number of files required cannot be greater than number of files allowed."
             )
-            sys.exit(1)
 
     def validate(self) -> list[str]:
         error_list = super().validate()

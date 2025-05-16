@@ -1,4 +1,3 @@
-import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -6,6 +5,8 @@ from typing import Any
 import yaml
 from asteval import Interpreter  # type: ignore
 from loguru import logger
+
+from moodle_tools.utils import ParsingError
 
 
 def eval_context(allow_eval: bool) -> Callable[[yaml.SafeLoader, yaml.ScalarNode], Any]:
@@ -22,16 +23,17 @@ def eval_context(allow_eval: bool) -> Callable[[yaml.SafeLoader, yaml.ScalarNode
         value = loader.construct_scalar(node)
         if not allow_eval:
             logger.error(
-                f"Explicit evaluation is not allowed but used {node.start_mark}. "
-                f"Check the question first! Then set `--allow-eval` to enable evaluation."
+                "Explicit evaluation is not allowed but used {}. "
+                "Check the question first! Then set `--allow-eval` to enable evaluation.",
+                node.start_mark,
             )
-            sys.exit(1)
+            raise ParsingError()
 
         aeval = Interpreter()
 
         result = aeval(value)
 
-        logger.info(f"Evaluated expression: {value} -> {result}")
+        logger.info("Evaluated expression: {} -> {}", value, result)
 
         return result
 

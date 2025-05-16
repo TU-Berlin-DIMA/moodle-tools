@@ -165,35 +165,64 @@ print(SEPARATOR)
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="0.5">
             <testcode>
-                <text><![CDATA[-- thisisatest Test-Cases
- -- Column names
+                <text><![CDATA[-- Column names
 
 SELECT name AS name_columns
 FROM pragma_table_info("thisisatest")
 ORDER BY name;
 
--- Not null columns
+----------
+ -- Column types
+-- fixed types
+WITH flex_cols AS
+  (SELECT unnest(map_keys(MAP {})) AS name_type),
+     student_datatype AS
+  (SELECT name AS name_type,
+          TYPE AS datatype
+   FROM pragma_table_info("thisisatest")
+   ORDER BY name)
+SELECT name_type,
+       datatype
+FROM student_datatype ANTI
+JOIN flex_cols ON student_datatype.name_type = flex_cols.name_type
+ORDER BY name_type;
+
+-- flexible types
+WITH flextype_table AS
+  (SELECT unnest(map_entries(MAP {}), RECURSIVE := TRUE)),
+     student_datatype AS
+  (SELECT name AS name_type,
+          TYPE AS datatype
+   FROM pragma_table_info("thisisatest")
+   ORDER BY name),
+     flextype_flat AS
+  (SELECT "key" AS col,
+          unnest("value") AS datatype
+   FROM flextype_table),
+     correct_types AS
+  (SELECT flextype_flat.col AS flexible_column_name
+   FROM flextype_flat
+   JOIN student_datatype ON flextype_flat.col = student_datatype.name_type
+   AND flextype_flat.datatype = student_datatype.datatype)
+SELECT flexible_column_name,
+       '## viable_flex_type ##' AS flex_type
+FROM correct_types
+UNION ALL
+SELECT DISTINCT flextype_flat.col AS flexible_column_name,
+                '## non_viable_flex_type ##' AS flex_type
+FROM flextype_flat ANTI
+JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
+
+----------
+ -- Not null columns
 
 SELECT name AS name_notnull
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
 ORDER BY name;
 
--- Column types
-
-SELECT name AS name_type,
-       TYPE AS datatype
-FROM pragma_table_info("thisisatest")
-ORDER BY name;
-
--- Primary key columns
-
-SELECT name AS name_primarykey
-FROM pragma_table_info("thisisatest")
-WHERE pk
-ORDER BY name;
-
--- Unique constraint
+----------
+ -- Unique constraint
 
 SELECT unnest(constraint_column_names) AS name_unique
 FROM duckdb_constraints()
@@ -202,7 +231,16 @@ WHERE SCHEMA_NAME='main'
   AND TABLE_NAME='thisisatest'
 ORDER BY name_unique;
 
--- Foreign key columns
+----------
+ -- Primary key columns
+
+SELECT name AS name_primarykey
+FROM pragma_table_info("thisisatest")
+WHERE pk
+ORDER BY name;
+
+----------
+ -- Foreign key columns
 
 SELECT unnest(constraint_column_names) AS name_fk_from,
        constraint_text AS fk_constraint_text
@@ -224,14 +262,6 @@ ORDER BY name_fk_from;]]></text>
 │ name         │
 └──────────────┘
 
-┌──────────────┐
-│ name_notnull │
-│   varchar    │
-├──────────────┤
-│ id           │
-│ name         │
-└──────────────┘
-
 ┌───────────┬──────────┐
 │ name_type │ datatype │
 │  varchar  │ varchar  │
@@ -240,12 +270,20 @@ ORDER BY name_fk_from;]]></text>
 │ name      │ VARCHAR  │
 └───────────┴──────────┘
 
-┌─────────────────┐
-│ name_primarykey │
-│     varchar     │
-├─────────────────┤
-│ id              │
-└─────────────────┘
+┌──────────────────────┬───────────┐
+│ flexible_column_name │ flex_type │
+│        int32         │  varchar  │
+├──────────────────────┴───────────┤
+│              0 rows              │
+└──────────────────────────────────┘
+
+┌──────────────┐
+│ name_notnull │
+│   varchar    │
+├──────────────┤
+│ id           │
+│ name         │
+└──────────────┘
 
 ┌─────────────┐
 │ name_unique │
@@ -253,6 +291,13 @@ ORDER BY name_fk_from;]]></text>
 ├─────────────┤
 │   0 rows    │
 └─────────────┘
+
+┌─────────────────┐
+│ name_primarykey │
+│     varchar     │
+├─────────────────┤
+│ id              │
+└─────────────────┘
 
 ┌──────────────┬────────────────────┐
 │ name_fk_from │ fk_constraint_text │
@@ -272,8 +317,7 @@ ORDER BY name_fk_from;]]></text>
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="0.5">
             <testcode>
-                <text><![CDATA[-- thisisatest Test-Cases
- -- Column names
+                <text><![CDATA[-- Column names
 
 SELECT name AS name_columns
 FROM pragma_table_info("thisisatest")
@@ -470,35 +514,64 @@ print(SEPARATOR)
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="0.5">
             <testcode>
-                <text><![CDATA[-- thisisatest Test-Cases
- -- Column names
+                <text><![CDATA[-- Column names
 
 SELECT name AS name_columns
 FROM pragma_table_info("thisisatest")
 ORDER BY name;
 
--- Not null columns
+----------
+ -- Column types
+-- fixed types
+WITH flex_cols AS
+  (SELECT unnest(map_keys(MAP {})) AS name_type),
+     student_datatype AS
+  (SELECT name AS name_type,
+          TYPE AS datatype
+   FROM pragma_table_info("thisisatest")
+   ORDER BY name)
+SELECT name_type,
+       datatype
+FROM student_datatype ANTI
+JOIN flex_cols ON student_datatype.name_type = flex_cols.name_type
+ORDER BY name_type;
+
+-- flexible types
+WITH flextype_table AS
+  (SELECT unnest(map_entries(MAP {}), RECURSIVE := TRUE)),
+     student_datatype AS
+  (SELECT name AS name_type,
+          TYPE AS datatype
+   FROM pragma_table_info("thisisatest")
+   ORDER BY name),
+     flextype_flat AS
+  (SELECT "key" AS col,
+          unnest("value") AS datatype
+   FROM flextype_table),
+     correct_types AS
+  (SELECT flextype_flat.col AS flexible_column_name
+   FROM flextype_flat
+   JOIN student_datatype ON flextype_flat.col = student_datatype.name_type
+   AND flextype_flat.datatype = student_datatype.datatype)
+SELECT flexible_column_name,
+       '## viable_flex_type ##' AS flex_type
+FROM correct_types
+UNION ALL
+SELECT DISTINCT flextype_flat.col AS flexible_column_name,
+                '## non_viable_flex_type ##' AS flex_type
+FROM flextype_flat ANTI
+JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
+
+----------
+ -- Not null columns
 
 SELECT name AS name_notnull
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
 ORDER BY name;
 
--- Column types
-
-SELECT name AS name_type,
-       TYPE AS datatype
-FROM pragma_table_info("thisisatest")
-ORDER BY name;
-
--- Primary key columns
-
-SELECT name AS name_primarykey
-FROM pragma_table_info("thisisatest")
-WHERE pk
-ORDER BY name;
-
--- Unique constraint
+----------
+ -- Unique constraint
 
 SELECT unnest(constraint_column_names) AS name_unique
 FROM duckdb_constraints()
@@ -507,7 +580,16 @@ WHERE SCHEMA_NAME='main'
   AND TABLE_NAME='thisisatest'
 ORDER BY name_unique;
 
--- Foreign key columns
+----------
+ -- Primary key columns
+
+SELECT name AS name_primarykey
+FROM pragma_table_info("thisisatest")
+WHERE pk
+ORDER BY name;
+
+----------
+ -- Foreign key columns
 
 SELECT unnest(constraint_column_names) AS name_fk_from,
        constraint_text AS fk_constraint_text
@@ -529,14 +611,6 @@ ORDER BY name_fk_from;]]></text>
 │ name         │
 └──────────────┘
 
-┌──────────────┐
-│ name_notnull │
-│   varchar    │
-├──────────────┤
-│ id           │
-│ name         │
-└──────────────┘
-
 ┌───────────┬──────────┐
 │ name_type │ datatype │
 │  varchar  │ varchar  │
@@ -545,12 +619,20 @@ ORDER BY name_fk_from;]]></text>
 │ name      │ VARCHAR  │
 └───────────┴──────────┘
 
-┌─────────────────┐
-│ name_primarykey │
-│     varchar     │
-├─────────────────┤
-│ id              │
-└─────────────────┘
+┌──────────────────────┬───────────┐
+│ flexible_column_name │ flex_type │
+│        int32         │  varchar  │
+├──────────────────────┴───────────┤
+│              0 rows              │
+└──────────────────────────────────┘
+
+┌──────────────┐
+│ name_notnull │
+│   varchar    │
+├──────────────┤
+│ id           │
+│ name         │
+└──────────────┘
 
 ┌─────────────┐
 │ name_unique │
@@ -558,6 +640,13 @@ ORDER BY name_fk_from;]]></text>
 ├─────────────┤
 │   0 rows    │
 └─────────────┘
+
+┌─────────────────┐
+│ name_primarykey │
+│     varchar     │
+├─────────────────┤
+│ id              │
+└─────────────────┘
 
 ┌──────────────┬────────────────────┐
 │ name_fk_from │ fk_constraint_text │
@@ -577,8 +666,7 @@ ORDER BY name_fk_from;]]></text>
         </testcase>
         <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="0.5">
             <testcode>
-                <text><![CDATA[-- thisisatest Test-Cases
- -- Column names
+                <text><![CDATA[-- Column names
 
 SELECT name AS name_columns
 FROM pragma_table_info("thisisatest")

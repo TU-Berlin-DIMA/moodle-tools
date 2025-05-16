@@ -1,0 +1,5 @@
+-- Primary key columns
+SELECT name AS name_primarykey
+FROM pragma_table_info("{{ tablename }}")
+WHERE pk
+ORDER BY name;
