@@ -1005,7 +1005,7 @@ testcases:
     description: Test with template and test types
 ```
 
-If you want to use the `types` check, you can optionally provide a list of types for each column in the `extra` field to allow multiple correct types as part of the test case.
+If you want to use the `types` check, you can optionally provide a list of types for each column in the `extra` field to allow multiple correct types as part of the question.
 In the following example, both `REAL` and `DECIMAL(10, 2)` are accepted as correct types for the `Preis` column:
 
 ```yaml
@@ -1015,17 +1015,22 @@ answer: |-
     Preis REAL,
     PRIMARY KEY (Name)
   );
+extra:
+  flex_datatypes:
+    - attribute: Preis
+      allowed:
+        - REAL
+        - DECIMAL(10, 2)
+      used_in:
+        - Produkt
 testcases:
   - code: |-
       MT_testtablecorrectness Produkt types
     grade: 1.0
     description: Test with template and test types
-    extra:
-      flex_datatypes:
-        Preis:
-          - REAL
-          - DECIMAL(10, 2)
 ```
+
+Setting flexible datatypes directly in the testcases is possible too, but will be deprecated in the future.
 
 #### Coderunner Streaming Questions
 
