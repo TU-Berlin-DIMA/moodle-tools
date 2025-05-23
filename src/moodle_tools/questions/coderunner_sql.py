@@ -395,7 +395,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
                     table_has_flex_enum = any(
                         "ENUM" in item for allowed in table_flex_dt for item in allowed
-                    )
+                    ) and not all("ENUM" in item for allowed in table_flex_dt for item in allowed)
 
                     match_check = re.search(
                         r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
