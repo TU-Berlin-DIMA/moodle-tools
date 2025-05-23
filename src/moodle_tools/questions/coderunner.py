@@ -34,7 +34,8 @@ class Testcase(TypedDict, total=False):
     hiderestiffail: bool
     hidden: bool
     show: str
-    extra: dict[str, str | dict[str, Any]] | None
+    extra: dict[str, Any] | None
+    additional_info: dict[str, Any] | None
 
 
 class CoderunnerQuestion(Question):
@@ -46,7 +47,6 @@ class CoderunnerQuestion(Question):
     CODERUNNER_TYPE: str
     RESULT_COLUMNS_DEFAULT: str
     RESULT_COLUMNS_DEBUG: str
-    TEST_TEMPLATE: str
 
     def __init__(
         self,
@@ -62,6 +62,7 @@ class CoderunnerQuestion(Question):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        extra: dict[str, str | dict[str, Any]] | None = None,
         internal_copy: bool = False,
         **flags: bool,
     ) -> None:
@@ -81,6 +82,7 @@ class CoderunnerQuestion(Question):
             check_results: If testcase_results are provided, run the reference solution and check
                 if the results match.
             parser: Code parser for formatting the correct answer and testcases.
+            extra: Extra information for parsing the question.
             internal_copy: Flag to create an internal copy for debugging purposes.
             flags: Additional flags that can be used to control the behavior of the
                 question.
@@ -93,6 +95,8 @@ class CoderunnerQuestion(Question):
         self.result_columns = (
             self.RESULT_COLUMNS_DEBUG if internal_copy else self.RESULT_COLUMNS_DEFAULT
         )
+
+        self.extra = extra
 
         # Apply consistent formatting to the answer code
         self.answer = format_code(self.answer, formatter=self.parser)
@@ -108,17 +112,23 @@ class CoderunnerQuestion(Question):
         for i, testcase in enumerate(testcases):
             logger.debug("Processing test case '{}'", testcase.get("description", "Untitled test"))
 
+            testcase["additional_info"] = testcase.get("additional_info", {})
+            testcase["extra"] = testcase.get("extra", {})
+
             if "code" not in testcase:
                 raise ParsingError(
                     "A testcase must include the field 'code'. Provide an empty string if no "
                     "changes are needed."
                 )
+
+            self.update_testcase_from_extra(testcase)
+
             if "result" not in testcase:
                 if check_results:
                     raise ParsingError(
                         "You must provide a result for each test case if check_results is True."
                     )
-                testcase["result"] = self.fetch_expected_result(testcase["code"])
+                testcase["result"] = self.fetch_expected_result(testcase)
 
                 logger.debug("Test code:\n{}", testcase["code"])
                 logger.debug("Test result:\n{}", testcase["result"])
@@ -141,6 +151,8 @@ class CoderunnerQuestion(Question):
 
             self.testcases.append(testcase)
 
+    TEST_TEMPLATE: str
+
     @property
     @abc.abstractmethod
     def files(self) -> list[dict[str, str]]:
@@ -151,11 +163,11 @@ class CoderunnerQuestion(Question):
         """
 
     @abc.abstractmethod
-    def fetch_expected_result(self, test_code: str) -> str:
+    def fetch_expected_result(self, testcase: Testcase) -> str:
         """Fetch the result of the correct solution for a given test case.
 
         Args:
-            test_code: Changes to be applied before or after the correct solution.
+            testcase: The test case for which to fetch the expected result.
 
         Returns:
             str: The result of the correct solution.
@@ -165,13 +177,16 @@ class CoderunnerQuestion(Question):
     def check_results(self) -> bool:
         """Verify that the manually provided results match the dynamically fetched results."""
         for testcase in self.testcases:
-            result = self.fetch_expected_result(testcase["code"]).strip()
+            result = self.fetch_expected_result(testcase).strip()
             if result != testcase["result"].strip():
                 raise ParsingError(
                     f"Provided result:\n{testcase['result'].strip()}\ndid not match the "
                     f"result from the provided 'answer':\n{result}"
                 )
         return True
+
+    def update_testcase_from_extra(self, testcase: Testcase) -> None:
+        pass
 
     def validate_query(self, testcase: Testcase) -> None:
         """Check if anything within the query is bogus."""
