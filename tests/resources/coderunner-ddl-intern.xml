@@ -31,9 +31,10 @@
     <answerpreload><![CDATA[]]></answerpreload>
     <globalextra></globalextra>
     <useace>1</useace>
-    <resultcolumns><![CDATA[[["Beschreibung", "extra"], ["Test", "testcode"], ["Erhalten", "got"], ["Erwartet", "expected"], ["Bewertung", "awarded"]]]]></resultcolumns>
+    <resultcolumns><![CDATA[[["Beschreibung", "extra"], ["Erwartet", "expected"], ["Erhalten", "got"], ["Test", "testcode"], ["Bewertung", "awarded"]]]]></resultcolumns>
     <template><![CDATA[from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -66,6 +67,8 @@ SEPARATOR = "#<ab@17943918#@>#"
 # Running each test in isolation
 {% for TEST in TESTCASES %}
 
+additional_info = {{ TEST.stdin | e('py') }}
+
 if db_working != ":memory:":
     db_working = f"{db_working}.copy"
     shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
@@ -86,14 +89,24 @@ for statement in statements:
     try:
         res = con.sql(statement)
         res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except duckdb.ConstraintException as e:
+    except (duckdb.ConstraintException, duckdb.ConversionException) as e:
         # DuckDB prints the individual constraint implementation in the error message
         # so we have to filter it out.
-        match = re.search(
+        table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
+        table_flex_enums = additional_info.get("flex_enum_tables", [])
+
+        match_check = re.search(
             r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
         )
-        if match:
-            print(f"CHECK constraint failed on table {match.group(1)}")
+
+        match_enum = re.search(
+            r"^Conversion Error: Could not convert.*$", str(e), re.M
+        )
+
+        if (match_check or match_enum) and table_under_test in table_flex_enums:
+            print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+        elif match_check:
+            print(f"CHECK constraint failed on table {table_under_test}")
         else:
             print(e)
     except duckdb.Error as e:
@@ -144,7 +157,7 @@ print(SEPARATOR)
                 <text><![CDATA[SELECT 1;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌───────┐
@@ -219,6 +232,8 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 SELECT name AS name_notnull
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
+  AND NOT "pk"
+  AND NOT "dflt_value"
 ORDER BY name;
 
 ----------
@@ -251,7 +266,7 @@ WHERE SCHEMA_NAME='main'
 ORDER BY name_fk_from;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌──────────────┐
@@ -281,8 +296,7 @@ ORDER BY name_fk_from;]]></text>
 │ name_notnull │
 │   varchar    │
 ├──────────────┤
-│ id           │
-│ name         │
+│    0 rows    │
 └──────────────┘
 
 ┌─────────────┐
@@ -324,7 +338,7 @@ FROM pragma_table_info("thisisatest")
 ORDER BY name;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌──────────────┐
@@ -383,6 +397,7 @@ ORDER BY name;]]></text>
     <resultcolumns><![CDATA[[["Testfall", "extra"], ["Bewertung", "awarded"]]]]></resultcolumns>
     <template><![CDATA[from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -415,6 +430,8 @@ SEPARATOR = "#<ab@17943918#@>#"
 # Running each test in isolation
 {% for TEST in TESTCASES %}
 
+additional_info = {{ TEST.stdin | e('py') }}
+
 if db_working != ":memory:":
     db_working = f"{db_working}.copy"
     shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
@@ -435,14 +452,24 @@ for statement in statements:
     try:
         res = con.sql(statement)
         res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except duckdb.ConstraintException as e:
+    except (duckdb.ConstraintException, duckdb.ConversionException) as e:
         # DuckDB prints the individual constraint implementation in the error message
         # so we have to filter it out.
-        match = re.search(
+        table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
+        table_flex_enums = additional_info.get("flex_enum_tables", [])
+
+        match_check = re.search(
             r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
         )
-        if match:
-            print(f"CHECK constraint failed on table {match.group(1)}")
+
+        match_enum = re.search(
+            r"^Conversion Error: Could not convert.*$", str(e), re.M
+        )
+
+        if (match_check or match_enum) and table_under_test in table_flex_enums:
+            print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+        elif match_check:
+            print(f"CHECK constraint failed on table {table_under_test}")
         else:
             print(e)
     except duckdb.Error as e:
@@ -493,7 +520,7 @@ print(SEPARATOR)
                 <text><![CDATA[SELECT 1;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌───────┐
@@ -568,6 +595,8 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 SELECT name AS name_notnull
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
+  AND NOT "pk"
+  AND NOT "dflt_value"
 ORDER BY name;
 
 ----------
@@ -600,7 +629,7 @@ WHERE SCHEMA_NAME='main'
 ORDER BY name_fk_from;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌──────────────┐
@@ -630,8 +659,7 @@ ORDER BY name_fk_from;]]></text>
 │ name_notnull │
 │   varchar    │
 ├──────────────┤
-│ id           │
-│ name         │
+│    0 rows    │
 └──────────────┘
 
 ┌─────────────┐
@@ -673,7 +701,7 @@ FROM pragma_table_info("thisisatest")
 ORDER BY name;]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌──────────────┐

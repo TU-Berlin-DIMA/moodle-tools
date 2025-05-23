@@ -137,7 +137,7 @@ ORDER BY Name ASC;]]></answer>
                 <text><![CDATA[]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌───────────────┬───────┐
@@ -168,7 +168,7 @@ INSERT INTO Produkt (Id, Name, Preis)
 VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌───────────────────────────┬───────┐
@@ -192,7 +192,7 @@ VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);]]></text>
 VALUES (45678, 'Rolex Daytona', 30000);]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[┌───────────────┬───────┐
