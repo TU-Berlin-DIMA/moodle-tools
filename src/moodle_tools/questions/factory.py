@@ -14,6 +14,7 @@ from .numerical import NumericalQuestion
 from .ordering import OrderingQuestion
 from .question import Question
 from .shortanswer import ShortAnswerQuestion
+from .stack import STACKQuestion
 from .true_false import TrueFalseQuestion
 
 SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
@@ -29,6 +30,7 @@ SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
     "essay": EssayQuestion,
     "ordering": OrderingQuestion,
     "dragdrop_missing_words": DragDropMissingWordsQuestion,
+    "stack": STACKQuestion,
 }
 
 try:

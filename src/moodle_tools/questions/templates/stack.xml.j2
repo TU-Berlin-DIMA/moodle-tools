@@ -1,0 +1,99 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <stackversion>
+      <text>2025040100</text>
+    </stackversion>
+    <questionvariables>
+        <text>{{ input_variables | join(';\n') }}</text>
+    </questionvariables>
+    <specificfeedback format="html">
+        <text><![CDATA[{{ specific_feedback }}]]></text>
+    </specificfeedback>
+    <questionnote format="html">
+        <text><![CDATA[{{ question_note }}]]></text>
+    </questionnote>
+    <questiondescription format="html">
+        <text><![CDATA[{{ question_description if question_description else "" }}]]></text>
+    </questiondescription>
+    <questionsimplify>{{ "1" if question_simplify else "0" }}</questionsimplify>
+    <assumepositive>{{ "1" if assume_positive else "0" }}</assumepositive>
+    <assumereal>{{ "1" if assume_real else "0" }}</assumereal>
+    <prtcorrect format="html">
+        <text>{{ "<![CDATA[{}]]>".format(correct_feedback) if correct_feedback }}</text>
+    </prtcorrect>
+    <prtpartiallycorrect format="html">
+        <text>{{ "<![CDATA[{}]]>".format(partial_feedback) if partial_feedback }}</text>
+    </prtpartiallycorrect>
+    <prtincorrect format="html">
+        <text>{{ "<![CDATA[{}]]>".format(incorrect_feedback) if incorrect_feedback }}</text>
+    </prtincorrect>
+    <decimals>{{ decimal_separator }}</decimals>
+    <scientificnotation>{{ scientific_notation }}</scientificnotation>
+    <multiplicationsign>{{ multiplication_sign }}</multiplicationsign>
+    <sqrtsign>{{ square_root_sign }}</sqrtsign>
+    <complexno>{{ complex_number_variable }}</complexno>
+    <inversetrig>{{ inverse_trigonometry }}</inversetrig>
+    <logicsymbol>{{ logic_symbol }}</logicsymbol>
+    <matrixparens>{{ matrix_parentheses }}</matrixparens>
+    <variantsselectionseed>{{ variants_selection_seed }}</variantsselectionseed>
+    {% for name, input in inputs.items() %}
+    <input>
+        <name>{{ name }}</name>
+        <type>{{ input.type }}</type>
+        <tans>{{ input.matching_answer_variable }}</tans>
+        <boxsize>{{ input.width }}</boxsize>
+        <strictsyntax>{{ "1" if input.strict_syntax else "0" }}</strictsyntax>
+        <insertstars>{{ "1" if input.insert_stars else "0" }}</insertstars>
+        <syntaxhint>{{ input.syntax_hint }}</syntaxhint>
+        <syntaxattribute>{{ "1" if input.syntax_attribute else "0" }}</syntaxattribute>
+        <forbidwords>{{ input.forbidden_words | join(',') }}</forbidwords>
+        <allowwords>{{ input.allowed_words | join(',') }}</allowwords>
+        <forbidfloat>{{ "1" if input.forbid_floats else "0" }}</forbidfloat>
+        <requirelowestterms>{{ "1" if input.require_lowest_terms else "0" }}</requirelowestterms>
+        <checkanswertype>{{ "1" if input.check_answer_type else "0" }}</checkanswertype>
+        <mustverify>{{ "1" if input.must_verify else "0" }}</mustverify>
+        <showvalidation>{{  input.show_validation }}</showvalidation>
+        <options>{{ input.options | join(',') }}</options>
+    </input>
+    {% endfor %}
+
+    {% for name, prt in response_trees.items() %}
+    <prt>
+        <name>{{ name }}</name>
+        <value>{{ prt.max_points }}</value>
+        <autosimplify>{{ "1" if prt.auto_simplify else "0" }}</autosimplify>
+        <feedbackstyle>{{ prt.feedback_style }}</feedbackstyle>
+        <feedbackvariables>
+            <text>{{ prt.feedback_variables | join(',') }}</text>
+        </feedbackvariables>
+        {% for id, node in prt.nodes.items() %}
+        <node>
+            <name>{{ id }}</name>
+            <description>{{ node.description }}</description>
+            <answertest>{{ node.test_type }}</answertest>
+            <sans>{{ node.received_answer }}</sans>
+            <tans>{{ node.expected_answer }}</tans>
+            <testoptions>{{ node.test_options }}</testoptions>
+            <quiet>{{ "1" if node.quiet else "0" }}</quiet>
+            <truescoremode>{{ node.true_branch.score_mode }}</truescoremode>
+            <truescore>{{ node.true_branch.score }}</truescore>
+            <truepenalty>{{ node.true_branch.penalty }}</truepenalty>
+            <truenextnode>{{ node.true_branch.next_node }}</truenextnode>
+            <trueanswernote>{{ node.true_branch.answer_note }}</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[{{ node.true_branch.feedback }}]]></text>
+            </truefeedback>
+            <falsescoremode>{{ node.false_branch.score_mode }}</falsescoremode>
+            <falsescore>{{ node.false_branch.score }}</falsescore>
+            <falsepenalty>{{ node.false_branch.penalty }}</falsepenalty>
+            <falsenextnode>{{ node.false_branch.next_node }}</falsenextnode>
+            <falseanswernote>{{ node.false_branch.answer_note }}</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[{{ node.false_branch.feedback }}]]></text>
+            </falsefeedback>
+        </node>
+        {% endfor %}
+    </prt>
+    {% endfor %}
+{% endblock%}
