@@ -1,5 +1,5 @@
 -- Not null columns
-SELECT name AS name_notnull
+SELECT name AS name_notnull_nopk
 FROM pragma_table_info("{{ tablename }}")
 WHERE "notnull" AND NOT "pk" AND NOT "dflt_value"
 ORDER BY name;

@@ -47,6 +47,7 @@ class CoderunnerQuestion(Question):
     CODERUNNER_TYPE: str
     RESULT_COLUMNS_DEFAULT: str
     RESULT_COLUMNS_DEBUG: str
+    TEST_TEMPLATE: str
 
     def __init__(
         self,
@@ -150,8 +151,6 @@ class CoderunnerQuestion(Question):
             testcase["code"] = format_code(testcase["code"], formatter=self.parser)
 
             self.testcases.append(testcase)
-
-    TEST_TEMPLATE: str
 
     @property
     @abc.abstractmethod

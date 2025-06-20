@@ -229,7 +229,7 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 ----------
  -- Not null columns
 
-SELECT name AS name_notnull
+SELECT name AS name_notnull_nopk
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
   AND NOT "pk"
@@ -292,12 +292,12 @@ ORDER BY name_fk_from;]]></text>
 │              0 rows              │
 └──────────────────────────────────┘
 
-┌──────────────┐
-│ name_notnull │
-│   varchar    │
-├──────────────┤
-│    0 rows    │
-└──────────────┘
+┌───────────────────┐
+│ name_notnull_nopk │
+│      varchar      │
+├───────────────────┤
+│      0 rows       │
+└───────────────────┘
 
 ┌─────────────┐
 │ name_unique │
@@ -598,7 +598,7 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 ----------
  -- Not null columns
 
-SELECT name AS name_notnull
+SELECT name AS name_notnull_nopk
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
   AND NOT "pk"
@@ -660,12 +660,12 @@ ORDER BY name_fk_from;]]></text>
 │ id                   │ ## viable_flex_type ## │
 └──────────────────────┴────────────────────────┘
 
-┌──────────────┐
-│ name_notnull │
-│   varchar    │
-├──────────────┤
-│    0 rows    │
-└──────────────┘
+┌───────────────────┐
+│ name_notnull_nopk │
+│      varchar      │
+├───────────────────┤
+│      0 rows       │
+└───────────────────┘
 
 ┌─────────────┐
 │ name_unique │
