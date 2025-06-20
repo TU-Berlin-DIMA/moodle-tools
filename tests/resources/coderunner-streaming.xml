@@ -95,7 +95,7 @@ output_stream = pipeline(data_stream)
 _check_element_structure_in_stream(output_stream, 124.0, "velocity")]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[Expected element structure in output stream: velocity
@@ -121,7 +121,7 @@ data_stream = TimedStream().from_csv("autobahn.csv", start, end)
 print(pipeline(data_stream))]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[Testing elements with indices 0 to 30.
@@ -146,7 +146,7 @@ data_stream = TimedStream().from_csv("autobahn.csv", start, end)
 print(pipeline(data_stream))]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[Testing elements with indices 100 to 150.
@@ -171,7 +171,7 @@ data_stream = TimedStream().from_csv("autobahn.csv", start, end)
 print(pipeline(data_stream))]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[Testing elements with indices 5437 to 5735.
@@ -196,7 +196,7 @@ data_stream = TimedStream().from_csv("autobahn.csv", start, end)
 print(pipeline(data_stream))]]></text>
             </testcode>
             <stdin>
-                <text></text>
+                <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
                 <text><![CDATA[Testing elements with indices 7283 to 8436.

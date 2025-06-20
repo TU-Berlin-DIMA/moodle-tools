@@ -44,6 +44,13 @@ answer: |-
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
   );
+extra:
+  flex_datatypes:
+    - attribute: id
+      allowed:
+        - INTEGER
+        - UINTEGER
+      used_in: thisisatest
 testcases:
   - description: Test auf Laufzeitfehler
     code: |-
@@ -62,10 +69,6 @@ testcases:
   - code: MT_testtablecorrectness thisisatest types
     grade: 1.0
     description: Test with template and test types
-    extra:
-      flex_datatypes:
-        id:
-          - INTEGER
-          - UINTEGER
+
 check_results: false
 database_connection: true
