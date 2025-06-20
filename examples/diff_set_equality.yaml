@@ -1,5 +1,5 @@
 ---
-type: diff_set_equiv
+type: diff_set_equality
 title: Differential Set Equivalence Example
 question: |-
   Which sets exist in the set \\[\\{A, B, \\{C, D\\}\\}\\]?
