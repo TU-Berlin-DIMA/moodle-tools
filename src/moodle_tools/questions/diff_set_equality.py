@@ -104,7 +104,7 @@ class DifferentiatedSetEquality(STACKQuestion):
                 expected_answer=f"cardinality({expected_answer_var}) + {num}",
                 true_branch=PRTNodeBranch(
                     score_mode=ScoreMode.SUBTRACT,
-                    score=1 / additional_sets_until_wrong + 1,
+                    score=1 / (additional_sets_until_wrong + 1),
                     next_node=num + len(response_nodes) + 1
                     if num < additional_sets_until_wrong
                     else -1,
