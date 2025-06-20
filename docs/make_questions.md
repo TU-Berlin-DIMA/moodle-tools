@@ -886,6 +886,45 @@ Currently, moodle-tools provides only a very bare-bones implementation of STACK 
 As this will be enhanced in the future to support users building questions in the moodle-tools way, we currently do not provide an exhaustive explanation of the YAML format.
 
 
+### Set Equality Questions
+
+In Database Theory it is common to ask questions on sets or sets of sets.
+For example, normalization of a relation can be abstracted as a set of sets, where each set represents a relation.
+
+
+#### Differentially graded set equality question
+
+The differentially graded set equality question is a STACK-based question for assigning partial points on sets of sets.
+The full YAML format for such a question is as follows:
+
+```yaml
+type: diff_set_equality  # Mandatory
+category: category/subcategory/diff_set_equality  # Optional
+title: Differentially graded set equality question  # Mandatory
+question: |-  # Mandatory
+  Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.
+
+  [[ANSWERBOX]]
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
+expected_set: # Mandatory
+  - "{A, B}"
+  - "{B, C}"
+additional_sets_until_wrong: 1 # Optional, default: 0
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Differentially graded set equality question](assets/diff_set_equality.png)
+
+This question is graded as follows:
+
+1. For each correct set, the student receives `1/(number of sets)` points.
+2. If the student provides more sets than expected, points are subtracted according to the `additional_sets_until_wrong` attribute. Deduction is as follows: `1/(additional_sets_until_wrong + 1)` points are subtracted for each additional set.
+
+
 ### Coderunner questions
 
 This is an abstract question type for three types of concrete questions: `sql_ddl`, `sql_dql`, and `isda_streaming`.
