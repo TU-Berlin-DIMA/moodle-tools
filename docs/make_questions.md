@@ -108,12 +108,14 @@ At the moment, the following question types are supported.
 - Essay questions
 - Ordering questions
 - Drag and drop into text questions
+- STACK questions
 
 The following question types are supported if you install the `isda` extra dependencies:
 
 - CodeRunner SQL-DQL
 - CodeRunner SQL-DDL/DML
 - CodeRunner ISDA Streaming
+- STACK-Based Differntially graded Set Equality
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
@@ -875,6 +877,14 @@ By default, it is set to `false`.
 This YAML content is rendered as follows in Moodle:
 
 ![Drag and drop into text question](assets/dd_mw.png)
+
+### STACK questions
+
+The [STACK question type](https://docs.moodle.org/en/STACK_question_type) allows the student to answer mathematical questions using the [Maxima CAS](https://maxima.sourceforge.io/). Documentation for Maxima can be found at: https://maths.cnam.fr/Membres/wilk/MathMax/help/Maxima/maxima_toc.html
+
+Currently, moodle-tools provides only a very bare-bones implementation of STACK questions.
+As this will be enhanced in the future to support users building questions in the moodle-tools way, we currently do not provide an exhaustive explanation of the YAML format.
+
 
 ### Coderunner questions
 
