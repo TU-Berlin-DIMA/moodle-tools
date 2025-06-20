@@ -115,7 +115,7 @@ The following question types are supported if you install the `isda` extra depen
 - CodeRunner SQL-DQL
 - CodeRunner SQL-DDL/DML
 - CodeRunner ISDA Streaming
-- STACK-Based Differntially graded Set Equality
+- STACK-Based Differentially graded Set Equality
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
