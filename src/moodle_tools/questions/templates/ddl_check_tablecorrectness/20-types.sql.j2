@@ -1,7 +1,9 @@
 -- Column types
 -- fixed types
 with flex_cols as (
-    select unnest( map_keys( MAP {{ flex_datatypes }} ) ) as name_type
+    select unnest( map_keys( MAP
+        {{ flex_datatypes }}
+        ) ) as name_type
 ),
      student_datatype as (
          SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name
@@ -14,7 +16,9 @@ ORDER BY name_type;
 -- flexible types
 WITH
     flextype_table as (
-        select unnest( map_entries( MAP {{ flex_datatypes }} ), recursive := true)
+        select unnest( map_entries( MAP
+            {{ flex_datatypes }}
+            ), recursive := true)
     ),
     student_datatype as (
         SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name

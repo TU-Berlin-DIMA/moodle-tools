@@ -6,6 +6,7 @@ import shutil
 from base64 import b64encode
 from contextlib import redirect_stdout
 from pathlib import Path
+from typing import Any
 
 from isda_streaming import data_stream, synopsis
 
@@ -45,6 +46,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         all_or_nothing: bool = True,
         check_results: bool = False,
         parser: str | None = None,
+        extra: dict[str, Any] | None = None,
         internal_copy: bool = False,
         **flags: bool,
     ) -> None:
@@ -65,6 +67,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             check_results: If True, the expected results are checked against the provided answer
                 and testcases.
             parser: Code parser for formatting the correct answer and testcases.
+            extra: Extra information for parsing the question.
             internal_copy: Flag to create an internal copy for debugging purposes.
             **flags: Additional flags for the question.
         """
@@ -83,6 +86,7 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             all_or_nothing=all_or_nothing,
             check_results=check_results,
             parser=parser,
+            extra=extra,
             internal_copy=internal_copy,
             **flags,
         )
@@ -92,19 +96,16 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
     @property
     def files(self) -> list[dict[str, str]]:
-        files = []
-        files.append(
+        files = [
             {
                 "name": "data_stream.py",
                 "encoding": b64encode(inspect.getsource(data_stream).encode()).decode("utf-8"),
-            }
-        )
-        files.append(
+            },
             {
                 "name": "synopsis.py",
                 "encoding": b64encode(inspect.getsource(synopsis).encode()).decode("utf-8"),
-            }
-        )
+            },
+        ]
         with self.input_stream.open("r", encoding="utf-8") as file:
             files.append(
                 {
@@ -114,12 +115,12 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             )
         return files
 
-    def fetch_expected_result(self, test_code: str) -> str:
+    def fetch_expected_result(self, testcase: Testcase) -> str:
         # TODO: Add test
         shutil.copy(self.input_stream, self.input_stream.name)
 
         stdout_capture = io.StringIO()
-        combined_code = f"{ISDA_STREAMING_IMPORTS}\n\n{self.answer}\n\n{test_code}"
+        combined_code = f"{ISDA_STREAMING_IMPORTS}\n\n{self.answer}\n\n{testcase['code']}"
 
         try:
             with redirect_stdout(stdout_capture):
