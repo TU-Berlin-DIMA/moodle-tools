@@ -185,4 +185,10 @@ class STACKQuestion(Question):
             errors.append("No response trees specified.")
         if not self.inputs:
             errors.append("No inputs specified.")
+        if not self.correct_feedback:
+            errors.append("No feedback for correct answer provided.")
+        if not self.partial_feedback:
+            errors.append("No feedback for partially correct answer provided.")
+        if not self.incorrect_feedback:
+            errors.append("No feedback for incorrect answer provided.")
         return errors

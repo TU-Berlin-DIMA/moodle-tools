@@ -1,12 +1,11 @@
 ---
 type: diff_set_equality
-title: Differential Set Equivalence Example
+title: Differentially graded set equality question
 question: |-
-  Which sets exist in the set \\[\\{A, B, \\{C, D\\}\\}\\]?
+  Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.
 
   [[ANSWERBOX]]
 expected_set:
-  - A
-  - B
-  - "{C, D}"
+  - "{A, B}"
+  - "{B, C}"
 additional_sets_until_wrong: 1
