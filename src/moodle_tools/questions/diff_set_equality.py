@@ -5,7 +5,7 @@ from moodle_tools.questions.stack import PRT, Input, PRTNode, PRTNodeBranch, STA
 from moodle_tools.utils import parse_markdown
 
 
-class DifferentiatedSetEquivalence(STACKQuestion):
+class DifferentiatedSetEquality(STACKQuestion):
     """A Differenited Set Equivalence question type for Moodle based on STACK.
 
     This question type checks if the expected set matches the received set fully,

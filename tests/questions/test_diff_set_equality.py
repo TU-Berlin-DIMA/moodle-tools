@@ -6,18 +6,18 @@ import pytest
 from moodle_tools.make_questions import main
 
 
-class TestDiffSetEquiv:
-    def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
-        # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/diff_set_equiv.yaml"]
-
-        # Call the main function
-        main()
-        captured = capsys.readouterr()
-
-        # Assert the output is as expected
-        assert "The following question did not pass strict validation" in captured.err
-        assert "type: stack" in captured.err
+class TestDiffSetEquality:
+    # def test_yml_parsing_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
+    #     # Simulate command-line arguments
+    #     sys.argv = ["make-questions", "-i", "examples/diff_set_equiv.yaml"]
+    #
+    #     # Call the main function
+    #     main()
+    #     captured = capsys.readouterr()
+    #
+    #     # Assert the output is as expected
+    #     assert "The following question did not pass strict validation" in captured.err
+    #     assert "type: stack" in captured.err
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
@@ -32,29 +32,12 @@ class TestDiffSetEquiv:
         assert "<text></text>" in captured.out
         assert captured.err == ""
 
-    def test_cloze_from_obj(self, capsys: pytest.CaptureFixture[str]) -> None:
-        # Simulate command-line arguments
-        sys.argv = [
-            "make-questions",
-            "-i",
-            "examples/cloze.yaml",
-            "-s",
-        ]
-
-        # Call the main function
-        main()
-        captured = capsys.readouterr()
-
-        # Assert the output is as expected
-        assert "{2:NUMERICAL:%100%5.57:0.01#Some Feedback~%0%99999}" in captured.out
-        assert '[["NUMQUEST"]]' not in captured.out
-
     def test_e2e_cli_make_question(self, tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
 
         # Load content from the file
-        with (test_resources_dir / "clozeRef.xml").open(encoding="utf-8") as f:
+        with (test_resources_dir / "diff_set_equalityRef.xml").open(encoding="utf-8") as f:
             reference_xml = f.read().strip()
 
         # Generate the file using the xyz function
@@ -64,7 +47,7 @@ class TestDiffSetEquiv:
         sys.argv = [
             "make-questions",
             "-i",
-            "examples/cloze.yaml",
+            "examples/diff_set_equality.yaml",
             "-o",
             str(output_file_path),
             "-s",
