@@ -36,12 +36,14 @@ SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
 try:
     from .coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
     from .coderunner_streaming import CoderunnerStreamingQuestion
+    from .diff_set_equiv import DifferentiatedSetEquivalence
 
     SUPPORTED_QUESTION_TYPES.update(
         {
             "sql_ddl": CoderunnerDDLQuestion,
             "sql_dql": CoderunnerDQLQuestion,
             "isda_streaming": CoderunnerStreamingQuestion,
+            "diff_set_equiv": DifferentiatedSetEquivalence,
         }
     )
 except ImportError:

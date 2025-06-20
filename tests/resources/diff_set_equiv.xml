@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<question type="stack">
+    <name>
+        <text>Differential Set Equivalence Example</text>
+    </name>
+    <questiontext format="html">
+        <text><![CDATA[<p>Which sets exist in the set \[\{A, B, \{C, D\}\}\]?</p>
+<p>[[input:received]] [[validation:received]]</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+        <text></text>
+    </generalfeedback>
+    <idnumber></idnumber>
+    <defaultgrade>1.0</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <stackversion>
+      <text>2025040100</text>
+    </stackversion>
+    <questionvariables>
+        <text>r1: A;
+r2: B;
+r3: {C, D};
+expected: { r1,r2,r3 }</text>
+    </questionvariables>
+    <specificfeedback format="html">
+        <text><![CDATA[<p>[[feedback:prt1]]</p>]]></text>
+    </specificfeedback>
+    <questionnote format="html">
+        <text><![CDATA[<p>{@expected@}</p>]]></text>
+    </questionnote>
+    <questiondescription format="html">
+        <text><![CDATA[]]></text>
+    </questiondescription>
+    <questionsimplify>1</questionsimplify>
+    <assumepositive>0</assumepositive>
+    <assumereal>0</assumereal>
+    <prtcorrect format="html">
+        <text></text>
+    </prtcorrect>
+    <prtpartiallycorrect format="html">
+        <text></text>
+    </prtpartiallycorrect>
+    <prtincorrect format="html">
+        <text></text>
+    </prtincorrect>
+    <decimals>.</decimals>
+    <scientificnotation>*10</scientificnotation>
+    <multiplicationsign>dot</multiplicationsign>
+    <sqrtsign>1</sqrtsign>
+    <complexno>i</complexno>
+    <inversetrig>cos-1</inversetrig>
+    <logicsymbol>lang</logicsymbol>
+    <matrixparens>[</matrixparens>
+    <variantsselectionseed></variantsselectionseed>
+    <input>
+        <name>received</name>
+        <type>algebraic</type>
+        <tans>expected</tans>
+        <boxsize>42</boxsize>
+        <strictsyntax>1</strictsyntax>
+        <insertstars>0</insertstars>
+        <syntaxhint></syntaxhint>
+        <syntaxattribute>0</syntaxattribute>
+        <forbidwords></forbidwords>
+        <allowwords></allowwords>
+        <forbidfloat>1</forbidfloat>
+        <requirelowestterms>0</requirelowestterms>
+        <checkanswertype>0</checkanswertype>
+        <mustverify>1</mustverify>
+        <showvalidation>2</showvalidation>
+        <options></options>
+    </input>
+
+    <prt>
+        <name>prt1</name>
+        <value>1.0</value>
+        <autosimplify>1</autosimplify>
+        <feedbackstyle>1</feedbackstyle>
+        <feedbackvariables>
+            <text></text>
+        </feedbackvariables>
+        <node>
+            <name>0</name>
+            <description></description>
+            <answertest>Sets</answertest>
+            <sans>intersection(set(r1), received)</sans>
+            <tans>set(r1)</tans>
+            <testoptions></testoptions>
+            <quiet>1</quiet>
+            <truescoremode>+</truescoremode>
+            <truescore>0.3333333333333333</truescore>
+            <truepenalty></truepenalty>
+            <truenextnode>1</truenextnode>
+            <trueanswernote>prt1-r1-correct</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[]]></text>
+            </truefeedback>
+            <falsescoremode>+</falsescoremode>
+            <falsescore>0</falsescore>
+            <falsepenalty></falsepenalty>
+            <falsenextnode>1</falsenextnode>
+            <falseanswernote>prt1-r1-wrong</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[]]></text>
+            </falsefeedback>
+        </node>
+        <node>
+            <name>1</name>
+            <description></description>
+            <answertest>Sets</answertest>
+            <sans>intersection(set(r2), received)</sans>
+            <tans>set(r2)</tans>
+            <testoptions></testoptions>
+            <quiet>1</quiet>
+            <truescoremode>+</truescoremode>
+            <truescore>0.3333333333333333</truescore>
+            <truepenalty></truepenalty>
+            <truenextnode>2</truenextnode>
+            <trueanswernote>prt1-r2-correct</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[]]></text>
+            </truefeedback>
+            <falsescoremode>+</falsescoremode>
+            <falsescore>0</falsescore>
+            <falsepenalty></falsepenalty>
+            <falsenextnode>2</falsenextnode>
+            <falseanswernote>prt1-r2-wrong</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[]]></text>
+            </falsefeedback>
+        </node>
+        <node>
+            <name>2</name>
+            <description></description>
+            <answertest>Sets</answertest>
+            <sans>intersection(set(r3), received)</sans>
+            <tans>set(r3)</tans>
+            <testoptions></testoptions>
+            <quiet>1</quiet>
+            <truescoremode>+</truescoremode>
+            <truescore>0.3333333333333333</truescore>
+            <truepenalty></truepenalty>
+            <truenextnode>3</truenextnode>
+            <trueanswernote>prt1-r3-correct</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[]]></text>
+            </truefeedback>
+            <falsescoremode>+</falsescoremode>
+            <falsescore>0</falsescore>
+            <falsepenalty></falsepenalty>
+            <falsenextnode>3</falsenextnode>
+            <falseanswernote>prt1-r3-wrong</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[]]></text>
+            </falsefeedback>
+        </node>
+        <node>
+            <name>3</name>
+            <description></description>
+            <answertest>GT</answertest>
+            <sans>cardinality(received)</sans>
+            <tans>cardinality(expected) + 0</tans>
+            <testoptions></testoptions>
+            <quiet>1</quiet>
+            <truescoremode>-</truescoremode>
+            <truescore>2.0</truescore>
+            <truepenalty></truepenalty>
+            <truenextnode>4</truenextnode>
+            <trueanswernote>prt1-1-GT-toomany</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[]]></text>
+            </truefeedback>
+            <falsescoremode>+</falsescoremode>
+            <falsescore>0</falsescore>
+            <falsepenalty></falsepenalty>
+            <falsenextnode>-1</falsenextnode>
+            <falseanswernote>prt1-0-LEQ-toomany</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[]]></text>
+            </falsefeedback>
+        </node>
+        <node>
+            <name>4</name>
+            <description></description>
+            <answertest>GT</answertest>
+            <sans>cardinality(received)</sans>
+            <tans>cardinality(expected) + 1</tans>
+            <testoptions></testoptions>
+            <quiet>1</quiet>
+            <truescoremode>-</truescoremode>
+            <truescore>2.0</truescore>
+            <truepenalty></truepenalty>
+            <truenextnode>-1</truenextnode>
+            <trueanswernote>prt1-2-GT-toomany</trueanswernote>
+            <truefeedback format="html">
+              <text><![CDATA[]]></text>
+            </truefeedback>
+            <falsescoremode>+</falsescoremode>
+            <falsescore>0</falsescore>
+            <falsepenalty></falsepenalty>
+            <falsenextnode>-1</falsenextnode>
+            <falseanswernote>prt1-1-LEQ-toomany</falseanswernote>
+            <falsefeedback format="html">
+              <text><![CDATA[]]></text>
+            </falsefeedback>
+        </node>
+    </prt>
+</question>
+</quiz>
