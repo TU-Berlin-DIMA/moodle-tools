@@ -21,7 +21,7 @@ class TestDiffSetEquality:
 
     def test_yml_parsing_non_strict(self, capsys: pytest.CaptureFixture[str]) -> None:
         # Simulate command-line arguments
-        sys.argv = ["make-questions", "-i", "examples/diff_set_equiv.yaml", "-s"]
+        sys.argv = ["make-questions", "-i", "examples/diff_set_equality.yaml", "-s"]
 
         # Call the main function
         main()
