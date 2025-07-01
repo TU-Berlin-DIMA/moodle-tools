@@ -1,0 +1,11 @@
+---
+type: diff_set_equality
+title: Differentially graded set equality question
+question: |-
+  Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.
+
+  [[ANSWERBOX]]
+expected_set:
+  - "{A, B}"
+  - "{B, C}"
+additional_sets_until_wrong: 1

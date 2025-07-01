@@ -108,12 +108,15 @@ At the moment, the following question types are supported.
 - Essay questions
 - Ordering questions
 - Drag and drop into text questions
+- STACK questions
 
 The following question types are supported if you install the `isda` extra dependencies:
 
 - CodeRunner SQL-DQL
 - CodeRunner SQL-DDL/DML
 - CodeRunner ISDA Streaming
+- STACK-Based Differentially graded Set Equality
+- STACK-Based All-or-Nothing graded Set Equality
 
 Multiple question variants can be collected in a single YAML document.
 In this case, each question variant is separated by three dashes `---`.
@@ -875,6 +878,76 @@ By default, it is set to `false`.
 This YAML content is rendered as follows in Moodle:
 
 ![Drag and drop into text question](assets/dd_mw.png)
+
+### STACK questions
+
+The [STACK question type](https://docs.moodle.org/en/STACK_question_type) allows the student to answer mathematical questions using the [Maxima CAS](https://maxima.sourceforge.io/). Documentation for Maxima can be found at: https://maths.cnam.fr/Membres/wilk/MathMax/help/Maxima/maxima_toc.html
+
+Currently, moodle-tools provides only a very bare-bones implementation of STACK questions.
+As this will be enhanced in the future to support users building questions in the moodle-tools way, we currently do not provide an exhaustive explanation of the YAML format.
+
+
+### Set Equality Questions
+
+In Database Theory it is common to ask questions on sets or sets of sets.
+For example, normalization of a relation can be abstracted as a set of sets, where each set represents a relation.
+
+
+#### Differentially graded set equality question
+
+The differentially graded set equality question is a STACK-based question for assigning partial points on sets of sets.
+The full YAML format for such a question is as follows:
+
+```yaml
+type: diff_set_equality  # Mandatory
+category: category/subcategory/diff_set_equality  # Optional
+title: Differentially graded set equality question  # Mandatory
+question: |-  # Mandatory
+  Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.
+
+  [[ANSWERBOX]]
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+incorrect_feedback: Incorrect feedback  # Mandatory in strict mode
+expected_set: # Mandatory
+  - "{A, B}"
+  - "{B, C}"
+additional_sets_until_wrong: 1 # Optional, default: 0
+```
+
+This YAML content is rendered as follows in Moodle:
+
+![Differentially graded set equality question](assets/diff_set_equality.png)
+
+This question is graded as follows:
+
+1. For each correct set, the student receives `1/(number of sets)` points.
+2. If the student provides more sets than expected, points are subtracted according to the `additional_sets_until_wrong` attribute. Deduction is as follows: `1/(additional_sets_until_wrong + 1)` points are subtracted for each additional set.
+
+#### All-or-Nothing set equality question
+
+The all-or-nothing set equality question (or: exact set equality) is a STACK-based question for assigning points on sets of sets.
+The full YAML format for such a question is as follows:
+
+```yaml
+type: exact_set_equality  # Mandatory
+category: category/subcategory/all_or_nothing_set_equality  # Optional
+title: All-or-Nothing set equality question  # Mandatory
+question: |-  # Mandatory
+  Given distance A <-> B = 2 and distance B <-> C = 4, return the k-Means cluster with k = 1.
+
+  [[ANSWERBOX]]
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+expected_set:
+  - A
+  - B
+  - C
+```
+
+This YAML content is rendered similar to the differentially graded set equality question.
 
 ### Coderunner questions
 

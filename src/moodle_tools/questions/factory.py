@@ -14,6 +14,7 @@ from .numerical import NumericalQuestion
 from .ordering import OrderingQuestion
 from .question import Question
 from .shortanswer import ShortAnswerQuestion
+from .stack import STACKQuestion
 from .true_false import TrueFalseQuestion
 
 SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
@@ -29,17 +30,22 @@ SUPPORTED_QUESTION_TYPES: dict[str, type[Question]] = {
     "essay": EssayQuestion,
     "ordering": OrderingQuestion,
     "dragdrop_missing_words": DragDropMissingWordsQuestion,
+    "stack": STACKQuestion,
 }
 
 try:
     from .coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
     from .coderunner_streaming import CoderunnerStreamingQuestion
+    from .diff_set_equality import DifferentiatedSetEquality
+    from .exact_set_equality import ExactSetEquality
 
     SUPPORTED_QUESTION_TYPES.update(
         {
             "sql_ddl": CoderunnerDDLQuestion,
             "sql_dql": CoderunnerDQLQuestion,
             "isda_streaming": CoderunnerStreamingQuestion,
+            "diff_set_equality": DifferentiatedSetEquality,
+            "exact_set_equality": ExactSetEquality,
         }
     )
 except ImportError:
