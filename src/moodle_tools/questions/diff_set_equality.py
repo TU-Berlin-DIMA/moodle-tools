@@ -6,7 +6,7 @@ from moodle_tools.utils import parse_markdown
 
 
 class DifferentiatedSetEquality(STACKQuestion):
-    """A Differenited Set Equivalence question type for Moodle based on STACK.
+    """A Differentiated Set Equivalence question type for Moodle based on STACK.
 
     This question type checks if the expected set matches the received set fully,
     giving partial points if not.
