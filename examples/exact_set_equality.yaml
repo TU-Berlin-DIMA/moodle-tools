@@ -1,0 +1,11 @@
+---
+type: exact_set_equality
+title: All-or-Nothing graded set equality question
+question: |-
+  Given distance A <-> B = 2 and distance B <-> C = 4, return the k-Means cluster with k = 1.
+
+  [[ANSWERBOX]]
+expected_set:
+  - A
+  - B
+  - C

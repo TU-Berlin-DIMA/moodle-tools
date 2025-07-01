@@ -37,6 +37,7 @@ try:
     from .coderunner_sql import CoderunnerDDLQuestion, CoderunnerDQLQuestion
     from .coderunner_streaming import CoderunnerStreamingQuestion
     from .diff_set_equality import DifferentiatedSetEquality
+    from .exact_set_equality import ExactSetEquality
 
     SUPPORTED_QUESTION_TYPES.update(
         {
@@ -44,6 +45,7 @@ try:
             "sql_dql": CoderunnerDQLQuestion,
             "isda_streaming": CoderunnerStreamingQuestion,
             "diff_set_equality": DifferentiatedSetEquality,
+            "exact_set_equality": ExactSetEquality,
         }
     )
 except ImportError:

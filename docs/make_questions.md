@@ -924,6 +924,29 @@ This question is graded as follows:
 1. For each correct set, the student receives `1/(number of sets)` points.
 2. If the student provides more sets than expected, points are subtracted according to the `additional_sets_until_wrong` attribute. Deduction is as follows: `1/(additional_sets_until_wrong + 1)` points are subtracted for each additional set.
 
+#### All-or-Nothing set equality question
+
+The all-or-nothing set equality question (or: exact set equality) is a STACK-based question for assigning points on sets of sets.
+The full YAML format for such a question is as follows:
+
+```yaml
+type: exact_set_equality  # Mandatory
+category: category/subcategory/all_or_nothing_set_equality  # Optional
+title: All-or-Nothing set equality question  # Mandatory
+question: |-  # Mandatory
+  Given distance A <-> B = 2 and distance B <-> C = 4, return the k-Means cluster with k = 1.
+
+  [[ANSWERBOX]]
+general_feedback: General feedback  # Mandatory in strict mode
+correct_feedback: Correct feedback  # Mandatory in strict mode
+partial_feedback: Partial feedback  # Mandatory in strict mode
+expected_set:
+  - A
+  - B
+  - C
+```
+
+This YAML content is rendered similar to the differentially graded set equality question.
 
 ### Coderunner questions
 
