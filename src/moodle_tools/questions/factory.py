@@ -38,6 +38,7 @@ try:
     from .coderunner_streaming import CoderunnerStreamingQuestion
     from .diff_set_equality import DifferentiatedSetEquality
     from .exact_set_equality import ExactSetEquality
+    from .image_overlay_mw import ImageOverlayMissingWordsQuestion
 
     SUPPORTED_QUESTION_TYPES.update(
         {
@@ -46,6 +47,7 @@ try:
             "isda_streaming": CoderunnerStreamingQuestion,
             "diff_set_equality": DifferentiatedSetEquality,
             "exact_set_equality": ExactSetEquality,
+            "image_overlay_missing_words": ImageOverlayMissingWordsQuestion,
         }
     )
 except ImportError:

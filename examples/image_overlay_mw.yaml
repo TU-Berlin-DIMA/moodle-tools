@@ -1,0 +1,43 @@
+---
+type: image_overlay_missing_words
+title: Image Overlay MW Example
+question: |
+  Given is the following table. Complete the given Chen ER diagram.
+
+
+  #### r1
+
+  | <ins>e1 → E1</ins> | e2 → E2 | attr |
+  |---|---|---|
+  | A | X | 1 |
+  | B | Y | 2 |
+  | C | Y | 1 |
+
+
+  [[IMAGEBOX]]
+shuffle_answers: LEXICOGRAPHICAL
+options:
+  - answer: E1
+    group: E
+  - answer: E3
+    group: E
+  - answer: E2
+    group: E
+  - answer: r1
+    group: R
+  - answer: r2
+    group: R
+  - answer: attr
+    group: A
+  - answer: bttr
+    group: A
+  - answer: "1"
+    group: K
+  - answer: n
+    group: K
+scale_coords: 1.4
+scale_image: 0.75
+vertical_offset: 0.6
+image: assets/er_overlay.svg
+gap_image: assets/er_overlay.with_gaps.svg
+debug_image: assets/er_overlay.debug.svg

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24cm" height="6cm" viewBox="379 239 469 105">
+  <g>
+    <rect style="fill: #ffffff" x="380" y="260" width="66.5" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="380" y="260" width="66.5" height="36"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="413.25" y="282.595"></text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="560,279.72 626.2,240 692.4,279.72 626.2,319.44 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="560,279.72 626.2,240 692.4,279.72 626.2,319.44 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="554" y="273.72"></text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="698.4" y="273.72">n</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="626.2" y="284.315"></text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="780" y="260" width="66.5" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="780" y="260" width="66.5" height="36"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="813.25" y="282.595"></text>
+  </g>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="680" y="340">
+    <tspan x="680" y="340"></tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="626.2" y1="319.44" x2="665.562" y2="332.529"/>
+    <path style="fill: #ffffff" d="M 675.051 335.684 C 674.262,338.057 671.101,339.64 668.729,338.851 C 666.357,338.062 664.773,334.901 665.562,332.529 C 666.351,330.157 669.512,328.573 671.884,329.362 C 674.257,330.151 675.84,333.312 675.051,335.684z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 675.051 335.684 C 674.262,338.057 671.101,339.64 668.729,338.851 C 666.357,338.062 664.773,334.901 665.562,332.529 C 666.351,330.157 669.512,328.573 671.884,329.362 C 674.257,330.151 675.84,333.312 675.051,335.684"/>
+  </g>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="412" y="340">
+    <tspan x="412" y="340">e1</tspan>
+  </text>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="812" y="340">
+    <tspan x="812" y="340">e2</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="414.385" y1="296.979" x2="416" y2="324"/>
+    <path style="fill: #000000" d="M 416 324 C 413.504,324.149 410.86,321.803 410.711,319.307 C 410.561,316.812 412.908,314.167 415.403,314.018 C 417.899,313.869 420.544,316.215 420.693,318.711 C 420.842,321.206 418.496,323.851 416,324z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 416 324 C 413.504,324.149 410.86,321.803 410.711,319.307 C 410.561,316.812 412.908,314.167 415.403,314.018 C 417.899,313.869 420.544,316.215 420.693,318.711 C 420.842,321.206 418.496,323.851 416,324"/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="814.385" y1="296.979" x2="816" y2="324"/>
+    <path style="fill: #000000" d="M 816 324 C 813.504,324.149 810.86,321.803 810.711,319.307 C 810.561,316.812 812.908,314.167 815.403,314.018 C 817.899,313.869 820.544,316.215 820.693,318.711 C 820.842,321.206 818.496,323.851 816,324z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 816 324 C 813.504,324.149 810.86,321.803 810.711,319.307 C 810.561,316.812 812.908,314.167 815.403,314.018 C 817.899,313.869 820.544,316.215 820.693,318.711 C 820.842,321.206 818.496,323.851 816,324"/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="447.43" y1="278.401" x2="560" y2="279.72"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="779.01" y1="278.487" x2="692.4" y2="279.72"/>
+</svg>
