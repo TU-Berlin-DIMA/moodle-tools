@@ -32,6 +32,26 @@ class TestMissingWords:
         assert "<text>Simple missing words question</text>" in captured.out
         assert captured.err == ""
 
+    # def test_error_on_conflicting_options(self, capsys: pytest.CaptureFixture[str]) -> None:
+    #     # Simulate command-line arguments with conflicting options
+    #     with (Path("examples/missing-words.yaml").open("r", encoding="utf-8") as f):
+    #         question = yaml.safe_load(f)[0]
+    #
+    #     last_answer_copy = copy.deepcopy(question["options"][-1])
+    #     last_answer_copy["group"] +=
+    #
+    #
+    #     sys.argv = ["make-questions", "-i", "examples/missing-words.yaml", "-s"]
+    #
+    #     # Call the main function
+    #     with pytest.raises(SystemExit):
+    #         main()
+    #
+    #     captured = capsys.readouterr()
+    #
+    #     # Assert the output is as expected
+    #     assert "Error: Cannot use both --strict and --no-strict options." in captured.err
+
     def test_e2e_cli_make_question(self, tmp_path: Path) -> None:
         # Get the path to the directory containing the test resources
         test_resources_dir = Path(__file__).parent / "../resources"
