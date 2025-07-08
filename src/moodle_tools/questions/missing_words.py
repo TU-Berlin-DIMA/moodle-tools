@@ -21,6 +21,7 @@ class OptionItem:
     group: str | int
     ordinal: int = -1
     group_letter: str = ""
+    infinite: bool | None = None
 
     def __hash__(self) -> int:
         return hash((self.answer, self.group))
