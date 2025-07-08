@@ -22,7 +22,7 @@ class PRTNodeBranch:
 
 @dataclass
 class PRTNode:
-    test_type: str
+    test_type: STACKMatchType
     received_answer: str
     expected_answer: str
     true_branch: PRTNodeBranch
