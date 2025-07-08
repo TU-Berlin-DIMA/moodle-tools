@@ -155,7 +155,14 @@ class STACKQuestion(Question):
         }
         self.response_trees = {
             k: dacite.from_dict(
-                data_class=PRT, data=v, config=Config(cast=[ScoreMode, STACKMatchType])
+                data_class=PRT,
+                data=v,
+                config=Config(
+                    type_hooks={
+                        ScoreMode: ScoreMode.from_str,
+                        STACKMatchType: STACKMatchType.from_str,
+                    }
+                ),
             )
             for k, v in (response_trees or {}).items()
         }
