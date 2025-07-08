@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from enum import IntEnum
 from pathlib import Path
 
 import dacite
@@ -11,16 +10,7 @@ from lxml.etree import ElementBase
 
 from moodle_tools.enums import ShuffleAnswersEnum
 from moodle_tools.questions.missing_words import MissingWordsQuestion, OptionItem
-
-
-class TextAnchor(IntEnum):
-    START = 0
-    MIDDLE = 50
-    END = 100
-
-    @classmethod
-    def from_str(cls, value: str) -> "TextAnchor":
-        return cls[value.upper()] if value else cls.MIDDLE
+from moodle_tools.utils import TextAnchor
 
 
 @dataclass

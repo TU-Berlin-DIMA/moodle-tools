@@ -1,14 +1,58 @@
 import base64
 import re
+from dataclasses import dataclass
+from enum import IntEnum
 from pathlib import Path
 
+import dacite
 import markdown
 from loguru import logger
+from lxml import etree
+from lxml.etree import ElementBase
 
 try:
     import sqlparse  # type: ignore
 except ImportError:
     sqlparse = None
+
+
+class TextAnchor(IntEnum):
+    START = 0
+    MIDDLE = 50
+    END = 100
+
+    @classmethod
+    def from_str(cls, value: str) -> "TextAnchor":
+        return cls[value.upper()] if value else cls.MIDDLE
+
+
+@dataclass
+class OverlayItem:
+    """Dataclass to hold overlay item information."""
+
+    value: str
+    x: float
+    y: float
+    text_anchor: TextAnchor
+    xml: ElementBase
+    matches_extract: bool = False
+
+    def as_div(self, indent: int, vertical_offset: float) -> str:
+        """Return the overlay item as a div element."""
+        return f'{" " * indent}<div style="position: absolute; left: {self.x}px; top: {self.y}px; transform: translate({-self.text_anchor}%, -{vertical_offset}%);">{self.value}</div> <!--  -->'  # TODO what is a good identifying comment?
+
+
+@dataclass
+class ImageOverlay:
+    """Dataclass to hold image overlay information."""
+
+    image: str
+    gap_image: str
+    debug_image: str | None = None
+    scale_coords: float = 1.0
+    scale_image: float = 1.0
+    vertical_offset: float = 0.5
+    overlay_items: dict[str, OverlayItem] = None
 
 
 def format_tables(text: str) -> str:
@@ -56,6 +100,104 @@ def preprocess_text(text: str | None, **flags: bool) -> str:
     text = parse_markdown(text) if flags["markdown"] else text
     text = inline_images(text)
     return format_tables(text) if flags["table_styling"] else text
+
+
+def overlay_image(
+    question: str,
+    image_overlay: dict[str, dict[str, str | float]],
+    extract_regex: list[str],
+    **flags: bool,
+) -> str:
+    RE_IMAGEBOX = r"\[\[IMAGEBOX=(\w+)\]\]"
+
+    if not extract_regex:
+        return question
+
+    if not image_overlay:
+        return question
+
+    for image, overlay_data in image_overlay.items():
+        overlay: ImageOverlay = dacite.from_dict(data_class=ImageOverlay, data=overlay_data)
+
+        if not overlay.gap_image:
+            raise ValueError("gap_image must be provided for Image Overlays.")
+
+        with open(overlay.image, "rb") as img_file:
+            image_data = etree.fromstring(img_file.read())
+
+        min_x, min_y, width, height = [int(val) for val in image_data.get("viewBox").split(" ")]
+        width *= overlay.scale_coords
+        height *= overlay.scale_coords
+
+        doc_width = int(re.search(r"(\d+)", image_data.get("width", width)).group(1))
+        doc_height = int(re.search(r"(\d+)", image_data.get("height", height)).group(1))
+
+        def get_text_anchor(elem: ElementBase) -> TextAnchor:
+            style = elem.get("style", "")
+            re_text_anchor = re.compile(r"text-anchor:\s*(\w+)")
+            match = re_text_anchor.search(style)
+            if not match:
+                parent = elem.getparent().get("style", "")
+                match = re_text_anchor.search(parent)
+
+            return TextAnchor.from_str(match.group(1) if match else "middle")
+
+        overlay_items = [
+            OverlayItem(
+                value=elem.text.strip(),
+                x=(float(elem.get("x")) - min_x) * overlay.scale_coords,
+                y=(float(elem.get("y")) - min_y) * overlay.scale_coords,
+                text_anchor=get_text_anchor(elem),
+                xml=elem,
+            )
+            for elem in image_data.iter()
+            if elem.text and elem.text.strip()
+        ]
+
+        for extract_re in extract_regex:
+            re_extract = re.compile(extract_re)
+            for item in overlay_items:
+                if re_extract.search(item.value):
+                    item.matches_extract = True
+
+        overlay_items.sort(key=lambda x: x.value)
+
+        overlay_items_str = "\n".join(
+            item.as_div(indent=8, vertical_offset=overlay.vertical_offset)
+            for item in overlay_items
+        )
+
+        for item in overlay_items:
+            item.xml.text = ""
+
+        cleaned_image = etree.tostring(image_data, encoding="utf8")
+        with Path(overlay.gap_image).open("wb") as img_file:
+            img_file.write(cleaned_image)
+
+        overlay_str = f"""
+        <div style="position:relative;transform: scale({overlay.scale_image});transform-origin: 0 0;">
+            <div style="background-image:url('{overlay.gap_image}'); width: {width}px; height: {height}px; background-size: 100% 100%">
+        {overlay_items_str}
+            </div>
+        </div>
+        """
+
+        replace_box = re.search(RE_IMAGEBOX, question)
+
+        if not replace_box:
+            raise ParsingError(f"Box for image '{image}' not found in the question text.")
+
+        question = question.replace(replace_box.group(0), overlay_str)
+
+        # FIXME if comments are set, add debug image output
+
+        # if overlay.debug_image:
+        #     for item in overlay_items:
+        #         item.xml.text = f"[[{item.internal_id}]]"
+        #
+        #     debug_image_data = etree.tostring(image_data, encoding="utf8")
+        #     with Path(overlay.debug_image).open("wb") as img_file:
+        #         img_file.write(debug_image_data)
 
 
 def format_code(code: str, formatter: str | None = None) -> str:

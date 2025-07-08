@@ -25,6 +25,7 @@ def load_questions(  # noqa: C901
     strict_validation: bool = True,
     parse_markdown: bool = True,
     table_styling: bool = True,
+    image_overlay: bool = True,
 ) -> Iterator[Question]:
     """Load questions from a collection of dictionaries.
 
@@ -34,6 +35,7 @@ def load_questions(  # noqa: C901
             optional information, such as feedback (default True).
         parse_markdown: Parse question and answer text as Markdown (default True).
         table_styling: Add Bootstrap style classes to table tags (default True).
+        image_overlay: Extract content from SVG images and overlay it on the image (default: True).
 
     Yields:
         Iterator[Question]: The loaded questions.
@@ -46,6 +48,12 @@ def load_questions(  # noqa: C901
             document.update({"table_styling": table_styling})
         if "markdown" not in document:
             document.update({"markdown": parse_markdown})
+        if "image_overlay" in document and not image_overlay:
+            logger.warning(
+                "Image overlay is used in the question, but image_overlay is disabled in CLI. Removing Overlay."
+            )
+            del document["image_overlay"]
+
         if "skip_validation" in document:
             strict_validation = not document["skip_validation"]
         if "type" in document:
