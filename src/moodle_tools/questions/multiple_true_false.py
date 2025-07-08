@@ -27,12 +27,12 @@ class MultipleTrueFalseQuestion(Question):
     ) -> None:
         super().__init__(question, title, category, grade, general_feedback, **flags)
         self.answers = answers
-        self.choices = choices
+        self.choices = [preprocess_text(choice, **flags) for choice in choices]
         self.shuffle_answers = shuffle_answers
 
         for answer in self.answers:
             answer["answer"] = preprocess_text(answer["answer"], **flags)
-            answer["choice"] = str(answer["choice"])
+            answer["choice"] = preprocess_text(str(answer["choice"]), **flags)
             if "feedback" not in answer:
                 answer["feedback"] = ""
             else:

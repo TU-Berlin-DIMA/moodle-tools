@@ -40,13 +40,13 @@
             </feedbacktext>
         </row>
         <column number="1">
-            <responsetext format="moodle_auto_format">
-                <text>True</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>True</p>]]></text>
             </responsetext>
         </column>
         <column number="2">
-            <responsetext format="moodle_auto_format">
-                <text>False</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>False</p>]]></text>
             </responsetext>
         </column>
         <weight rownumber="1" columnnumber="1">
@@ -118,18 +118,18 @@
             </feedbacktext>
         </row>
         <column number="1">
-            <responsetext format="moodle_auto_format">
-                <text>Yes</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>Yes</p>]]></text>
             </responsetext>
         </column>
         <column number="2">
-            <responsetext format="moodle_auto_format">
-                <text>No</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>No</p>]]></text>
             </responsetext>
         </column>
         <column number="3">
-            <responsetext format="moodle_auto_format">
-                <text>Maybe</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>Maybe</p>]]></text>
             </responsetext>
         </column>
         <weight rownumber="1" columnnumber="1">
@@ -218,13 +218,13 @@
             </feedbacktext>
         </row>
         <column number="1">
-            <responsetext format="moodle_auto_format">
-                <text>Ascending</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>Ascending</p>]]></text>
             </responsetext>
         </column>
         <column number="2">
-            <responsetext format="moodle_auto_format">
-                <text>Descending</text>
+            <responsetext format="html">
+                <text><![CDATA[<p>Descending</p>]]></text>
             </responsetext>
         </column>
         <weight rownumber="1" columnnumber="1">
