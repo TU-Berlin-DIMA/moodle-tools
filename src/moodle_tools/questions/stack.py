@@ -133,14 +133,14 @@ class STACKQuestion(Question):
         """
         super().__init__(question, title, category, grade, general_feedback, **flags)
         self.input_variables = input_variables or []
-        self.specific_feedback = preprocess_text(specific_feedback)
-        self.question_note = preprocess_text(question_note)
+        self.specific_feedback = preprocess_text(specific_feedback, **flags)
+        self.question_note = preprocess_text(question_note, **flags)
         self.question_simplify = question_simplify
         self.assume_positive = assume_positive
         self.assume_real = assume_real
-        self.correct_feedback = preprocess_text(correct_feedback)
-        self.partial_feedback = preprocess_text(partial_feedback)
-        self.incorrect_feedback = preprocess_text(incorrect_feedback)
+        self.correct_feedback = preprocess_text(correct_feedback, **flags)
+        self.partial_feedback = preprocess_text(partial_feedback, **flags)
+        self.incorrect_feedback = preprocess_text(incorrect_feedback, **flags)
         self.decimal_separator = decimal_separator
         self.scientific_notation = scientific_notation
         self.multiplication_sign = multiplication_sign
