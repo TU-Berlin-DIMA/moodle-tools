@@ -8,10 +8,10 @@ with flex_cols as (
      student_datatype as (
          SELECT name AS name_type, type as datatype FROM pragma_table_info("{{ tablename }}") ORDER BY name
      )
-SELECT name_type, datatype
+SELECT lower(name_type), datatype
 from student_datatype
          ANTI JOIN flex_cols on student_datatype.name_type = flex_cols.name_type
-ORDER BY name_type;
+ORDER BY lower(name_type);
 
 -- flexible types
 WITH
@@ -32,10 +32,10 @@ WITH
                                join student_datatype
                                     on flextype_flat.col = student_datatype.name_type
                                         AND flextype_flat.datatype = student_datatype.datatype)
-SELECT flexible_column_name, '## viable_flex_type ##' as flex_type
+SELECT lower(flexible_column_name), '## viable_flex_type ##' as flex_type
 FROM correct_types
 UNION ALL
-SELECT DISTINCT flextype_flat.col as flexible_column_name, '## non_viable_flex_type ##' as flex_type
+SELECT DISTINCT lower(flextype_flat.col) as flexible_column_name, '## non_viable_flex_type ##' as flex_type
 FROM flextype_flat
          ANTI JOIN correct_types
                    on flextype_flat.col = correct_types.flexible_column_name;
