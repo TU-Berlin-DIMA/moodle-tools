@@ -1,8 +1,8 @@
 -- Foreign key columns
-SELECT unnest(constraint_column_names) AS name_fk_from, constraint_text as fk_constraint_text
+SELECT lower(unnest(constraint_column_names)) AS name_fk_from, constraint_text as fk_constraint_text
 from duckdb_constraints()
 where
     schema_name='main'
   and constraint_type = 'FOREIGN KEY'
   and table_name='{{ tablename }}'
-ORDER BY name_fk_from;
+ORDER BY lower(name_fk_from);
