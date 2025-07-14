@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import json
+import io
 import os
 import re
 import shutil
+import sys
 
 import duckdb
+
+class TestCaseException(Exception):
+    """Custom exception for test case errors."""
+    pass
 
 MAX_ROWS = 50
 MAX_WIDTH = 500
@@ -29,60 +35,155 @@ else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
 SEPARATOR = "#<ab@17943918#@>#"
+#test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
+test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
+total_points = 0.0
+awarded_points = 0.0
+hide_rest_if_fail = False
 
-# Running each test in isolation
+errors = []
+
+old_stdout = sys.stdout
+
+test_cases = {}
+# Collecting all test cases
+{% for TEST in TESTCASES %}
+test_cases.append({
+    "testcode": """{{ TEST.testcode | e('py') }}""",
+    "extra": """{{ TEST.extra | e('py') }}""",
+    "expected": """{{ TEST.expected | e('py') }}""",
+    "mark": {{ TEST.mark | e('py') }},
+    "additional_info": {{ TEST.stdin | e('py') }},
+    "hiderestiffail": {{ TEST.hiderestiffail | e('py') }},
+    "display": "{{ TEST.display | e('py') }}",
+})
+{% endfor %}
+
+
+
+
+try:
+    # Running each test in isolation
 {% for TEST in TESTCASES %}
 
-additional_info = {{ TEST.stdin | e('py') }}
+    additional_info = {{ TEST.stdin | e('py') }}
 
-if db_working != ":memory:":
-    db_working = f"{db_working}.copy"
-    shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+    if db_working != ":memory:":
+        db_working = f"{db_working}.copy"
+        shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
 
-testcode = """{{ TEST.testcode | e('py') }}"""
-extra = """{{ TEST.extra | e('py') }}"""
-con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
+    testcode = """{{ TEST.testcode | e('py') }}"""
+    extra = """{{ TEST.extra | e('py') }}"""
+    expected_result = """{{ TEST.expected | e('py') }}"""
+    testcase_max = {{ TEST.mark | e('py') }}
+    testcase_max = testcase_max if testcase_max > 0.005 else 0.0
 
-# Set DB parameters
-con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
 
-# Execute student answer
-con.sql(student_answer)
 
-# Execute test code
-statements = [s for s in testcode.split(";") if s.strip()]
-for statement in statements:
-    try:
-        res = con.sql(statement)
-        res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except (duckdb.ConstraintException, duckdb.ConversionException) as e:
-        # DuckDB prints the individual constraint implementation in the error message
-        # so we have to filter it out.
-        table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
-        table_flex_enums = additional_info.get("flex_enum_tables", [])
+    sys.stdout = io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
 
-        match_check = re.search(
-            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
-        )
+    con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
 
-        match_enum = re.search(
-            r"^Conversion Error: Could not convert.*$", str(e), re.M
-        )
+    # Set DB parameters
+    con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
 
-        if (match_check or match_enum) and table_under_test in table_flex_enums:
-            print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
-        elif match_check:
-            print(f"CHECK constraint failed on table {table_under_test}")
-        else:
+    # Execute student answer
+    con.sql(student_answer)
+
+    # Execute test code
+    statements = [s for s in testcode.split(";") if s.strip()]
+
+    has_error = False
+    for statement in statements:
+        try:
+            res = con.sql(statement)
+            res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+        except (duckdb.ConstraintException, duckdb.ConversionException) as e:
+            # DuckDB prints the individual constraint implementation in the error message
+            # so we have to filter it out.
+            table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
+            table_flex_enums = additional_info.get("flex_enum_tables", [])
+
+            match_check = re.search(
+                r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+            )
+
+            match_enum = re.search(
+                r"^Conversion Error: Could not convert.*$", str(e), re.M
+            )
+
+            if (match_check or match_enum) and table_under_test in table_flex_enums:
+                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+            elif match_check:
+                print(f"CHECK constraint failed on table {table_under_test}")
+            else:
+                print(e)
+                errors.append(str(e) if not hide_rest_if_fail else "")
+        except duckdb.Error as e:
             print(e)
-    except duckdb.Error as e:
-        print(e)
-    except Exception as e:
-        raise (e)
+            errors.append(str(e) if not hide_rest_if_fail else "")
+        except Exception as e:
+            errors.append(str(e))
+            has_error = True
 
-con.close()
+    if has_error:
+        raise TestCaseException()
 
-{% if not loop.last %}
-print(SEPARATOR)
-{% endif %}
+    sys.stdout.seek(0)
+    received_result = sys.stdout.read()
+
+    evaluated_result = received_result == expected_result
+
+    testcase_grade = testcase_max if evaluated_result else 0.0
+
+    total_points += testcase_max
+    awarded_points += testcase_grade
+
+    tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
+    tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+    test_results.append([
+        extra,
+        " " * (10 - len(tc_grade_str)) + tc_grade_str,
+        " " * (10 - len(expected_result)) + tc_max_str,
+        evaluated_result,
+        hide_rest_if_fail
+    ])
+
+    test_results.append([
+        extra,
+        received_result,
+        expected_result,
+        evaluated_result,
+        True
+    ])
+
+    hide_rest_if_fail = ({{ TEST.hiderestiffail | e('py') }} and not evaluated_result) or hide_rest_if_fail
+
+    # Restore stdout.
+    sys.stdout.close()
+    con.close()
+
 {% endfor %}
+except TestCaseException:
+    pass
+finally:
+    sys.stdout = old_stdout
+
+    first_error = [e for e in errors if e.strip()][0] if errors else None
+
+    if first_error:
+        error_out = f'<h3>Erste Fehlermeldung</h3><pre style="margin-bottom: 1em"><code>{first_error}</code></pre>'
+    else:
+        error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
+
+    output = {
+        'fraction': awarded_points / total_points if total_points > 0 else 0,
+        'prologuehtml': error_out,
+        "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
+        'testresults': test_results,
+        "showdifferences": True
+    }
+
+
+    print(json.dumps(output))
