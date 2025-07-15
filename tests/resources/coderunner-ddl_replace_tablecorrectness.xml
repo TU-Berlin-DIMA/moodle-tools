@@ -35,9 +35,11 @@
     <template><![CDATA[from __future__ import annotations
 
 import json
+import io
 import os
 import re
 import shutil
+import sys
 
 import duckdb
 
@@ -63,63 +65,175 @@ else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
 SEPARATOR = "#<ab@17943918#@>#"
+#test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
+test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
 
-# Running each test in isolation
+
+old_stdout = sys.stdout
+
+test_cases = []
+# Collecting all test cases
 {% for TEST in TESTCASES %}
 
-additional_info = {{ TEST.stdin | e('py') }}
+tc_max = {{ TEST.mark | e('py') }}
+tc_max = tc_max if tc_max > 0.005 else 0.0
 
-if db_working != ":memory:":
-    db_working = f"{db_working}.copy"
-    shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+test_cases.append({
+    "testcode": """{{ TEST.testcode | e('py') }}""",
+    "extra": """{{ TEST.extra | e('py') }}""",
+    "expected_result": """{{ TEST.expected | e('py') }}""",
+    "testcase_max": tc_max,
+    "additional_info": {{ TEST.stdin | e('py') }},
+    "hide_rest_if_fail": {{ TEST.hiderestiffail | e('py') }},
+    "display": "{{ TEST.display | e('py') }}",
+})
 
-testcode = """{{ TEST.testcode | e('py') }}"""
-extra = """{{ TEST.extra | e('py') }}"""
-con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
-
-# Set DB parameters
-con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
-
-# Execute student answer
-con.sql(student_answer)
-
-# Execute test code
-statements = [s for s in testcode.split(";") if s.strip()]
-for statement in statements:
-    try:
-        res = con.sql(statement)
-        res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except (duckdb.ConstraintException, duckdb.ConversionException) as e:
-        # DuckDB prints the individual constraint implementation in the error message
-        # so we have to filter it out.
-        table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
-        table_flex_enums = additional_info.get("flex_enum_tables", [])
-
-        match_check = re.search(
-            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
-        )
-
-        match_enum = re.search(
-            r"^Conversion Error: Could not convert.*$", str(e), re.M
-        )
-
-        if (match_check or match_enum) and table_under_test in table_flex_enums:
-            print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
-        elif match_check:
-            print(f"CHECK constraint failed on table {table_under_test}")
-        else:
-            print(e)
-    except duckdb.Error as e:
-        print(e)
-    except Exception as e:
-        raise (e)
-
-con.close()
-
-{% if not loop.last %}
-print(SEPARATOR)
-{% endif %}
 {% endfor %}
+
+def run_testcase(testcase, db_working, db_files):
+
+    if db_working != ":memory:":
+        db_working = f"{db_working}.copy"
+        shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+
+
+
+
+    sys.stdout = io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+
+    con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
+
+    # Set DB parameters
+    con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
+
+    errors = []
+
+    try:
+        # Execute student answer
+        con.sql(student_answer)
+    except duckdb.Error as e:
+        errors.append(str(e))
+        sys.stdout.close()
+        con.close()
+        sys.stdout = old_stdout
+
+        return False, "", False, errors
+
+    # Execute test code
+    statements = [s for s in testcase['testcode'].split(";") if s.strip()]
+
+    for statement in statements:
+        try:
+            res = con.sql(statement)
+            res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+        except (duckdb.ConstraintException, duckdb.ConversionException) as e:
+            # DuckDB prints the individual constraint implementation in the error message
+            # so we have to filter it out.
+            table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
+            table_flex_enums = testcase['additional_info'].get("flex_enum_tables", [])
+
+            match_check = re.search(
+                r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+            )
+
+            match_enum = re.search(
+                r"^Conversion Error: Could not convert.*$", str(e), re.M
+            )
+
+            if (match_check or match_enum) and table_under_test in table_flex_enums:
+                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+            elif match_check:
+                print(f"CHECK constraint failed on table {table_under_test}")
+            else:
+                print(e)
+                errors.append(str(e) if not hide_rest_if_fail else "")
+        except duckdb.Error as e:
+            print(e)
+            errors.append(str(e) if not hide_rest_if_fail else "")
+        except Exception as e:
+            raise (e)
+
+    sys.stdout.seek(0)
+    received_result = sys.stdout.read()
+
+    evaluated_result = received_result == testcase['expected_result']
+    # Restore stdout.
+    sys.stdout.close()
+    con.close()
+    sys.stdout = old_stdout
+
+    return received_result, testcase['expected_result'], evaluated_result, errors
+
+abort_tests = False
+
+hide_rest_if_fail = False
+awarded_points = 0.0
+first_error = ""
+
+for tc in test_cases:
+    if not abort_tests:
+        received_result, expected_result, evaluated_result, errors = run_testcase(tc, db_working, db_files)
+
+        testcase_max = tc['testcase_max']
+        testcase_grade = testcase_max if evaluated_result else 0.0
+        awarded_points += testcase_grade
+
+        tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+        test_results.append([
+            tc['extra'],
+            " " * (10 - len(tc_grade_str)) + tc_grade_str,
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            evaluated_result,
+            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result)
+        ])
+
+        test_results.append([
+            tc['extra'],
+            received_result,
+            expected_result,
+            evaluated_result,
+            True
+        ])
+
+        if errors:
+            first_error = [e for e in errors if e.strip()][0] if errors else None
+            abort_tests = True
+
+        hide_rest_if_fail = (tc['hide_rest_if_fail'] and not evaluated_result) or hide_rest_if_fail
+
+    else:
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+        test_results.append([
+            tc['extra'],
+            " " * 5 + "0.000",
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            False,
+            True
+        ])
+
+
+
+total_points = sum(tc['testcase_max'] for tc in test_cases)
+
+
+if first_error:
+    error_out = f'<h3>Erste Fehlermeldung</h3><pre style="margin-bottom: 1em"><code>{first_error}</code></pre>'
+else:
+    error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
+
+output = {
+    'fraction': awarded_points / total_points if total_points > 0 else 0,
+    'prologuehtml': error_out,
+    "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
+    'testresults': test_results,
+    "showdifferences": True
+}
+
+
+print(json.dumps(output))
 ]]></template>
     <iscombinatortemplate>1</iscombinatortemplate>
     <allowmultiplestdins>0</allowmultiplestdins>
@@ -130,10 +244,10 @@ print(SEPARATOR)
     <language>python3</language>
     <acelang>sql</acelang>
     <sandbox></sandbox>
-    <grader>EqualityGrader</grader>
+    <grader>TemplateGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb>1000</memlimitmb>
-    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
+    <memlimitmb>2000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 200}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>
@@ -180,9 +294,9 @@ print(SEPARATOR)
             <testcode>
                 <text><![CDATA[-- Column names
 
-SELECT name AS name_columns
+SELECT lower(name) AS name_columns
 FROM pragma_table_info("thisisatest")
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Column types
@@ -194,11 +308,11 @@ WITH flex_cols AS
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
-SELECT name_type,
+SELECT lower(name_type),
        datatype
 FROM student_datatype ANTI
 JOIN flex_cols ON student_datatype.name_type = flex_cols.name_type
-ORDER BY name_type;
+ORDER BY lower(name_type);
 
 -- flexible types
 WITH flextype_table AS
@@ -217,11 +331,11 @@ WITH flextype_table AS
    FROM flextype_flat
    JOIN student_datatype ON flextype_flat.col = student_datatype.name_type
    AND flextype_flat.datatype = student_datatype.datatype)
-SELECT flexible_column_name,
+SELECT lower(flexible_column_name),
        '## viable_flex_type ##' AS flex_type
 FROM correct_types
 UNION ALL
-SELECT DISTINCT flextype_flat.col AS flexible_column_name,
+SELECT DISTINCT lower(flextype_flat.col) AS flexible_column_name,
                 '## non_viable_flex_type ##' AS flex_type
 FROM flextype_flat ANTI
 JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
@@ -229,41 +343,41 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 ----------
  -- Not null columns
 
-SELECT name AS name_notnull_nopk
+SELECT lower(name) AS name_notnull_nopk
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
   AND NOT "pk"
   AND NOT "dflt_value"
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Unique constraint
 
-SELECT unnest(constraint_column_names) AS name_unique
+SELECT lower(unnest(constraint_column_names)) AS name_unique
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'UNIQUE'
   AND TABLE_NAME='thisisatest'
-ORDER BY name_unique;
+ORDER BY lower(name_unique);
 
 ----------
  -- Primary key columns
 
-SELECT name AS name_primarykey
+SELECT lower(name) AS name_primarykey
 FROM pragma_table_info("thisisatest")
 WHERE pk
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Foreign key columns
 
-SELECT unnest(constraint_column_names) AS name_fk_from,
+SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
        constraint_text AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
   AND TABLE_NAME='thisisatest'
-ORDER BY name_fk_from;]]></text>
+ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
@@ -277,20 +391,20 @@ ORDER BY name_fk_from;]]></text>
 │ name         │
 └──────────────┘
 
-┌───────────┬──────────┐
-│ name_type │ datatype │
-│  varchar  │ varchar  │
-├───────────┼──────────┤
-│ id        │ INTEGER  │
-│ name      │ VARCHAR  │
-└───────────┴──────────┘
+┌──────────────────┬──────────┐
+│ lower(name_type) │ datatype │
+│     varchar      │ varchar  │
+├──────────────────┼──────────┤
+│ id               │ INTEGER  │
+│ name             │ VARCHAR  │
+└──────────────────┴──────────┘
 
-┌──────────────────────┬───────────┐
-│ flexible_column_name │ flex_type │
-│        int32         │  varchar  │
-├──────────────────────┴───────────┤
-│              0 rows              │
-└──────────────────────────────────┘
+┌─────────────────────────────┬───────────┐
+│ lower(flexible_column_name) │ flex_type │
+│           varchar           │  varchar  │
+├─────────────────────────────┴───────────┤
+│                 0 rows                  │
+└─────────────────────────────────────────┘
 
 ┌───────────────────┐
 │ name_notnull_nopk │
@@ -333,9 +447,9 @@ ORDER BY name_fk_from;]]></text>
             <testcode>
                 <text><![CDATA[-- Column names
 
-SELECT name AS name_columns
+SELECT lower(name) AS name_columns
 FROM pragma_table_info("thisisatest")
-ORDER BY name;]]></text>
+ORDER BY lower(name);]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
@@ -398,9 +512,11 @@ ORDER BY name;]]></text>
     <template><![CDATA[from __future__ import annotations
 
 import json
+import io
 import os
 import re
 import shutil
+import sys
 
 import duckdb
 
@@ -426,63 +542,175 @@ else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
 SEPARATOR = "#<ab@17943918#@>#"
+#test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
+test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
 
-# Running each test in isolation
+
+old_stdout = sys.stdout
+
+test_cases = []
+# Collecting all test cases
 {% for TEST in TESTCASES %}
 
-additional_info = {{ TEST.stdin | e('py') }}
+tc_max = {{ TEST.mark | e('py') }}
+tc_max = tc_max if tc_max > 0.005 else 0.0
 
-if db_working != ":memory:":
-    db_working = f"{db_working}.copy"
-    shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+test_cases.append({
+    "testcode": """{{ TEST.testcode | e('py') }}""",
+    "extra": """{{ TEST.extra | e('py') }}""",
+    "expected_result": """{{ TEST.expected | e('py') }}""",
+    "testcase_max": tc_max,
+    "additional_info": {{ TEST.stdin | e('py') }},
+    "hide_rest_if_fail": {{ TEST.hiderestiffail | e('py') }},
+    "display": "{{ TEST.display | e('py') }}",
+})
 
-testcode = """{{ TEST.testcode | e('py') }}"""
-extra = """{{ TEST.extra | e('py') }}"""
-con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
-
-# Set DB parameters
-con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
-
-# Execute student answer
-con.sql(student_answer)
-
-# Execute test code
-statements = [s for s in testcode.split(";") if s.strip()]
-for statement in statements:
-    try:
-        res = con.sql(statement)
-        res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
-    except (duckdb.ConstraintException, duckdb.ConversionException) as e:
-        # DuckDB prints the individual constraint implementation in the error message
-        # so we have to filter it out.
-        table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
-        table_flex_enums = additional_info.get("flex_enum_tables", [])
-
-        match_check = re.search(
-            r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
-        )
-
-        match_enum = re.search(
-            r"^Conversion Error: Could not convert.*$", str(e), re.M
-        )
-
-        if (match_check or match_enum) and table_under_test in table_flex_enums:
-            print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
-        elif match_check:
-            print(f"CHECK constraint failed on table {table_under_test}")
-        else:
-            print(e)
-    except duckdb.Error as e:
-        print(e)
-    except Exception as e:
-        raise (e)
-
-con.close()
-
-{% if not loop.last %}
-print(SEPARATOR)
-{% endif %}
 {% endfor %}
+
+def run_testcase(testcase, db_working, db_files):
+
+    if db_working != ":memory:":
+        db_working = f"{db_working}.copy"
+        shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
+
+
+
+
+    sys.stdout = io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+
+    con = duckdb.connect(db_working, config={"temp_directory": os.getcwd()})
+
+    # Set DB parameters
+    con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
+
+    errors = []
+
+    try:
+        # Execute student answer
+        con.sql(student_answer)
+    except duckdb.Error as e:
+        errors.append(str(e))
+        sys.stdout.close()
+        con.close()
+        sys.stdout = old_stdout
+
+        return False, "", False, errors
+
+    # Execute test code
+    statements = [s for s in testcase['testcode'].split(";") if s.strip()]
+
+    for statement in statements:
+        try:
+            res = con.sql(statement)
+            res.show(max_width=MAX_WIDTH, max_rows=MAX_ROWS) if res else print(res)
+        except (duckdb.ConstraintException, duckdb.ConversionException) as e:
+            # DuckDB prints the individual constraint implementation in the error message
+            # so we have to filter it out.
+            table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
+            table_flex_enums = testcase['additional_info'].get("flex_enum_tables", [])
+
+            match_check = re.search(
+                r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
+            )
+
+            match_enum = re.search(
+                r"^Conversion Error: Could not convert.*$", str(e), re.M
+            )
+
+            if (match_check or match_enum) and table_under_test in table_flex_enums:
+                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+            elif match_check:
+                print(f"CHECK constraint failed on table {table_under_test}")
+            else:
+                print(e)
+                errors.append(str(e) if not hide_rest_if_fail else "")
+        except duckdb.Error as e:
+            print(e)
+            errors.append(str(e) if not hide_rest_if_fail else "")
+        except Exception as e:
+            raise (e)
+
+    sys.stdout.seek(0)
+    received_result = sys.stdout.read()
+
+    evaluated_result = received_result == testcase['expected_result']
+    # Restore stdout.
+    sys.stdout.close()
+    con.close()
+    sys.stdout = old_stdout
+
+    return received_result, testcase['expected_result'], evaluated_result, errors
+
+abort_tests = False
+
+hide_rest_if_fail = False
+awarded_points = 0.0
+first_error = ""
+
+for tc in test_cases:
+    if not abort_tests:
+        received_result, expected_result, evaluated_result, errors = run_testcase(tc, db_working, db_files)
+
+        testcase_max = tc['testcase_max']
+        testcase_grade = testcase_max if evaluated_result else 0.0
+        awarded_points += testcase_grade
+
+        tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+        test_results.append([
+            tc['extra'],
+            " " * (10 - len(tc_grade_str)) + tc_grade_str,
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            evaluated_result,
+            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result)
+        ])
+
+        test_results.append([
+            tc['extra'],
+            received_result,
+            expected_result,
+            evaluated_result,
+            True
+        ])
+
+        if errors:
+            first_error = [e for e in errors if e.strip()][0] if errors else None
+            abort_tests = True
+
+        hide_rest_if_fail = (tc['hide_rest_if_fail'] and not evaluated_result) or hide_rest_if_fail
+
+    else:
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+        test_results.append([
+            tc['extra'],
+            " " * 5 + "0.000",
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            False,
+            True
+        ])
+
+
+
+total_points = sum(tc['testcase_max'] for tc in test_cases)
+
+
+if first_error:
+    error_out = f'<h3>Erste Fehlermeldung</h3><pre style="margin-bottom: 1em"><code>{first_error}</code></pre>'
+else:
+    error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
+
+output = {
+    'fraction': awarded_points / total_points if total_points > 0 else 0,
+    'prologuehtml': error_out,
+    "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
+    'testresults': test_results,
+    "showdifferences": True
+}
+
+
+print(json.dumps(output))
 ]]></template>
     <iscombinatortemplate>1</iscombinatortemplate>
     <allowmultiplestdins>0</allowmultiplestdins>
@@ -493,10 +721,10 @@ print(SEPARATOR)
     <language>python3</language>
     <acelang>sql</acelang>
     <sandbox></sandbox>
-    <grader>EqualityGrader</grader>
+    <grader>TemplateGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb>1000</memlimitmb>
-    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
+    <memlimitmb>2000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 200}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>
@@ -543,9 +771,9 @@ print(SEPARATOR)
             <testcode>
                 <text><![CDATA[-- Column names
 
-SELECT name AS name_columns
+SELECT lower(name) AS name_columns
 FROM pragma_table_info("thisisatest")
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Column types
@@ -560,11 +788,11 @@ WITH flex_cols AS
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
-SELECT name_type,
+SELECT lower(name_type),
        datatype
 FROM student_datatype ANTI
 JOIN flex_cols ON student_datatype.name_type = flex_cols.name_type
-ORDER BY name_type;
+ORDER BY lower(name_type);
 
 -- flexible types
 WITH flextype_table AS
@@ -586,11 +814,11 @@ WITH flextype_table AS
    FROM flextype_flat
    JOIN student_datatype ON flextype_flat.col = student_datatype.name_type
    AND flextype_flat.datatype = student_datatype.datatype)
-SELECT flexible_column_name,
+SELECT lower(flexible_column_name),
        '## viable_flex_type ##' AS flex_type
 FROM correct_types
 UNION ALL
-SELECT DISTINCT flextype_flat.col AS flexible_column_name,
+SELECT DISTINCT lower(flextype_flat.col) AS flexible_column_name,
                 '## non_viable_flex_type ##' AS flex_type
 FROM flextype_flat ANTI
 JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
@@ -598,41 +826,41 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;
 ----------
  -- Not null columns
 
-SELECT name AS name_notnull_nopk
+SELECT lower(name) AS name_notnull_nopk
 FROM pragma_table_info("thisisatest")
 WHERE "notnull"
   AND NOT "pk"
   AND NOT "dflt_value"
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Unique constraint
 
-SELECT unnest(constraint_column_names) AS name_unique
+SELECT lower(unnest(constraint_column_names)) AS name_unique
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'UNIQUE'
   AND TABLE_NAME='thisisatest'
-ORDER BY name_unique;
+ORDER BY lower(name_unique);
 
 ----------
  -- Primary key columns
 
-SELECT name AS name_primarykey
+SELECT lower(name) AS name_primarykey
 FROM pragma_table_info("thisisatest")
 WHERE pk
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Foreign key columns
 
-SELECT unnest(constraint_column_names) AS name_fk_from,
+SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
        constraint_text AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
   AND TABLE_NAME='thisisatest'
-ORDER BY name_fk_from;]]></text>
+ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
@@ -646,19 +874,19 @@ ORDER BY name_fk_from;]]></text>
 │ name         │
 └──────────────┘
 
-┌───────────┬──────────┐
-│ name_type │ datatype │
-│  varchar  │ varchar  │
-├───────────┼──────────┤
-│ name      │ VARCHAR  │
-└───────────┴──────────┘
+┌──────────────────┬──────────┐
+│ lower(name_type) │ datatype │
+│     varchar      │ varchar  │
+├──────────────────┼──────────┤
+│ name             │ VARCHAR  │
+└──────────────────┴──────────┘
 
-┌──────────────────────┬────────────────────────┐
-│ flexible_column_name │       flex_type        │
-│       varchar        │        varchar         │
-├──────────────────────┼────────────────────────┤
-│ id                   │ ## viable_flex_type ## │
-└──────────────────────┴────────────────────────┘
+┌─────────────────────────────┬────────────────────────┐
+│ lower(flexible_column_name) │       flex_type        │
+│           varchar           │        varchar         │
+├─────────────────────────────┼────────────────────────┤
+│ id                          │ ## viable_flex_type ## │
+└─────────────────────────────┴────────────────────────┘
 
 ┌───────────────────┐
 │ name_notnull_nopk │
@@ -701,9 +929,9 @@ ORDER BY name_fk_from;]]></text>
             <testcode>
                 <text><![CDATA[-- Column names
 
-SELECT name AS name_columns
+SELECT lower(name) AS name_columns
 FROM pragma_table_info("thisisatest")
-ORDER BY name;]]></text>
+ORDER BY lower(name);]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
@@ -730,21 +958,21 @@ ORDER BY name;]]></text>
             <testcode>
                 <text><![CDATA[-- Primary key columns
 
-SELECT name AS name_primarykey
+SELECT lower(name) AS name_primarykey
 FROM pragma_table_info("thisisatest")
 WHERE pk
-ORDER BY name;
+ORDER BY lower(name);
 
 ----------
  -- Foreign key columns
 
-SELECT unnest(constraint_column_names) AS name_fk_from,
+SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
        constraint_text AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
   AND TABLE_NAME='thisisatest'
-ORDER BY name_fk_from;]]></text>
+ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
@@ -787,11 +1015,11 @@ WITH flex_cols AS
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
-SELECT name_type,
+SELECT lower(name_type),
        datatype
 FROM student_datatype ANTI
 JOIN flex_cols ON student_datatype.name_type = flex_cols.name_type
-ORDER BY name_type;
+ORDER BY lower(name_type);
 
 -- flexible types
 WITH flextype_table AS
@@ -813,11 +1041,11 @@ WITH flextype_table AS
    FROM flextype_flat
    JOIN student_datatype ON flextype_flat.col = student_datatype.name_type
    AND flextype_flat.datatype = student_datatype.datatype)
-SELECT flexible_column_name,
+SELECT lower(flexible_column_name),
        '## viable_flex_type ##' AS flex_type
 FROM correct_types
 UNION ALL
-SELECT DISTINCT flextype_flat.col AS flexible_column_name,
+SELECT DISTINCT lower(flextype_flat.col) AS flexible_column_name,
                 '## non_viable_flex_type ##' AS flex_type
 FROM flextype_flat ANTI
 JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;]]></text>
@@ -826,19 +1054,19 @@ JOIN correct_types ON flextype_flat.col = correct_types.flexible_column_name;]]>
                 <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
-                <text><![CDATA[┌───────────┬──────────┐
-│ name_type │ datatype │
-│  varchar  │ varchar  │
-├───────────┼──────────┤
-│ name      │ VARCHAR  │
-└───────────┴──────────┘
+                <text><![CDATA[┌──────────────────┬──────────┐
+│ lower(name_type) │ datatype │
+│     varchar      │ varchar  │
+├──────────────────┼──────────┤
+│ name             │ VARCHAR  │
+└──────────────────┴──────────┘
 
-┌──────────────────────┬────────────────────────┐
-│ flexible_column_name │       flex_type        │
-│       varchar        │        varchar         │
-├──────────────────────┼────────────────────────┤
-│ id                   │ ## viable_flex_type ## │
-└──────────────────────┴────────────────────────┘
+┌─────────────────────────────┬────────────────────────┐
+│ lower(flexible_column_name) │       flex_type        │
+│           varchar           │        varchar         │
+├─────────────────────────────┼────────────────────────┤
+│ id                          │ ## viable_flex_type ## │
+└─────────────────────────────┴────────────────────────┘
 
 ]]></text>
             </expected>
