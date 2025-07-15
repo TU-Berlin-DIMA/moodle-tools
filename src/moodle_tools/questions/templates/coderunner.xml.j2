@@ -15,7 +15,7 @@
     <useace>1</useace>
     <resultcolumns><![CDATA[{{ result_columns }}]]></resultcolumns>
     <template><![CDATA[{{ test_logic }}]]></template>
-    <iscombinatortemplate>1</iscombinatortemplate>
+    <iscombinatortemplate>{{ "1" if is_combinator else "0" }}</iscombinatortemplate>
     <allowmultiplestdins>0</allowmultiplestdins>
     <answer><![CDATA[{{ answer }}]]></answer>
     <validateonsave>1</validateonsave>
@@ -23,10 +23,10 @@
     <language>python3</language>
     <acelang>{{ ace_lang }}</acelang>
     <sandbox></sandbox>
-    <grader>EqualityGrader</grader>
+    <grader>{{ grader }}</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb>1000</memlimitmb>
-    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
+    <memlimitmb>2000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 200}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>

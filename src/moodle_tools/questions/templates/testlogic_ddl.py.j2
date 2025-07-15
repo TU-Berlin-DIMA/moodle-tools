@@ -9,10 +9,6 @@ import sys
 
 import duckdb
 
-class TestCaseException(Exception):
-    """Custom exception for test case errors."""
-    pass
-
 MAX_ROWS = 50
 MAX_WIDTH = 500
 
@@ -37,46 +33,35 @@ else:
 SEPARATOR = "#<ab@17943918#@>#"
 #test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
 test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
-total_points = 0.0
-awarded_points = 0.0
-hide_rest_if_fail = False
 
-errors = []
 
 old_stdout = sys.stdout
 
-test_cases = {}
+test_cases = []
 # Collecting all test cases
 {% for TEST in TESTCASES %}
+
+tc_max = {{ TEST.mark | e('py') }}
+tc_max = tc_max if tc_max > 0.005 else 0.0
+
 test_cases.append({
     "testcode": """{{ TEST.testcode | e('py') }}""",
     "extra": """{{ TEST.extra | e('py') }}""",
-    "expected": """{{ TEST.expected | e('py') }}""",
-    "mark": {{ TEST.mark | e('py') }},
+    "expected_result": """{{ TEST.expected | e('py') }}""",
+    "testcase_max": tc_max,
     "additional_info": {{ TEST.stdin | e('py') }},
-    "hiderestiffail": {{ TEST.hiderestiffail | e('py') }},
+    "hide_rest_if_fail": {{ TEST.hiderestiffail | e('py') }},
     "display": "{{ TEST.display | e('py') }}",
 })
+
 {% endfor %}
 
-
-
-
-try:
-    # Running each test in isolation
-{% for TEST in TESTCASES %}
-
-    additional_info = {{ TEST.stdin | e('py') }}
+def run_testcase(testcase, db_working, db_files):
 
     if db_working != ":memory:":
         db_working = f"{db_working}.copy"
         shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
 
-    testcode = """{{ TEST.testcode | e('py') }}"""
-    extra = """{{ TEST.extra | e('py') }}"""
-    expected_result = """{{ TEST.expected | e('py') }}"""
-    testcase_max = {{ TEST.mark | e('py') }}
-    testcase_max = testcase_max if testcase_max > 0.005 else 0.0
 
 
 
@@ -87,13 +72,22 @@ try:
     # Set DB parameters
     con.sql("SET memory_limit = '{{ QUESTION.memlimitmb - 50 }}MB'; SET threads = 1;")
 
-    # Execute student answer
-    con.sql(student_answer)
+    errors = []
+
+    try:
+        # Execute student answer
+        con.sql(student_answer)
+    except duckdb.Error as e:
+        errors.append(str(e))
+        sys.stdout.close()
+        con.close()
+        sys.stdout = old_stdout
+
+        return False, "", False, errors
 
     # Execute test code
-    statements = [s for s in testcode.split(";") if s.strip()]
+    statements = [s for s in testcase['testcode'].split(";") if s.strip()]
 
-    has_error = False
     for statement in statements:
         try:
             res = con.sql(statement)
@@ -102,7 +96,7 @@ try:
             # DuckDB prints the individual constraint implementation in the error message
             # so we have to filter it out.
             table_under_test = re.search(r"INSERT INTO (.+?) ", statement).group(1)
-            table_flex_enums = additional_info.get("flex_enum_tables", [])
+            table_flex_enums = testcase['additional_info'].get("flex_enum_tables", [])
 
             match_check = re.search(
                 r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
@@ -123,67 +117,86 @@ try:
             print(e)
             errors.append(str(e) if not hide_rest_if_fail else "")
         except Exception as e:
-            errors.append(str(e))
-            has_error = True
-
-    if has_error:
-        raise TestCaseException()
+            raise (e)
 
     sys.stdout.seek(0)
     received_result = sys.stdout.read()
 
-    evaluated_result = received_result == expected_result
-
-    testcase_grade = testcase_max if evaluated_result else 0.0
-
-    total_points += testcase_max
-    awarded_points += testcase_grade
-
-    tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
-    tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
-
-    test_results.append([
-        extra,
-        " " * (10 - len(tc_grade_str)) + tc_grade_str,
-        " " * (10 - len(expected_result)) + tc_max_str,
-        evaluated_result,
-        hide_rest_if_fail
-    ])
-
-    test_results.append([
-        extra,
-        received_result,
-        expected_result,
-        evaluated_result,
-        True
-    ])
-
-    hide_rest_if_fail = ({{ TEST.hiderestiffail | e('py') }} and not evaluated_result) or hide_rest_if_fail
-
+    evaluated_result = received_result == testcase['expected_result']
     # Restore stdout.
     sys.stdout.close()
     con.close()
-
-{% endfor %}
-except TestCaseException:
-    pass
-finally:
     sys.stdout = old_stdout
 
-    first_error = [e for e in errors if e.strip()][0] if errors else None
+    return received_result, testcase['expected_result'], evaluated_result, errors
 
-    if first_error:
-        error_out = f'<h3>Erste Fehlermeldung</h3><pre style="margin-bottom: 1em"><code>{first_error}</code></pre>'
+abort_tests = False
+
+hide_rest_if_fail = False
+awarded_points = 0.0
+first_error = ""
+
+for tc in test_cases:
+    if not abort_tests:
+        received_result, expected_result, evaluated_result, errors = run_testcase(tc, db_working, db_files)
+
+        testcase_max = tc['testcase_max']
+        testcase_grade = testcase_max if evaluated_result else 0.0
+        awarded_points += testcase_grade
+
+        tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
+
+        test_results.append([
+            tc['extra'],
+            " " * (10 - len(tc_grade_str)) + tc_grade_str,
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            evaluated_result,
+            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result)
+        ])
+
+        test_results.append([
+            tc['extra'],
+            received_result,
+            expected_result,
+            evaluated_result,
+            True
+        ])
+
+        if errors:
+            first_error = [e for e in errors if e.strip()][0] if errors else None
+            abort_tests = True
+
+        hide_rest_if_fail = (tc['hide_rest_if_fail'] and not evaluated_result) or hide_rest_if_fail
+
     else:
-        error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
+        tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
 
-    output = {
-        'fraction': awarded_points / total_points if total_points > 0 else 0,
-        'prologuehtml': error_out,
-        "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
-        'testresults': test_results,
-        "showdifferences": True
-    }
+        test_results.append([
+            tc['extra'],
+            " " * 5 + "0.000",
+            " " * (10 - len(tc_max_str)) + tc_max_str,
+            False,
+            True
+        ])
 
 
-    print(json.dumps(output))
+
+total_points = sum(tc['testcase_max'] for tc in test_cases)
+
+
+if first_error:
+    error_out = f'<h3>Erste Fehlermeldung</h3><pre style="margin-bottom: 1em"><code>{first_error}</code></pre>'
+else:
+    error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
+
+output = {
+    'fraction': awarded_points / total_points if total_points > 0 else 0,
+    'prologuehtml': error_out,
+    "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
+    'testresults': test_results,
+    "showdifferences": True
+}
+
+
+print(json.dumps(output))

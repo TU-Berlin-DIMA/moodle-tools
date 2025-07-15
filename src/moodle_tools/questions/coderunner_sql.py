@@ -17,6 +17,7 @@ import duckdb
 from jinja2 import Environment, PackageLoader, select_autoescape
 from loguru import logger
 
+from moodle_tools.enums import CRGrader
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 from moodle_tools.utils import ParsingError, preprocess_text
 
@@ -84,6 +85,8 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         check_results: bool = False,
         parser: str | None = None,
         extra: dict[str, str | dict[str, Any]] | None = None,
+        grader: CRGrader = CRGrader.EQUALITY_GRADER,
+        is_combinator: bool = True,
         internal_copy: bool = False,
         database_connection: bool = True,
         **flags: bool,
@@ -106,6 +109,8 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
                 if the results match.
             parser: Code parser for formatting the correct answer and testcases.
             extra: Extra information for parsing the question.
+            grader: Grader to use for the question.
+            is_combinator: If True, the question automatically builds testcases with TWIG
             internal_copy: Flag to create an internal copy for debugging purposes.
             database_connection: If True, connect to the provided database to fetch the expected
                 result. If False, use the provided result.
@@ -149,6 +154,8 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=grader,
+            is_combinator=is_combinator,
             internal_copy=internal_copy,
             **flags,
         )
@@ -220,6 +227,8 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=CRGrader.TEMPLATE_GRADER,
+            is_combinator=True,
             internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
@@ -364,7 +373,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                 try:
                     res = con.sql(statement)
                     if res:
-                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
+                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)
                     else:
                         print(res)
                 except (duckdb.ConstraintException, duckdb.ConversionException) as e:
@@ -472,6 +481,8 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=CRGrader.EQUALITY_GRADER,
+            is_combinator=True,
             internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
@@ -498,7 +509,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             con.sql(testcase["code"])
             res = con.sql(self.answer)
             if res:
-                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
+                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)
             else:
                 print(res)
 
