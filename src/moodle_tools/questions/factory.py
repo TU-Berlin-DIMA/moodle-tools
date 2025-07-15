@@ -58,11 +58,16 @@ class QuestionFactory:
 
     @staticmethod
     def props_from_xml(
-        question_type: str, element: Element, **properties: Any
+        question_type: str, element: Element, skip_unsupported: bool, **properties: Any
     ) -> dict[str, str | Any | None]:
-        properties = properties | QuestionFactory.SUPPORTED_MOODLE_TYPES[
-            question_type
-        ].extract_properties_from_xml(element)
+        try:
+            properties = properties | QuestionFactory.SUPPORTED_MOODLE_TYPES[
+                question_type
+            ].extract_properties_from_xml(element)
+        except NotImplementedError as e:
+            if skip_unsupported:
+                return {}
+            raise ParsingError(f"Unsupported Question Type: {question_type}.") from e
 
         properties["type"] = QuestionFactory.SUPPORTED_MOODLE_TO_MT[question_type]
         properties["category"] = properties["category"].replace("$course$/top/", "")

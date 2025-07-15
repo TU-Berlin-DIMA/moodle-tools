@@ -64,7 +64,17 @@ def load_moodle_xml(
             question_props.update({"type": str(question_type)})
             question_props.update({"table_styling": str(table_styling)})
 
-            question = QuestionFactory.props_from_xml(question_type, element, **question_props)
+            question = QuestionFactory.props_from_xml(
+                question_type, element, skip_unsupported, **question_props
+            )
+
+            if not question:
+                logger.warning(
+                    "Question type {} from category {} is not implemented. Skipping.",
+                    question_type,
+                    category,
+                )
+                continue
 
             yield dict(sorted(question.items(), key=lambda item: ITEM_ORDER.get(item[0], 10)))
 
