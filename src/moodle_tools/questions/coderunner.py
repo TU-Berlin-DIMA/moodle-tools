@@ -7,6 +7,7 @@ from typing import Any, Required, TypedDict
 from jinja2 import Environment
 from loguru import logger
 
+from moodle_tools.enums import CRGrader
 from moodle_tools.questions.question import Question
 from moodle_tools.utils import ParsingError, format_code
 
@@ -65,6 +66,8 @@ class CoderunnerQuestion(Question):
         parser: str | None = None,
         extra: dict[str, str | dict[str, Any]] | None = None,
         internal_copy: bool = False,
+        grader: CRGrader = CRGrader.EQUALITY_GRADER,
+        is_combinator: bool = True,
         **flags: bool,
     ) -> None:
         """Create a new CodeRunner question.
@@ -85,6 +88,8 @@ class CoderunnerQuestion(Question):
             parser: Code parser for formatting the correct answer and testcases.
             extra: Extra information for parsing the question.
             internal_copy: Flag to create an internal copy for debugging purposes.
+            grader: The type of grader to use for this question.
+            is_combinator: If True, the question automatically builds testcases with TWIG
             flags: Additional flags that can be used to control the behavior of the
                 question.
         """
@@ -96,6 +101,8 @@ class CoderunnerQuestion(Question):
         self.result_columns = (
             self.RESULT_COLUMNS_DEBUG if internal_copy else self.RESULT_COLUMNS_DEFAULT
         )
+        self.grader = grader
+        self.is_combinator = is_combinator
 
         self.extra = extra
 

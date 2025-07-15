@@ -165,3 +165,14 @@ class STACKMatchType(StrEnum):
     @classmethod
     def from_str(cls, value: str) -> "STACKMatchType":
         return cls[value.upper()] if value else cls.ALG_EQUIV
+
+
+class CRGrader(StrEnum):
+    EQUALITY_GRADER = "EqualityGrader"
+    NEAR_EQUALITY_GRADER = "NearEqualityGrader"
+    REGEX_GRADER = "RegexGrader"
+    TEMPLATE_GRADER = "TemplateGrader"
+
+    @classmethod
+    def from_str(cls, value: str) -> "CRGrader":
+        return cls[value.upper()] if value else cls.EQUALITY_GRADER
