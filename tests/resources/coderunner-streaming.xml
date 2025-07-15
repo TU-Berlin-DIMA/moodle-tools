@@ -67,8 +67,8 @@ def pipeline(input_stream: TimedStream) -> TimedStream:
     <sandbox></sandbox>
     <grader>EqualityGrader</grader>
     <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb>1000</memlimitmb>
-    <sandboxparams><![CDATA[{"numprocs": 100}]]></sandboxparams>
+    <memlimitmb>2000</memlimitmb>
+    <sandboxparams><![CDATA[{"numprocs": 200}]]></sandboxparams>
     <templateparams></templateparams>
     <hoisttemplateparams>0</hoisttemplateparams>
     <extractcodefromjson>1</extractcodefromjson>
