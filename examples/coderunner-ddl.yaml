@@ -17,7 +17,7 @@ answer: |-
 testcases:
   - description: Test auf Laufzeitfehler
     code: |-
-      SELECT 1;
+      SELECT version() as version;
     grade: 0.001
     hiderestiffail: true
   - description: Korrektheit Tabelle thisisatest
@@ -54,7 +54,7 @@ extra:
 testcases:
   - description: Test auf Laufzeitfehler
     code: |-
-      SELECT 1;
+      SELECT version() as version;
     grade: 0.001
     hiderestiffail: true
   - description: Korrektheit Tabelle thisisatest

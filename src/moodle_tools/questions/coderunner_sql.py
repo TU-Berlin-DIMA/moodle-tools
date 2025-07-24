@@ -420,11 +420,14 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                             additional_info["flex_enum_tables"] = flex_enum_tables
                             testcase["additional_info"] = additional_info
 
-                        print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+                        print(
+                            f"CHECK constraint failed or wrong "
+                            f"ENUM in table {table_under_test}".lower()
+                        )
                     elif match_check:
-                        print(f"CHECK constraint failed on table {table_under_test}")
+                        print(f"CHECK constraint failed on table {table_under_test}".lower())
                     else:
-                        print(e)
+                        print(str(e).lower())
                 except duckdb.Error as e:
                     print(e)
 

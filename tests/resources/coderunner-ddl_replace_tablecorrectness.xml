@@ -66,7 +66,7 @@ else:
 
 SEPARATOR = "#<ab@17943918#@>#"
 #test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
-test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
+test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden", ""]]
 
 
 old_stdout = sys.stdout
@@ -141,14 +141,14 @@ def run_testcase(testcase, db_working, db_files):
             )
 
             if (match_check or match_enum) and table_under_test in table_flex_enums:
-                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}".lower())
             elif match_check:
-                print(f"CHECK constraint failed on table {table_under_test}")
+                print(f"CHECK constraint failed on table {table_under_test}".lower())
             else:
-                print(e)
-                errors.append(str(e) if not hide_rest_if_fail else "")
+                print(str(e).lower())
+                #errors.append(str(e) if not hide_rest_if_fail else "")
         except duckdb.Error as e:
-            print(e)
+            print(str(e).lower())
             errors.append(str(e) if not hide_rest_if_fail else "")
         except Exception as e:
             raise (e)
@@ -186,7 +186,8 @@ for tc in test_cases:
             " " * (10 - len(tc_grade_str)) + tc_grade_str,
             " " * (10 - len(tc_max_str)) + tc_max_str,
             evaluated_result,
-            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result)
+            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result),
+            ""
         ])
 
         test_results.append([
@@ -194,7 +195,8 @@ for tc in test_cases:
             received_result,
             expected_result,
             evaluated_result,
-            True
+            True,
+            tc['testcode']
         ])
 
         if errors:
@@ -268,18 +270,18 @@ print(json.dumps(output))
     <testcases>
         <testcase testtype="0" useasexample="0" hiderestiffail="1" mark="0.001">
             <testcode>
-                <text><![CDATA[SELECT 1;]]></text>
+                <text><![CDATA[SELECT version() AS VERSION;]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
-                <text><![CDATA[┌───────┐
-│   1   │
-│ int32 │
-├───────┤
-│     1 │
-└───────┘
+                <text><![CDATA[┌─────────┐
+│ version │
+│ varchar │
+├─────────┤
+│ v1.2.2  │
+└─────────┘
 
 ]]></text>
             </expected>
@@ -302,9 +304,9 @@ ORDER BY lower(name);
  -- Column types
 -- fixed types
 WITH flex_cols AS
-  (SELECT unnest(map_keys(MAP {})) AS name_type),
+  (SELECT lower(unnest(map_keys(MAP {}))) AS name_type),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
@@ -318,12 +320,12 @@ ORDER BY lower(name_type);
 WITH flextype_table AS
   (SELECT unnest(map_entries(MAP {}), RECURSIVE := TRUE)),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name),
      flextype_flat AS
-  (SELECT "key" AS col,
+  (SELECT lower("key") AS col,
           unnest("value") AS datatype
    FROM flextype_table),
      correct_types AS
@@ -357,7 +359,7 @@ SELECT lower(unnest(constraint_column_names)) AS name_unique
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'UNIQUE'
-  AND TABLE_NAME='thisisatest'
+  AND lower(TABLE_NAME)=lower('thisisatest')
 ORDER BY lower(name_unique);
 
 ----------
@@ -372,11 +374,11 @@ ORDER BY lower(name);
  -- Foreign key columns
 
 SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
-       constraint_text AS fk_constraint_text
+       lower(constraint_text) AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
-  AND TABLE_NAME='thisisatest'
+  AND lower(TABLE_NAME)=lower('thisisatest')
 ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
@@ -543,7 +545,7 @@ else:
 
 SEPARATOR = "#<ab@17943918#@>#"
 #test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
-test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden"]]
+test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden", ""]]
 
 
 old_stdout = sys.stdout
@@ -618,14 +620,14 @@ def run_testcase(testcase, db_working, db_files):
             )
 
             if (match_check or match_enum) and table_under_test in table_flex_enums:
-                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
+                print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}".lower())
             elif match_check:
-                print(f"CHECK constraint failed on table {table_under_test}")
+                print(f"CHECK constraint failed on table {table_under_test}".lower())
             else:
-                print(e)
-                errors.append(str(e) if not hide_rest_if_fail else "")
+                print(str(e).lower())
+                #errors.append(str(e) if not hide_rest_if_fail else "")
         except duckdb.Error as e:
-            print(e)
+            print(str(e).lower())
             errors.append(str(e) if not hide_rest_if_fail else "")
         except Exception as e:
             raise (e)
@@ -663,7 +665,8 @@ for tc in test_cases:
             " " * (10 - len(tc_grade_str)) + tc_grade_str,
             " " * (10 - len(tc_max_str)) + tc_max_str,
             evaluated_result,
-            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result)
+            hide_rest_if_fail or tc['display'] == "HIDE" or (tc['display'] == "HIDE_IF_SUCCEED" and evaluated_result) or (tc['display'] == "HIDE_IF_FAIL" and not evaluated_result),
+            ""
         ])
 
         test_results.append([
@@ -671,7 +674,8 @@ for tc in test_cases:
             received_result,
             expected_result,
             evaluated_result,
-            True
+            True,
+            tc['testcode']
         ])
 
         if errors:
@@ -745,18 +749,18 @@ print(json.dumps(output))
     <testcases>
         <testcase testtype="0" useasexample="0" hiderestiffail="1" mark="0.001">
             <testcode>
-                <text><![CDATA[SELECT 1;]]></text>
+                <text><![CDATA[SELECT version() AS VERSION;]]></text>
             </testcode>
             <stdin>
                 <text><![CDATA[{}]]></text>
             </stdin>
             <expected>
-                <text><![CDATA[┌───────┐
-│   1   │
-│ int32 │
-├───────┤
-│     1 │
-└───────┘
+                <text><![CDATA[┌─────────┐
+│ version │
+│ varchar │
+├─────────┤
+│ v1.2.2  │
+└─────────┘
 
 ]]></text>
             </expected>
@@ -779,12 +783,12 @@ ORDER BY lower(name);
  -- Column types
 -- fixed types
 WITH flex_cols AS
-  (SELECT unnest(map_keys(MAP { 'id': [
+  (SELECT lower(unnest(map_keys(MAP { 'id': [
         'INTEGER',
         'UINTEGER'
-    ] })) AS name_type),
+    ] }))) AS name_type),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
@@ -801,12 +805,12 @@ WITH flextype_table AS
         'UINTEGER'
     ] }), RECURSIVE := TRUE)),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name),
      flextype_flat AS
-  (SELECT "key" AS col,
+  (SELECT lower("key") AS col,
           unnest("value") AS datatype
    FROM flextype_table),
      correct_types AS
@@ -840,7 +844,7 @@ SELECT lower(unnest(constraint_column_names)) AS name_unique
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'UNIQUE'
-  AND TABLE_NAME='thisisatest'
+  AND lower(TABLE_NAME)=lower('thisisatest')
 ORDER BY lower(name_unique);
 
 ----------
@@ -855,11 +859,11 @@ ORDER BY lower(name);
  -- Foreign key columns
 
 SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
-       constraint_text AS fk_constraint_text
+       lower(constraint_text) AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
-  AND TABLE_NAME='thisisatest'
+  AND lower(TABLE_NAME)=lower('thisisatest')
 ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
@@ -967,11 +971,11 @@ ORDER BY lower(name);
  -- Foreign key columns
 
 SELECT lower(unnest(constraint_column_names)) AS name_fk_from,
-       constraint_text AS fk_constraint_text
+       lower(constraint_text) AS fk_constraint_text
 FROM duckdb_constraints()
 WHERE SCHEMA_NAME='main'
   AND constraint_type = 'FOREIGN KEY'
-  AND TABLE_NAME='thisisatest'
+  AND lower(TABLE_NAME)=lower('thisisatest')
 ORDER BY lower(name_fk_from);]]></text>
             </testcode>
             <stdin>
@@ -1006,12 +1010,12 @@ ORDER BY lower(name_fk_from);]]></text>
                 <text><![CDATA[-- Column types
 -- fixed types
 WITH flex_cols AS
-  (SELECT unnest(map_keys(MAP { 'id': [
+  (SELECT lower(unnest(map_keys(MAP { 'id': [
         'INTEGER',
         'UINTEGER'
-    ] })) AS name_type),
+    ] }))) AS name_type),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name)
@@ -1028,12 +1032,12 @@ WITH flextype_table AS
         'UINTEGER'
     ] }), RECURSIVE := TRUE)),
      student_datatype AS
-  (SELECT name AS name_type,
+  (SELECT lower(name) AS name_type,
           TYPE AS datatype
    FROM pragma_table_info("thisisatest")
    ORDER BY name),
      flextype_flat AS
-  (SELECT "key" AS col,
+  (SELECT lower("key") AS col,
           unnest("value") AS datatype
    FROM flextype_table),
      correct_types AS

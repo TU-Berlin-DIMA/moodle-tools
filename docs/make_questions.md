@@ -1062,6 +1062,10 @@ The following exemplary test cases show how to use the template:
 ```yaml
 testcases:
   - code: |-
+      select version() as version; # test for runtime errors
+    grade: 0.001
+    hiderestiffail: true
+  - code: |-
       MT_testtablecorrectness Produkt  # this runs all available tests
     grade: 1.0
     hiderestiffail: false
@@ -1077,6 +1081,8 @@ testcases:
     hiderestiffail: false
     description: Test with template and test types
 ```
+
+**Hint:** Adding a version test at the beginning helps with both checking for runtime errors and ensuring that the local DuckDB matches the on eused in Moodle.
 
 If you want to use the `types` check, you can optionally provide a list of types for each column in the `extra` field to allow multiple correct types as part of the question.
 In the following example, both `REAL` and `DECIMAL(10, 2)` are accepted as correct types for the `Preis` column:
