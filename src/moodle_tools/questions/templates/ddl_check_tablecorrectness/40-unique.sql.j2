@@ -4,5 +4,5 @@ from duckdb_constraints()
 where
     schema_name='main'
   and constraint_type = 'UNIQUE'
-  and table_name='{{ tablename }}'
+  and lower(table_name)=lower('{{ tablename }}')
 ORDER BY lower(name_unique);
