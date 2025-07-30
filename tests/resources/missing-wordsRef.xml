@@ -28,32 +28,32 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>2</group>
         <!-- ordinal: 3, group: B -->
     </selectoption>
     <selectoption>
-        <text>PROJECT</text>
+        <text><![CDATA[PROJECT]]></text>
         <group>1</group>
         <!-- ordinal: 4, group: A -->
     </selectoption>
     <selectoption>
-        <text>SIGMA</text>
+        <text><![CDATA[SIGMA]]></text>
         <group>2</group>
         <!-- ordinal: 5, group: B -->
     </selectoption>
     <selectoption>
-        <text>JOIN</text>
+        <text><![CDATA[JOIN]]></text>
         <group>3</group>
         <!-- ordinal: 6, group: C -->
     </selectoption>
@@ -86,17 +86,17 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>1</group>
         <!-- ordinal: 3, group: A -->
     </selectoption>
@@ -129,17 +129,17 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>1</group>
         <!-- ordinal: 3, group: A -->
     </selectoption>
@@ -172,17 +172,17 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>1</group>
         <!-- ordinal: 3, group: A -->
     </selectoption>
@@ -215,27 +215,27 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </selectoption>
     <selectoption>
-        <text>.</text>
+        <text><![CDATA[.]]></text>
         <group>20</group>
         <!-- ordinal: 3, group: T -->
     </selectoption>
     <selectoption>
-        <text>.</text>
+        <text><![CDATA[.]]></text>
         <group>20</group>
         <!-- ordinal: 4, group: T -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>3</group>
         <!-- ordinal: 5, group: C -->
     </selectoption>
@@ -268,32 +268,32 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <selectoption>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </selectoption>
     <selectoption>
-        <text>.</text>
+        <text><![CDATA[.]]></text>
         <group>20</group>
         <!-- ordinal: 2, group: T -->
     </selectoption>
     <selectoption>
-        <text>.</text>
+        <text><![CDATA[.]]></text>
         <group>20</group>
         <!-- ordinal: 3, group: T -->
     </selectoption>
     <selectoption>
-        <text>.</text>
+        <text><![CDATA[.]]></text>
         <group>20</group>
         <!-- ordinal: 4, group: T -->
     </selectoption>
     <selectoption>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>3</group>
         <!-- ordinal: 5, group: C -->
     </selectoption>
     <selectoption>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>1</group>
         <!-- ordinal: 6, group: A -->
     </selectoption>
