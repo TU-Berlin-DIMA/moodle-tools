@@ -20,11 +20,12 @@ from moodle_tools.utils import ParsingError
 from moodle_tools.yaml_constructors import construct_include_context, eval_context
 
 
-def load_questions(  # noqa: C901
+def load_questions(  # noqa: C901, PLR0912
     documents: Iterator[dict[str, Any]],
     strict_validation: bool = True,
     parse_markdown: bool = True,
     table_styling: bool = True,
+    append_to_question: str = "",
 ) -> Iterator[Question]:
     """Load questions from a collection of dictionaries.
 
@@ -34,6 +35,7 @@ def load_questions(  # noqa: C901
             optional information, such as feedback (default True).
         parse_markdown: Parse question and answer text as Markdown (default True).
         table_styling: Add Bootstrap style classes to table tags (default True).
+        append_to_question: Append this text to each question text HTML (default: empty string).
 
     Yields:
         Iterator[Question]: The loaded questions.
@@ -68,6 +70,10 @@ def load_questions(  # noqa: C901
             internal_question = create_question(question_type, **internal_document)
 
         question = create_question(question_type, **document)
+
+        if append_to_question:
+            question.question += append_to_question
+
         if strict_validation:
             errors = question.validate()
             if errors:
@@ -95,6 +101,7 @@ def generate_moodle_questions(
     question_filter: list[str] | None = None,
     table_styling: bool = True,
     allow_eval: bool = False,
+    append_to_question: str = "",
 ) -> str:
     """Generate Moodle XML from a list of paths to YAML documents.
 
@@ -106,6 +113,7 @@ def generate_moodle_questions(
         question_filter: Filter questions to export by name.
         table_styling: Add Bootstrap style classes to table tags (default True).
         allow_eval: Allows to evaluate math expressions (default False).
+        append_to_question: Append this text to each question text HTML (default empty string).
 
     Returns:
         str: Moodle XML for all questions in the YAML file.
@@ -125,6 +133,7 @@ def generate_moodle_questions(
                     strict_validation=not skip_validation,
                     parse_markdown=parse_markdown,
                     table_styling=table_styling,
+                    append_to_question=append_to_question,
                 ),
                 start=1,
             ):
@@ -244,6 +253,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Allows to evaluate math expressions (default: %(default)s)",
     )
+    parser.add_argument(
+        "--append-to-question",
+        type=str,
+        default="",
+        help="Append this text to each question text HTML.",
+    )
 
     return parser.parse_args()
 
@@ -284,6 +299,7 @@ def main() -> None:
             add_question_index=args.add_question_index,
             question_filter=args.filter,
             allow_eval=args.allow_eval,
+            append_to_question=args.append_to_question,
         )
         print(question_xml, file=args.output)
     except ParsingError as e:
