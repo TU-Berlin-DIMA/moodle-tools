@@ -28,33 +28,33 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <dragbox>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </dragbox>
     <dragbox>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </dragbox>
     <dragbox>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>2</group>
         <!-- ordinal: 3, group: B -->
     </dragbox>
     <dragbox>
-        <text>PROJECT</text>
+        <text><![CDATA[PROJECT]]></text>
         <group>1</group>
         <!-- ordinal: 4, group: A -->
     </dragbox>
     <dragbox>
-        <text>SIGMA</text>
+        <text><![CDATA[SIGMA]]></text>
         <group>2</group>
         <infinite/>
         <!-- ordinal: 5, group: B -->
     </dragbox>
     <dragbox>
-        <text>JOIN</text>
+        <text><![CDATA[JOIN]]></text>
         <group>3</group>
         <!-- ordinal: 6, group: C -->
     </dragbox>
@@ -87,17 +87,17 @@
     </incorrectfeedback>
     <shownumcorrect/>
     <dragbox>
-        <text>FROM</text>
+        <text><![CDATA[FROM]]></text>
         <group>1</group>
         <!-- ordinal: 1, group: A -->
     </dragbox>
     <dragbox>
-        <text>SELECT</text>
+        <text><![CDATA[SELECT]]></text>
         <group>1</group>
         <!-- ordinal: 2, group: A -->
     </dragbox>
     <dragbox>
-        <text>WHERE</text>
+        <text><![CDATA[WHERE]]></text>
         <group>1</group>
         <!-- ordinal: 3, group: A -->
     </dragbox>
