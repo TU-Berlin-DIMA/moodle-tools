@@ -62,7 +62,7 @@ class DifferentiatedSetEquality(STACKQuestion):
         return DifferentiatedSetEqualitySubQuestion(
             expected_set=self.expected_set or [],
             additional_sets_until_wrong=self.additional_sets_until_wrong,
-            grade=self.grade,
+            weight=self.grade,
         )
 
     def inline_answer_box(self, received_answer_name: str) -> None:

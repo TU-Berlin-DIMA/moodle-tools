@@ -20,14 +20,14 @@ class DifferentiatedSetEqualitySubQuestion(STACKSubQuestion):
         self,
         expected_set: list[str],
         additional_sets_until_wrong: int = 0,
-        grade: float = 1.0,
+        weight: float = 1.0,
         subset_prefix: str = "r",
         expected_answer_var: str = "expected",
         received_answer_var: str = "received",
         prt_name: str = "prt1",
     ) -> None:
         super().__init__(
-            grade=grade,
+            weight=weight,
             subset_prefix=subset_prefix,
             expected_answer_var=expected_answer_var,
             received_answer_var=received_answer_var,
@@ -78,7 +78,7 @@ class DifferentiatedSetEqualitySubQuestion(STACKSubQuestion):
                 expected_answer=f"set({current_subset})",
                 true_branch=PRTNodeBranch(
                     score_mode=ScoreMode.ADD,
-                    score=1 / len(numbered_set) * self.grade,
+                    score=f"1/{len(numbered_set)}",
                     next_node=num + 1,
                     answer_note=f"{self.prt_name}-{current_subset}-correct",
                 ),
@@ -100,7 +100,7 @@ class DifferentiatedSetEqualitySubQuestion(STACKSubQuestion):
                 expected_answer=f"cardinality({self.expected_answer_var}) + {num}",
                 true_branch=PRTNodeBranch(
                     score_mode=ScoreMode.SUBTRACT,
-                    score=1 / (additional_sets_until_wrong + 1) * self.grade,
+                    score=f"1/{additional_sets_until_wrong + 1}",
                     next_node=num + len(response_nodes) + 1
                     if num < additional_sets_until_wrong
                     else -1,
@@ -118,7 +118,7 @@ class DifferentiatedSetEqualitySubQuestion(STACKSubQuestion):
         response_nodes.update(too_many_sets_nodes)
         self.response_trees = {
             self.prt_name: PRT(
-                max_points=self.grade,
+                weight=1,
                 nodes=response_nodes,
             )
         }

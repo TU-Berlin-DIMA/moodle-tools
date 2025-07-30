@@ -14,5 +14,5 @@ class ExactSetEquality(DifferentiatedSetEquality):
     def build_question_logic(self) -> ExactSetEqualitySubQuestion:
         return ExactSetEqualitySubQuestion(
             expected_set=self.expected_set,
-            grade=self.grade,
+            weight=self.grade,
         )

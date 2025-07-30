@@ -5,7 +5,7 @@ from moodle_tools.questions.stack_subquestions.dataclasses import PRT, Input
 
 @dataclass
 class STACKSubQuestion:
-    grade: float
+    weight: float
     subset_prefix: str
     expected_answer_var: str
     received_answer_var: str

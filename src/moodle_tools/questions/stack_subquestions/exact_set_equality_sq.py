@@ -24,7 +24,7 @@ class ExactSetEqualitySubQuestion(DifferentiatedSetEqualitySubQuestion):
     ) -> None:
         self.response_trees = {
             self.prt_name: PRT(
-                max_points=1.0,
+                weight=1.0,
                 nodes={
                     0: PRTNode(
                         test_type=STACKMatchType.SETS,

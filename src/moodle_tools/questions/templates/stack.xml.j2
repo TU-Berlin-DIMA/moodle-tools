@@ -61,7 +61,7 @@
     {% for name, prt in response_trees.items() %}
     <prt>
         <name>{{ name }}</name>
-        <value>{{ prt.max_points }}</value>
+        <value>{{ prt.weight }}</value>
         <autosimplify>{{ "1" if prt.auto_simplify else "0" }}</autosimplify>
         <feedbackstyle>{{ prt.feedback_style }}</feedbackstyle>
         <feedbackvariables>

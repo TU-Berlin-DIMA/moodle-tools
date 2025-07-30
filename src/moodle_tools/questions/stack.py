@@ -151,11 +151,11 @@ class STACKQuestion(Question):
                             additional_sets_until_wrong=curr_sq.get(
                                 "additional_sets_until_wrong", 0
                             ),
-                            grade=curr_sq.get("grade", 1.0),
+                            weight=curr_sq.get("weight", 1.0),
                             subset_prefix="dse",
-                            expected_answer_var="dseexpected",
-                            received_answer_var="dsereceived",
-                            prt_name="prtdse",
+                            expected_answer_var="dse_expected",
+                            received_answer_var="dse_received",
+                            prt_name="dse_prt",
                         )
 
                     case "exact_set_equality":
@@ -163,7 +163,7 @@ class STACKQuestion(Question):
 
                         subquestion = ExactSetEqualitySubQuestion(
                             expected_set=curr_sq.get("expected_set", []),
-                            grade=curr_sq.get("grade", 1.0),
+                            weight=curr_sq.get("weight", 1.0),
                             subset_prefix="ese",
                             expected_answer_var="ese_expected",
                             received_answer_var="ese_received",

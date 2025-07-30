@@ -74,7 +74,7 @@ expected: { r1,r2 }</text>
 
     <prt>
         <name>prt1</name>
-        <value>1.0</value>
+        <value>1</value>
         <autosimplify>1</autosimplify>
         <feedbackstyle>1</feedbackstyle>
         <feedbackvariables>
@@ -89,7 +89,7 @@ expected: { r1,r2 }</text>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>+</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>1</truenextnode>
             <trueanswernote>prt1-r1-correct</trueanswernote>
@@ -114,7 +114,7 @@ expected: { r1,r2 }</text>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>+</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>2</truenextnode>
             <trueanswernote>prt1-r2-correct</trueanswernote>
@@ -139,7 +139,7 @@ expected: { r1,r2 }</text>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>-</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>3</truenextnode>
             <trueanswernote>prt1-1-GT-toomany</trueanswernote>
@@ -164,7 +164,7 @@ expected: { r1,r2 }</text>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>-</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>-1</truenextnode>
             <trueanswernote>prt1-2-GT-toomany</trueanswernote>
@@ -188,7 +188,7 @@ expected: { r1,r2 }</text>
     </name>
     <questiontext format="html">
         <text><![CDATA[<p>Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.</p>
-<p>[[input:dsereceived]] [[validation:dsereceived]]</p>]]></text>
+<p>[[input:dse_received]] [[validation:dse_received]]</p>]]></text>
     </questiontext>
     <generalfeedback format="html">
         <text></text>
@@ -203,11 +203,11 @@ expected: { r1,r2 }</text>
     <questionvariables>
         <text>dse1: {A, B};
 dse2: {B, C};
-dseexpected: { dse1,dse2 }</text>
+dse_expected: { dse1,dse2 }</text>
     </questionvariables>
     <specificfeedback format="html">
         <text><![CDATA[
-<p>[[feedback:prtdse]]</p>]]></text>
+<p>[[feedback:dse_prt]]</p>]]></text>
     </specificfeedback>
     <questionnote format="html">
         <text><![CDATA[]]></text>
@@ -237,9 +237,9 @@ dseexpected: { dse1,dse2 }</text>
     <matrixparens>[</matrixparens>
     <variantsselectionseed></variantsselectionseed>
     <input>
-        <name>dsereceived</name>
+        <name>dse_received</name>
         <type>algebraic</type>
-        <tans>dseexpected</tans>
+        <tans>dse_expected</tans>
         <boxsize>44</boxsize>
         <strictsyntax>1</strictsyntax>
         <insertstars>0</insertstars>
@@ -256,7 +256,7 @@ dseexpected: { dse1,dse2 }</text>
     </input>
 
     <prt>
-        <name>prtdse</name>
+        <name>dse_prt</name>
         <value>1</value>
         <autosimplify>1</autosimplify>
         <feedbackstyle>1</feedbackstyle>
@@ -267,15 +267,15 @@ dseexpected: { dse1,dse2 }</text>
             <name>0</name>
             <description></description>
             <answertest>Sets</answertest>
-            <sans>intersection(set(dse1), dsereceived)</sans>
+            <sans>intersection(set(dse1), dse_received)</sans>
             <tans>set(dse1)</tans>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>+</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>1</truenextnode>
-            <trueanswernote>prtdse-dse1-correct</trueanswernote>
+            <trueanswernote>dse_prt-dse1-correct</trueanswernote>
             <truefeedback format="html">
               <text><![CDATA[]]></text>
             </truefeedback>
@@ -283,7 +283,7 @@ dseexpected: { dse1,dse2 }</text>
             <falsescore>0</falsescore>
             <falsepenalty></falsepenalty>
             <falsenextnode>1</falsenextnode>
-            <falseanswernote>prtdse-dse1-wrong</falseanswernote>
+            <falseanswernote>dse_prt-dse1-wrong</falseanswernote>
             <falsefeedback format="html">
               <text><![CDATA[]]></text>
             </falsefeedback>
@@ -292,15 +292,15 @@ dseexpected: { dse1,dse2 }</text>
             <name>1</name>
             <description></description>
             <answertest>Sets</answertest>
-            <sans>intersection(set(dse2), dsereceived)</sans>
+            <sans>intersection(set(dse2), dse_received)</sans>
             <tans>set(dse2)</tans>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>+</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>2</truenextnode>
-            <trueanswernote>prtdse-dse2-correct</trueanswernote>
+            <trueanswernote>dse_prt-dse2-correct</trueanswernote>
             <truefeedback format="html">
               <text><![CDATA[]]></text>
             </truefeedback>
@@ -308,7 +308,7 @@ dseexpected: { dse1,dse2 }</text>
             <falsescore>0</falsescore>
             <falsepenalty></falsepenalty>
             <falsenextnode>2</falsenextnode>
-            <falseanswernote>prtdse-dse2-wrong</falseanswernote>
+            <falseanswernote>dse_prt-dse2-wrong</falseanswernote>
             <falsefeedback format="html">
               <text><![CDATA[]]></text>
             </falsefeedback>
@@ -317,15 +317,15 @@ dseexpected: { dse1,dse2 }</text>
             <name>2</name>
             <description></description>
             <answertest>GT</answertest>
-            <sans>cardinality(dsereceived)</sans>
-            <tans>cardinality(dseexpected) + 0</tans>
+            <sans>cardinality(dse_received)</sans>
+            <tans>cardinality(dse_expected) + 0</tans>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>-</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>3</truenextnode>
-            <trueanswernote>prtdse-1-GT-toomany</trueanswernote>
+            <trueanswernote>dse_prt-1-GT-toomany</trueanswernote>
             <truefeedback format="html">
               <text><![CDATA[]]></text>
             </truefeedback>
@@ -333,7 +333,7 @@ dseexpected: { dse1,dse2 }</text>
             <falsescore>0</falsescore>
             <falsepenalty></falsepenalty>
             <falsenextnode>-1</falsenextnode>
-            <falseanswernote>prtdse-0-LEQ-toomany</falseanswernote>
+            <falseanswernote>dse_prt-0-LEQ-toomany</falseanswernote>
             <falsefeedback format="html">
               <text><![CDATA[]]></text>
             </falsefeedback>
@@ -342,15 +342,15 @@ dseexpected: { dse1,dse2 }</text>
             <name>3</name>
             <description></description>
             <answertest>GT</answertest>
-            <sans>cardinality(dsereceived)</sans>
-            <tans>cardinality(dseexpected) + 1</tans>
+            <sans>cardinality(dse_received)</sans>
+            <tans>cardinality(dse_expected) + 1</tans>
             <testoptions></testoptions>
             <quiet>1</quiet>
             <truescoremode>-</truescoremode>
-            <truescore>0.5</truescore>
+            <truescore>1/2</truescore>
             <truepenalty></truepenalty>
             <truenextnode>-1</truenextnode>
-            <trueanswernote>prtdse-2-GT-toomany</trueanswernote>
+            <trueanswernote>dse_prt-2-GT-toomany</trueanswernote>
             <truefeedback format="html">
               <text><![CDATA[]]></text>
             </truefeedback>
@@ -358,7 +358,7 @@ dseexpected: { dse1,dse2 }</text>
             <falsescore>0</falsescore>
             <falsepenalty></falsepenalty>
             <falsenextnode>-1</falsenextnode>
-            <falseanswernote>prtdse-1-LEQ-toomany</falseanswernote>
+            <falseanswernote>dse_prt-1-LEQ-toomany</falseanswernote>
             <falsefeedback format="html">
               <text><![CDATA[]]></text>
             </falsefeedback>

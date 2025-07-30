@@ -6,7 +6,7 @@ from moodle_tools.enums import ScoreMode, STACKMatchType
 @dataclass
 class PRTNodeBranch:
     score_mode: ScoreMode
-    score: float
+    score: float | str
     penalty: str = ""
     answer_note: str = ""
     feedback: str = ""
@@ -27,7 +27,7 @@ class PRTNode:
 
 @dataclass
 class PRT:
-    max_points: float
+    weight: float
     nodes: dict[int, PRTNode]
     auto_simplify: bool = True
     feedback_style: int = 1
