@@ -9,3 +9,18 @@ expected_set:
   - A
   - B
   - C
+---
+type: stack
+title: All-or-Nothing graded set equality question as subquestion
+question: |-
+  Given distance A <-> B = 2 and distance B <-> C = 4, return the k-Means cluster with k = 1.
+
+  [["dsq_quest"]]
+subquestions:
+  dsq_quest:
+    type: exact_set_equality
+    grade: 1
+    expected_set:
+      - A
+      - B
+      - C

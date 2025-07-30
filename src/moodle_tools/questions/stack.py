@@ -1,5 +1,4 @@
 import re
-from dataclasses import dataclass, field
 from typing import Any
 
 import dacite
@@ -7,60 +6,16 @@ from dacite import Config
 
 from moodle_tools.enums import ScoreMode, STACKMatchType
 from moodle_tools.questions.question import Question
+from moodle_tools.questions.stack_subquestions.dataclasses import PRT, Input
+from moodle_tools.questions.stack_subquestions.diff_set_equality_sq import (
+    DifferentiatedSetEqualitySubQuestion,
+)
+from moodle_tools.questions.stack_subquestions.exact_set_equality_sq import (
+    ExactSetEqualitySubQuestion,
+)
 from moodle_tools.utils import preprocess_text
 
-
-@dataclass
-class PRTNodeBranch:
-    score_mode: ScoreMode
-    score: float
-    penalty: str = ""
-    answer_note: str = ""
-    feedback: str = ""
-    next_node: int = -1
-
-
-@dataclass
-class PRTNode:
-    test_type: str
-    received_answer: str
-    expected_answer: str
-    true_branch: PRTNodeBranch
-    false_branch: PRTNodeBranch
-    description: str = ""
-    test_options: str = ""
-    quiet: bool = True
-
-
-@dataclass
-class PRT:
-    max_points: float
-    nodes: dict[int, PRTNode]
-    auto_simplify: bool = True
-    feedback_style: int = 1
-    feedback_variables: list[str] = field(default_factory=list)
-
-
-@dataclass
-class Input:
-    type: str
-    matching_answer_variable: str
-    width: int
-    strict_syntax: bool = True
-    insert_stars: bool = False
-    syntax_hint: str = ""
-    syntax_attribute: bool = False
-    forbidden_words: list[str] = field(default_factory=list)
-    allowed_words: list[str] = field(default_factory=list)
-    forbid_floats: bool = True
-    require_lowest_terms: bool = False
-    check_answer_type: bool = False
-    must_verify: bool = True
-    show_validation: int = 2
-    options: list[str] = field(default_factory=list)
-
-
-re_id = re.compile(r"""\[\[\"([^\"]*)\"\]\]""")
+re_id = re.compile(r"""\[\[(\"?[^\"\]]*\"?)\]\]""")
 
 
 class STACKQuestion(Question):
@@ -97,6 +52,7 @@ class STACKQuestion(Question):
         variants_selection_seed: str = "",
         inputs: dict[str, dict[str, Any]] | None = None,
         response_trees: dict[str, dict[str, Any]] | None = None,
+        subquestions: dict[str, dict[str, Any]] | None = None,
         **flags: bool,
     ) -> None:
         """Initialize a new STACK question.
@@ -129,6 +85,7 @@ class STACKQuestion(Question):
             variants_selection_seed: Seed for variants selection (STACK-Specific).
             inputs: Input Variables in the Qeustion.
             response_trees: partial response trees. Moodle tends to allow only one of those (prt1).
+            subquestions: Subquestions that are used in the question.
             flags: Additional flags for the question.
         """
         super().__init__(question, title, category, grade, general_feedback, **flags)
@@ -166,18 +123,74 @@ class STACKQuestion(Question):
             )
             for k, v in (response_trees or {}).items()
         }
+        self.subquestions = subquestions or {}
 
-        self.replace_input_placeholder()
+        self.fill_input_placeholder()
 
-    def replace_input_placeholder(self) -> None:
+    def fill_input_placeholder(self) -> None:
         input_matches = list(re_id.finditer(self.question))
         inputs = {match.group(1): match.group(0) for match in input_matches}
 
         if len(inputs) != len(input_matches):
             raise ValueError("Duplicate input variables found in the question text.")
 
-        for i in inputs.items():
-            self.question = self.question.replace(i[1], f"[[input:{i[0]}]] [[validation:{i[0]}]]")
+        for key, i in inputs.items():
+            clean_key = key.strip('"')
+
+            if clean_key in self.subquestions:
+                curr_sq = self.subquestions[clean_key]
+
+                match curr_sq["type"]:
+                    case "diff_set_equality":
+                        del curr_sq["type"]
+
+                        curr_sq.update()
+
+                        subquestion = DifferentiatedSetEqualitySubQuestion(
+                            expected_set=curr_sq.get("expected_set", []),
+                            additional_sets_until_wrong=curr_sq.get(
+                                "additional_sets_until_wrong", 0
+                            ),
+                            grade=curr_sq.get("grade", 1.0),
+                            subset_prefix="dse",
+                            expected_answer_var="dseexpected",
+                            received_answer_var="dsereceived",
+                            prt_name="prtdse",
+                        )
+
+                    case "exact_set_equality":
+                        del curr_sq["type"]
+
+                        subquestion = ExactSetEqualitySubQuestion(
+                            expected_set=curr_sq.get("expected_set", []),
+                            grade=curr_sq.get("grade", 1.0),
+                            subset_prefix="ese",
+                            expected_answer_var="ese_expected",
+                            received_answer_var="ese_received",
+                            prt_name="ese_prt",
+                        )
+
+                    case _:
+                        raise ValueError(f"Unknown subquestion type: {curr_sq['type']}")
+
+                self.inputs.update(subquestion.inputs)
+                self.response_trees.update(subquestion.response_trees)
+                self.input_variables.extend(subquestion.input_variables)
+                self.specific_feedback += "\n" + subquestion.specific_feedback
+                self.question = re.sub(
+                    re.escape(i),
+                    f"[[input:{subquestion.received_answer_var}]] "
+                    f"[[validation:{subquestion.received_answer_var}]]",
+                    self.question,
+                )
+            else:
+                strip_key = key.strip('"')
+                if strip_key in self.inputs:
+                    self.question = re.sub(
+                        re.escape(i),
+                        f"[[input:{strip_key}]] [[validation:{strip_key}]]",
+                        self.question,
+                    )
 
     def validate(self) -> list[str]:
         """Validate the STACK question.

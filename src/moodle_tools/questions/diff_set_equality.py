@@ -1,8 +1,9 @@
 import re
 
-from moodle_tools.enums import ScoreMode, STACKMatchType
-from moodle_tools.questions.stack import PRT, Input, PRTNode, PRTNodeBranch, STACKQuestion
-from moodle_tools.utils import parse_markdown
+from moodle_tools.questions.stack import STACKQuestion
+from moodle_tools.questions.stack_subquestions.diff_set_equality_sq import (
+    DifferentiatedSetEqualitySubQuestion,
+)
 
 
 class DifferentiatedSetEquality(STACKQuestion):
@@ -20,11 +21,11 @@ class DifferentiatedSetEquality(STACKQuestion):
         category: str | None = None,
         grade: float = 1.0,
         general_feedback: str = "",
-        expected_set: list[str] | None = None,
-        additional_sets_until_wrong: int = 0,
         correct_feedback: str = "",
         partial_feedback: str = "",
         incorrect_feedback: str = "",
+        expected_set: list[str] | None = None,
+        additional_sets_until_wrong: int = 0,
         variants_selection_seed: str = "",
         **flags: bool,
     ) -> None:
@@ -44,96 +45,25 @@ class DifferentiatedSetEquality(STACKQuestion):
             **flags,  # type: ignore
         )
 
-        self.subset_prefix = "r"
-        self.expected_answer_var = "expected"
-        self.received_answer_var = "received"
-        self.prt_name = "prt1"
+        self.expected_set = expected_set
+        self.additional_sets_until_wrong = additional_sets_until_wrong
+        self.question_logic = self.build_question_logic()
 
-        self.question_note = parse_markdown(f"{{@{self.expected_answer_var}@}}")
-        self.specific_feedback = parse_markdown(f"[[feedback:{self.prt_name}]]")
+        self.input_variables.extend(self.question_logic.input_variables)
+        self.inputs.update(self.question_logic.inputs)
+        self.response_trees.update(self.question_logic.response_trees)
 
-        self.inputs = {
-            self.received_answer_var: Input(
-                type="algebraic",
-                matching_answer_variable=self.expected_answer_var,
-                width=len(", ".join(expected_set)) + 30,
-            ),
-        }
+        self.question_note = self.question_logic.question_note
+        self.specific_feedback = self.question_logic.specific_feedback
 
-        variables_terms_set = self.build_input_variables(expected_set)
+        self.inline_answer_box(self.question_logic.received_answer_var)
 
-        self.build_prt(additional_sets_until_wrong, variables_terms_set)
-
-        self.inline_answer_box(self.received_answer_var)
-
-    def build_input_variables(self, expected_set: list[str]) -> list[tuple[str, str]]:
-        variables_terms_set = list(
-            zip(
-                [f"{self.subset_prefix}{i}" for i in range(1, len(expected_set) + 1)],
-                expected_set,
-                strict=False,
-            )
+    def build_question_logic(self) -> DifferentiatedSetEqualitySubQuestion:
+        return DifferentiatedSetEqualitySubQuestion(
+            expected_set=self.expected_set or [],
+            additional_sets_until_wrong=self.additional_sets_until_wrong,
+            grade=self.grade,
         )
-        self.input_variables = [f"{var}: {set_part}" for var, set_part in variables_terms_set]
-        self.input_variables.append(
-            f"{self.expected_answer_var}: {{ {','.join([v[0] for v in variables_terms_set])} }}"
-        )
-        return variables_terms_set
-
-    def build_prt(
-        self, additional_sets_until_wrong: int, numbered_set: list[tuple[str, str]]
-    ) -> None:
-        response_nodes = {
-            num: PRTNode(
-                test_type=STACKMatchType.SETS,
-                received_answer=f"intersection(set({current_subset}), {self.received_answer_var})",
-                expected_answer=f"set({current_subset})",
-                true_branch=PRTNodeBranch(
-                    score_mode=ScoreMode.ADD,
-                    score=1 / len(numbered_set),
-                    next_node=num + 1,
-                    answer_note=f"{self.prt_name}-{current_subset}-correct",
-                ),
-                false_branch=PRTNodeBranch(
-                    score_mode=ScoreMode.ADD,
-                    score=0,
-                    next_node=num + 1,
-                    answer_note=f"{self.prt_name}-{current_subset}-wrong",
-                ),
-            )
-            for (current_subset, _), num in zip(
-                numbered_set, range(len(numbered_set)), strict=False
-            )
-        }
-        too_many_sets_nodes = {
-            num + len(response_nodes): PRTNode(
-                test_type=STACKMatchType.GREATER_THAN,
-                received_answer=f"cardinality({self.received_answer_var})",
-                expected_answer=f"cardinality({self.expected_answer_var}) + {num}",
-                true_branch=PRTNodeBranch(
-                    score_mode=ScoreMode.SUBTRACT,
-                    score=1 / (additional_sets_until_wrong + 1),
-                    next_node=num + len(response_nodes) + 1
-                    if num < additional_sets_until_wrong
-                    else -1,
-                    answer_note=f"{self.prt_name}-{num + 1}-GT-toomany",
-                ),
-                false_branch=PRTNodeBranch(
-                    score_mode=ScoreMode.ADD,
-                    score=0,
-                    next_node=-1,
-                    answer_note=f"{self.prt_name}-{num}-LEQ-toomany",
-                ),
-            )
-            for num in range(additional_sets_until_wrong + 1)
-        }
-        response_nodes.update(too_many_sets_nodes)
-        self.response_trees = {
-            self.prt_name: PRT(
-                max_points=1.0,
-                nodes=response_nodes,
-            )
-        }
 
     def inline_answer_box(self, received_answer_name: str) -> None:
         re_box = re.compile(r"\[\[ANSWERBOX\]\]")

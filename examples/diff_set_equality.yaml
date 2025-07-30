@@ -9,3 +9,18 @@ expected_set:
   - "{A, B}"
   - "{B, C}"
 additional_sets_until_wrong: 1
+---
+type: stack
+title: Differentially graded set equality question as subquestion
+question: |-
+  Translate the relation R(<u>A</u>, B, C) with B → C into 3NF. Return the result as a set of sets.
+
+  [["dsq_quest"]]
+subquestions:
+  dsq_quest:
+    type: diff_set_equality
+    grade: 1
+    expected_set:
+      - "{A, B}"
+      - "{B, C}"
+    additional_sets_until_wrong: 1

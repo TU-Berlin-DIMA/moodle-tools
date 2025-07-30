@@ -2,7 +2,9 @@
 
 import inspect
 import io
+import random
 import shutil
+import string
 from base64 import b64encode
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -117,7 +119,12 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
 
     def fetch_expected_result(self, testcase: Testcase) -> str:
         # TODO: Add test
-        shutil.copy(self.input_stream, self.input_stream.name)
+        copied_file = Path(
+            self.input_stream.stem
+            + "".join(random.choices(string.digits, k=12))  # noqa: S311
+            + self.input_stream.suffix
+        )
+        shutil.copy(self.input_stream, copied_file)
 
         stdout_capture = io.StringIO()
         combined_code = f"{ISDA_STREAMING_IMPORTS}\n\n{self.answer}\n\n{testcase['code']}"
@@ -143,6 +150,6 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
                 ------------------------------"""
             ) from e
         finally:
-            Path(self.input_stream.name).unlink()
+            copied_file.unlink()
 
         return stdout_capture.getvalue()
