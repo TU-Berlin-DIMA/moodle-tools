@@ -22,8 +22,8 @@
     {% endfor %}
     {% for choice in choices %}
         <column number="{{ loop.index }}">
-            <responsetext format="moodle_auto_format">
-                <text>{{ choice }}</text>
+            <responsetext format="html">
+                <text>{{ "<![CDATA[{}]]>".format(choice) if choice else "" }}</text>
             </responsetext>
         </column>
     {% endfor %}
