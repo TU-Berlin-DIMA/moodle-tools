@@ -16,7 +16,8 @@
     <shownumcorrect/>
     {% for option in options %}
     <dragbox>
-        <text>{{ option.answer }}</text>
+        <text>{{ "<![CDATA[{}]]>".format(option.answer) if option.answer }}</text>
+        {% if option.file %}
         <group>{{ option.group }}</group>
         {% if option.infinite %}
         <infinite/>
