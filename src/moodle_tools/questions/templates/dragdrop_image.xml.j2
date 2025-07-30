@@ -1,0 +1,30 @@
+{% extends "question.xml.j2" %}
+{% block content %}
+    {{ super() }}
+    <shuffleanswers>
+        {{ "1" if shuffle_answers == "shuffle" else "0" }}
+    </shuffleanswers>
+    <correctfeedback format="html">
+    <text>{{ "<![CDATA[{}]]>".format(correct_feedback) if correct_feedback }}</text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+    <text>{{ "<![CDATA[{}]]>".format(partial_feedback) if partial_feedback }}</text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+    <text>{{ "<![CDATA[{}]]>".format(incorrect_feedback) if incorrect_feedback }}</text>
+    </incorrectfeedback>
+    <shownumcorrect/>
+    {% for option in options %}
+    <drag>
+        <text>{{ option.answer }}</text>
+        <draggroup>{{ option.group }}</draggroup>
+        {% if option.infinite %}
+        <infinite/>
+        {% endif %}
+        {%  if option.file %}
+        <file>{{ option.file }}</file>
+        {% endif %}
+        <!-- ordinal: {{ option.ordinal }}, group: {{ option.group_letter }} -->
+    </drag>
+    {% endfor %}
+{% endblock%}
