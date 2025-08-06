@@ -350,6 +350,13 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                         )
                     )
 
+                case ["MT_testkeywordpresent", keyword]:
+                    additional_info = testcase.get("additional_info", {})
+                    additional_info["keyword_present"] = keyword.lower()
+                    testcase["additional_info"] = additional_info
+
+                    testcase["code"] = ""
+
                 case _:
                     if statement.startswith("MT_"):
                         logger.warning(
@@ -360,13 +367,19 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
         return "\n\n".join(rendered_statements)
 
-    def fetch_expected_result(self, testcase: Testcase) -> str:
+    def fetch_expected_result(self, testcase: Testcase) -> str:  # noqa: C901
         if not self.database_connection:
             raise ParsingError(DB_CONNECTION_ERROR)
 
         # A DDL/DML test might include multiple statements, so we need to split them
         statements = [code for code in testcase["code"].split(";") if code.strip()]
+        additional_info = testcase.get("additional_info", {})
+
+        if not statements and "keyword_present" in additional_info:
+            return f"Keyword '{additional_info['keyword_present']}' is present.".lower()
+
         stdout_capture = io.StringIO()
+
         with redirect_stdout(stdout_capture), open_tmp_db_connection(self.database_path) as con:
             con.sql(self.answer)
             for statement in statements:

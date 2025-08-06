@@ -62,8 +62,16 @@ def run_testcase(testcase, db_working, db_files):
         db_working = f"{db_working}.copy"
         shutil.copyfile(db_files[0], db_working)  # Copy clean writeable db file
 
-
-
+    additional_info = testcase['additional_info']
+    if "keyword_present" in additional_info:
+        keyword = additional_info['keyword_present'].lower()
+        # If the test case has a keyword_presents, we need to check if it is present in the student answer.
+        if keyword in student_answer.lower():
+            actual_response = f"Keyword '{keyword}' is present.".lower()
+            return actual_response, testcase['expected_result'], True, []
+        else:
+            actual_response = f"Keyword '{keyword}' not found in student answer.".lower()
+            return actual_response, testcase['expected_result'], False, []
 
     sys.stdout = io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
 
@@ -137,7 +145,7 @@ awarded_points = 0.0
 first_error = ""
 
 for tc in test_cases:
-    if not abort_tests:
+    if not abort_tests and not hide_rest_if_fail:
         received_result, expected_result, evaluated_result, errors = run_testcase(tc, db_working, db_files)
 
         testcase_max = tc['testcase_max']
@@ -179,7 +187,7 @@ for tc in test_cases:
             " " * 5 + "0.000",
             " " * (10 - len(tc_max_str)) + tc_max_str,
             False,
-            True
+            not tc['hide_rest_if_fail']
         ])
 
 
