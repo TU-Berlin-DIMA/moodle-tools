@@ -15,6 +15,9 @@ answer: |-
     name TEXT NOT NULL
   );
 testcases:
+  - description: Korrektes SQL-Keyword verwendet
+    code: MT_testkeywordpresent CREATE
+    grade: 0.5
   - description: Test auf Laufzeitfehler
     code: |-
       SELECT version() as version;
