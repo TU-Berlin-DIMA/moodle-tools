@@ -19,6 +19,8 @@ from loguru import logger
 
 from moodle_tools.enums import CRGrader
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
+from moodle_tools.questions.cr_testeval.cr_testeval import CRDisplayType, CRTestCase
+from moodle_tools.questions.cr_testeval.ddl_testeval import DDLTestCase
 from moodle_tools.utils import ParsingError, preprocess_text
 
 DB_CONNECTION_ERROR = (
@@ -237,6 +239,37 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         if check_results:
             self.check_results()
 
+        # read cr_testeval.py and ddl_testeval.py and encode them in base_64
+
+    @property
+    def files(self) -> list[dict[str, str]]:
+        files = super().files
+        with (Path(__file__).parent / "cr_testeval" / "ddl_testeval.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "ddl_testeval.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        with (Path(__file__).parent / "cr_testeval" / "cr_testeval.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "cr_testeval.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        with (Path(__file__).parent / "cr_testeval" / "__init__.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "__init__.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        return files
+
     def update_testcase_from_extra(self, testcase: Testcase) -> None:
         self.put_flextypes_to_testcases(testcase)
 
@@ -302,6 +335,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
             str: The rendered test code.
         """
         rendered_statements = []
+        additional_info = testcase.get("additional_info", {})
 
         test_statements = [t.strip() for t in testcase["code"].split(";") if t.strip()]
         for statement in test_statements:
@@ -351,9 +385,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                     )
 
                 case ["MT_testkeywordpresent", keyword]:
-                    additional_info = testcase.get("additional_info", {})
                     additional_info["keyword_present"] = keyword.lower()
-                    testcase["additional_info"] = additional_info
 
                     testcase["code"] = ""
 
@@ -365,86 +397,34 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                     else:
                         rendered_statements.append(statement + ";")
 
+        testcase["additional_info"] = additional_info
         return "\n\n".join(rendered_statements)
 
-    def fetch_expected_result(self, testcase: Testcase) -> str:  # noqa: C901
+    def fetch_expected_result(self, testcase: Testcase) -> str:
         if not self.database_connection:
             raise ParsingError(DB_CONNECTION_ERROR)
 
-        # A DDL/DML test might include multiple statements, so we need to split them
-        statements = [code for code in testcase["code"].split(";") if code.strip()]
-        additional_info = testcase.get("additional_info", {})
+        cr_testcase = CRTestCase(
+            testcode=testcase["code"],
+            extra=testcase["description"],
+            expected_result="",
+            testcase_max=testcase.get("grade", 1.0),
+            additional_info=testcase.get("additional_info", {}),
+            hide_rest_if_fail=testcase.get("hiderestiffail", False),
+            display=CRDisplayType.from_str(testcase.get("show", "SHOW")),
+        )
 
-        if not statements and "keyword_present" in additional_info:
-            return f"Keyword '{additional_info['keyword_present']}' is present.".lower()
+        received_result, _, _, _ = DDLTestCase.evaluate_testcase(
+            testcase=cr_testcase,
+            student_answer=self.answer,
+            hide_rest_if_fail=False,
+            db_working=str(self.database_path),
+            db_files=str(self.files),
+            max_rows=self.MAX_ROWS,
+            max_width=self.MAX_WIDTH,
+        )
 
-        stdout_capture = io.StringIO()
-
-        with redirect_stdout(stdout_capture), open_tmp_db_connection(self.database_path) as con:
-            con.sql(self.answer)
-            for statement in statements:
-                try:
-                    res = con.sql(statement)
-                    if res:
-                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)
-                    else:
-                        print(res)
-                except (duckdb.ConstraintException, duckdb.ConversionException) as e:
-                    # DuckDB prints the individual constraint implementation in the error message
-                    # so we have to filter it out.
-
-                    match_tut = re.search(r"INSERT INTO (.+?) ", statement)
-
-                    if not match_tut:
-                        print(e)
-                        continue
-
-                    table_under_test = match_tut.group(1)
-
-                    testcase_extra = cast("dict[str, Any]", testcase["extra"])
-
-                    flex_datatypes = cast(
-                        "list[FlexType]", testcase_extra.get("flex_datatypes", [])
-                    )
-
-                    table_flex_types = [
-                        flex_types
-                        for flex_types in flex_datatypes
-                        if table_under_test in flex_types.get("used_in", [])
-                    ]
-
-                    table_flex_dt = [ft.get("allowed", []) for ft in table_flex_types]
-
-                    table_has_flex_enum = any(
-                        "ENUM" in item for allowed in table_flex_dt for item in allowed
-                    ) and not all("ENUM" in item for allowed in table_flex_dt for item in allowed)
-
-                    match_check = re.search(
-                        r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
-                    )
-
-                    match_enum = re.search(r"^Conversion Error: Could not convert.*$", str(e))
-
-                    if (match_check or match_enum) and table_has_flex_enum:
-                        additional_info = cast("dict[str, Any]", testcase["additional_info"])
-                        flex_enum_tables = additional_info.get("flex_enum_tables", [])
-                        if table_under_test not in flex_enum_tables:
-                            flex_enum_tables.append(table_under_test)
-                            additional_info["flex_enum_tables"] = flex_enum_tables
-                            testcase["additional_info"] = additional_info
-
-                        print(
-                            f"CHECK constraint failed or wrong "
-                            f"ENUM in table {table_under_test}".lower()
-                        )
-                    elif match_check:
-                        print(f"CHECK constraint failed on table {table_under_test}".lower())
-                    else:
-                        print(str(e).lower())
-                except duckdb.Error as e:
-                    print(e)
-
-        return stdout_capture.getvalue()
+        return received_result
 
     def validate_query(self, testcase: Testcase) -> None:
         if "## non_viable_flex_type ##" in testcase["result"]:
