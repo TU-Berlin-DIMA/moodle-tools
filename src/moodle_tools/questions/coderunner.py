@@ -26,6 +26,7 @@ class Testcase(TypedDict, total=False):
         hidden: If True, the test hidden. Otherwise, it is shown to students (default False).
         show: If the test is hidden, this is set to "HIDE". Otherwise, it is set to "SHOW".
         extra: Extra information for the test case (this can be used during output generation).
+        additional_info: Additional information for the test case
     """
 
     description: str
@@ -36,7 +37,7 @@ class Testcase(TypedDict, total=False):
     hidden: bool
     show: str
     extra: dict[str, Any] | None
-    additional_info: dict[str, Any] | None
+    additional_info: dict[str, Any]
 
 
 class CoderunnerQuestion(Question):
