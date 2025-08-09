@@ -272,6 +272,18 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
 
         return rendered_statement
 
+    def validate_query(self, testcase: Testcase) -> None:
+        keyword_present = re.search(r"keyword '([^']+)' is present\.", testcase["result"])
+        additional_info = testcase.get("additional_info", {})
+
+        if "keyword_present" in additional_info and not keyword_present:
+            raise ParsingError(
+                "Testcase {} expects the keyword '{}' to be present, "
+                "but it was not found in the result.",
+                testcase["description"],
+                additional_info["keyword_present"],
+            )
+
 
 class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
     """Template for a SQL DDL/DML question in Moodle CodeRunner."""
@@ -443,8 +455,10 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         return rendered_statement
 
     def validate_query(self, testcase: Testcase) -> None:
+        super().validate_query(testcase)
+
         if "## non_viable_flex_type ##" in testcase["result"]:
-            logger.warning(
+            raise ParsingError(
                 "Non-viable flex type detected in test case {}. "
                 "Please check that the set of possible types matches the sample solution.",
                 testcase.get("description", "Untitled test"),
@@ -594,6 +608,23 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
                 rendered_statement = super().enhance_statement(statement, testcase)
 
         return rendered_statement
+
+    def validate_query(self, testcase: Testcase) -> None:
+        """Validate the query and ensure it does not contain any non-viable flex types."""
+        super().validate_query(testcase)
+
+        additional_info = testcase.get("additional_info", {})
+
+        if (
+            "required_tables" in additional_info
+            and "All required tables are present." not in testcase["result"]
+        ):
+            raise ParsingError(
+                "Test case {} expects the following tables to be present: {}, "
+                "but the expected answer does not query them.",
+                testcase.get("description", "Untitled test"),
+                ", ".join(additional_info["required_tables"]),
+            )
 
     @property
     def files(self) -> list[dict[str, str]]:
