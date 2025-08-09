@@ -20,6 +20,14 @@ answer: |-
   )
   ORDER BY Name ASC;
 testcases:
+  - code: "MT_testkeywordpresent SELECT"
+    grade: 0.5
+    hidden: false
+    result: "keyword 'select' is present."
+  - code: "MT_requiredtables Produkt"
+    grade: 0.5
+    hidden: false
+    result: "All required tables are present."
   - code: ""
     result: |-
       ┌───────────────┬───────┐
@@ -28,6 +36,8 @@ testcases:
       ├───────────────┼───────┤
       │ Rolex Daytona │ 20000 │
       └───────────────┴───────┘
+    grade: 1.0
+    hiderestiffail: false
   - code: |-
       INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
       INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
@@ -40,6 +50,9 @@ testcases:
       │ BMW                       │ 50000 │
       │ Pokemon Glurak Holo Karte │ 50000 │
       └───────────────────────────┴───────┘
+    additional_info:
+      group: "query1"
+    grade: 0.5
   - code: |-
       INSERT INTO Produkt (Id, Name, Preis) VALUES (45678, 'Rolex Daytona', 30000);
     result: |-
@@ -49,7 +62,8 @@ testcases:
       ├───────────────┼───────┤
       │ Rolex Daytona │ 30000 │
       └───────────────┴───────┘
-    grade: 4.0
-    hidden: false
+    additional_info:
+      group: "query1"
+    grade: 0.5
 check_results: true
 database_connection: true
