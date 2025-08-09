@@ -1082,7 +1082,7 @@ testcases:
     description: Test with template and test types
 ```
 
-**Hint:** Adding a version test at the beginning helps with both checking for runtime errors and ensuring that the local DuckDB matches the on eused in Moodle.
+**Hint:** Adding a version test at the beginning helps with both checking for runtime errors and ensuring that the local DuckDB matches the one used in Moodle.
 
 If you want to use the `types` check, you can optionally provide a list of types for each column in the `extra` field to allow multiple correct types as part of the question.
 In the following example, both `REAL` and `DECIMAL(10, 2)` are accepted as correct types for the `Preis` column:
