@@ -13,8 +13,6 @@ shutil.move("ddl_testeval.py", "cr_testeval")
 from cr_testeval.cr_testeval import CRTestCase, CRDisplayType
 from cr_testeval.ddl_testeval import DDLTestCase
 
-import duckdb
-
 MAX_ROWS = 50
 MAX_WIDTH = 500
 
@@ -36,7 +34,6 @@ elif len(db_files) == 1:
 else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
-SEPARATOR = "#<ab@17943918#@>#"
 test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden", ""]]
 
 old_stdout = sys.stdout
