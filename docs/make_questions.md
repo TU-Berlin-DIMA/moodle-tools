@@ -1043,12 +1043,22 @@ database_connection: false
 - `database_path` must always be provided. Can be ":memory:" if the question should use an empty database. In this case, no database file is written into the output XML.
 - `database_connection` is optional and determines whether moodle-tools connects to the provided database during XML generation (default `True`)
 
+All SQL Questions now use Coderunner TemplateGraders. This way, we achieve maximum flexibility.
+
+For all sql questions, the following shorthands are available:
+
++ `MT_testkeywordpresent <keyword>`: Checks whether the given keyword is present in the answer.
+
+Shorthands are used by writing them in the `code` field of a test case, e.g., `MT_testkeywordpresent SELECT`.
+
+
 ##### Coderunner DDL/DML Questions
 
 For SQL DDL/DML questions, moodle-tools comes with some templates that simplify checking for regularly used database structures.
 To use them, you have to write `MT_<template_name> <params>` instead of a SQL statement into a test case's `code` field.
 
-As of now, moodle-tools only offers the template `MT_testtablecorrectness`, which can be configured with a list of parameters:
+Within DDL-Questions, the shorthand `MT_testtablecorrectness` is available.
+It can be configured with a list of parameters:
 
 - `name`: checks the name of the columns
 - `types`: checks the types of the columns (can check for multiple types, see below)
@@ -1057,7 +1067,7 @@ As of now, moodle-tools only offers the template `MT_testtablecorrectness`, whic
 - `primarykeys`: checks for primary key columns
 - `foreignkeys`: checks for foreign key columns
 
-The following exemplary test cases show how to use the template:
+The following exemplary test cases show how to use the shorthand:
 
 ```yaml
 testcases:
@@ -1110,6 +1120,59 @@ testcases:
 ```
 
 Setting flexible datatypes directly in the testcases is possible too, but will be deprecated in the future.
+
+#### Coderunner DQL Questions
+
+Coderunner DQL questions are used to test SQL queries that return results.
+The full YAML format for such a question is as follows:
+
+```yaml
+type: sql_dql  # Mandatory
+category: category/subcategory/sql_dql  # Optional
+title: Sample SQL DQL Coderunner Question  # Mandatory
+question: |-
+    Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
+
+    > Die Namen der teuersten Produkte und deren Preis.
+general_feedback: A query was submitted  # Mandatory in strict mode
+answer: |-
+    SELECT Name, Preis
+    FROM Produkt
+    WHERE Preis = (
+      SELECT MAX(Preis)
+      FROM Produkt
+    )
+    ORDER BY Name ASC;
+testcases: # Mandatory
+  - code: "MT_requiredtables Produkt" # Mandatory
+    grade: 1.0 # Optional, defaults to 1.0
+    hiderestiffail: false # Optional, defaults to false
+    description: Test for required tables # Optional, defaults to empty string
+    hidden: false # Optional, defaults to false
+    result: "All required tables are present." # Automatically generated, mandatory if `check_results` is true
+  - code: |- # Mandatory
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (12345, 'Audi A6', 25000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (23456, 'BMW', 50000);
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (34567, 'Pokemon Glurak Holo Karte', 50000);
+    additional_info: # Optional
+      group: "query1" # Optional
+    grade: 0.5 # Optional, defaults to 1.0
+  - code: |-
+      INSERT INTO Produkt (Id, Name, Preis) VALUES (45678, 'Rolex Daytona', 30000);
+    additional_info:
+      group: "query1"
+    grade: 0.5
+check_results: false # Optional, defaults to false
+```
+
+Groups are used to grade test cases together.
+A group is passed only if all test cases in the group are true.
+Within a group, all test cases must have the same `grade` value.
+
+Within DQL questions, the following shorthands are available:
+
+- `MT_requiredtables <table1> <table2> ...`: Checks whether the given tables are queried by the given query. Is determined by checking the query plan.
+
 
 #### Coderunner Streaming Questions
 
