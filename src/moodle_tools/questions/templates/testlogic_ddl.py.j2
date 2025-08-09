@@ -67,18 +67,20 @@ awarded_points = 0.0
 first_error = ""
 
 for tc in test_cases:
+    testcase_max = tc.testcase_max
     if not abort_tests and not hide_rest_if_fail:
-        received_result, expected_result, evaluated_result, errors = DDLTestCase.evaluate_testcase(testcase=tc,
-                                                                                                   student_answer=student_answer,
-                                                                                                   hide_rest_if_fail=hide_rest_if_fail,
-                                                                                                   db_working=db_working,
-                                                                                                   db_files=db_files,
-                                                                                                   max_rows=MAX_ROWS,
-                                                                                                   max_width=MAX_WIDTH,
-                                                                                                   question_memlimitmb=question_memlimitmb)
+        received_result, expected_result, is_correct, errors = DDLTestCase.evaluate_testcase(
+            testcase=tc,
+            student_answer=student_answer,
+            hide_rest_if_fail=hide_rest_if_fail,
+            db_working=db_working,
+            db_files=db_files,
+            max_rows=MAX_ROWS,
+            max_width=MAX_WIDTH,
+            question_memlimitmb=question_memlimitmb
+        )
 
-        testcase_max = tc.testcase_max
-        testcase_grade = testcase_max if evaluated_result else 0.0
+        testcase_grade = testcase_max if is_correct else 0.0
         awarded_points += testcase_grade
 
         tc_grade_str = f"{testcase_grade:.3f}" if testcase_max > 0.005 else "–––"
@@ -88,19 +90,20 @@ for tc in test_cases:
             tc.extra,
             " " * (10 - len(tc_grade_str)) + tc_grade_str,
             " " * (10 - len(tc_max_str)) + tc_max_str,
-            evaluated_result,
+            is_correct,
             hide_rest_if_fail
             or tc.display == CRDisplayType.HIDE
-            or (tc.display == CRDisplayType.HIDE_IF_SUCCEED and evaluated_result)
-            or (tc.display == CRDisplayType.HIDE_IF_FAIL and not evaluated_result),
+            or (tc.display == CRDisplayType.HIDE_IF_SUCCEED and is_correct)
+            or (tc.display == CRDisplayType.HIDE_IF_FAIL and not is_correct),
             ""
         ])
 
+        # append a hidden test case that contains testcode and the results for debugging
         test_results.append([
             tc.extra,
             received_result,
             expected_result,
-            evaluated_result,
+            is_correct,
             True,
             tc.testcode
         ])
@@ -109,7 +112,7 @@ for tc in test_cases:
             first_error = [e for e in errors if e.strip()][0] if errors else None
             abort_tests = True
 
-        hide_rest_if_fail = (tc.hide_rest_if_fail and not evaluated_result) or hide_rest_if_fail
+        hide_rest_if_fail = (tc.hide_rest_if_fail and not is_correct) or hide_rest_if_fail
 
     else:
         tc_max_str = f"{testcase_max:.3f}" if testcase_max > 0.005 else "–––"
