@@ -71,7 +71,6 @@ else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
 SEPARATOR = "#<ab@17943918#@>#"
-#test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
 test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden", ""]]
 
 old_stdout = sys.stdout
@@ -89,8 +88,8 @@ test_cases.append(
         extra="""{{ TEST.extra | e('py') }}""",
         expected_result="""{{ TEST.expected | e('py') }}""",
         testcase_max=tc_max,
-        additional_info= {{ TEST.stdin | e('py') }},
-        hide_rest_if_fail= {{ TEST.hiderestiffail | e('py') }},
+        additional_info={{ TEST.stdin | e('py') }},
+        hide_rest_if_fail={{ TEST.hiderestiffail | e('py') }},
         display=CRDisplayType.from_str("{{ TEST.display | e('py') }}"),
     ))
 
@@ -498,7 +497,6 @@ else:
     raise Exception("Multiple DB files not implemented yet, sorry!")
 
 SEPARATOR = "#<ab@17943918#@>#"
-#test_results = [["Testfall", "Bewertung", "Maximal erreichbar", "iscorrect", "ishidden"]]
 test_results = [["Testfall", "Erhalten", "Erwartet", "iscorrect", "ishidden", ""]]
 
 old_stdout = sys.stdout
@@ -516,8 +514,8 @@ test_cases.append(
         extra="""{{ TEST.extra | e('py') }}""",
         expected_result="""{{ TEST.expected | e('py') }}""",
         testcase_max=tc_max,
-        additional_info= {{ TEST.stdin | e('py') }},
-        hide_rest_if_fail= {{ TEST.hiderestiffail | e('py') }},
+        additional_info={{ TEST.stdin | e('py') }},
+        hide_rest_if_fail={{ TEST.hiderestiffail | e('py') }},
         display=CRDisplayType.from_str("{{ TEST.display | e('py') }}"),
     ))
 
