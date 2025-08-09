@@ -18,6 +18,7 @@ MAX_WIDTH = 500
 
 # Use Twig to get students answer
 student_answer = """{{ STUDENT_ANSWER | e('py') }}""".rstrip()
+is_all_or_nothing = {{ QUESTION.allornothing | e('py') }}
 
 # Parsing the student answer
 if not student_answer.endswith(";"):
@@ -169,13 +170,22 @@ for group, params in grouped_testresults.items():
             )
         )
 
-awarded_points = sum(
-    tr.awarded for tr in test_results if tr.awarded is not None
-)
+if is_all_or_nothing:
+    epilogue = "<h3>Alle Testfälle bestanden 🙂</h3>" \
+        if all(tr.is_correct for tr in test_results) \
+        else "<h3>Ein oder mehrere Testfälle sind fehlgeschlagen 😞</h3>"
+    fraction = 1.0 if all(tr.is_correct for tr in test_results) else 0.0
+else:
+    awarded_points = sum(
+        tr.awarded for tr in test_results if tr.awarded is not None
+    )
+    total_points = sum(
+        tr.max_points for tr in test_results if tr.max_points is not None
+    )
 
-total_points = sum(
-    tr.max_points for tr in test_results if tr.max_points is not None
-)
+    fraction = awarded_points / total_points if total_points > 0 else 0
+    epilogue = f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>"
+
 
 hidden_failed_testresults_exist = any(
     not tr.is_correct and tr.is_hidden for tr in test_results
@@ -188,10 +198,12 @@ elif hidden_failed_testresults_exist:
 else:
     error_out = '<h3>Keine Fehlermeldungen gefunden 🙂</h3>'
 
+
+
 output = {
-    'fraction': awarded_points / total_points if total_points > 0 else 0,
+    'fraction': fraction,
     'prologuehtml': error_out,
-    "epiloguehtml": f"<h3>Gesamtpunktzahl: {awarded_points} / {total_points}</h3>",
+    "epiloguehtml": epilogue,
     'testresults': [DQLTestResult.get_header()] + [tr.to_list() for tr in test_results],
     "showdifferences": True
 }
