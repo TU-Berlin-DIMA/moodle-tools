@@ -1,9 +1,10 @@
 ---
 type: sql_dql
 category: sql-dql
-title: Sample SQL Coderunner Question
+title: Sample SQL Coderunner Question with partial points, generated with a DB connection
 parser: sqlparse
 markdown: true
+all_or_nothing: false
 question: |-
   Formulieren Sie den SQL-Ausdruck, der äquivalent zu folgender Aussage ist:
 

@@ -84,7 +84,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         grade: float = 1.0,
         general_feedback: str = "",
         answer_preload: str = "",
-        all_or_nothing: bool = True,
+        all_or_nothing: bool = False,
         check_results: bool = False,
         parser: str | None = None,
         extra: dict[str, str | dict[str, Any]] | None = None,
