@@ -17,7 +17,10 @@ class TestCoderunnerQuestionSQL:
 
         # Assert the output is as expected
         assert '<question type="coderunner">' in captured.out
-        assert "<text>Sample SQL Coderunner Question</text>" in captured.out
+        assert (
+            "<text>Sample SQL Coderunner Question "
+            "graded all-or-nothing, generated without a DB connection</text>" in captured.out
+        )
         assert captured.err == ""
 
     def test_correct_number_of_testcases(self, capsys: pytest.CaptureFixture[str]) -> None:
