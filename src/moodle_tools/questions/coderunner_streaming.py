@@ -122,6 +122,9 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
         # TODO: Add test
         shutil.copy(self.input_stream, self.input_stream.name)
 
+        # print content of current directory for debugging
+        print(f"Current directory content: {list(Path.cwd().iterdir())}")
+
         stdout_capture = io.StringIO()
         combined_code = f"{ISDA_STREAMING_IMPORTS}\n\n{self.answer}\n\n{testcase['code']}"
 
