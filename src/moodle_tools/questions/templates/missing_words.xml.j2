@@ -16,7 +16,7 @@
     <shownumcorrect/>
     {% for option in options %}
     <selectoption>
-        <text>{{ option.answer }}</text>
+        <text>{{ "<![CDATA[{}]]>".format(option.answer) if option.answer }}</text>
         <group>{{ option.group }}</group>
         <!-- ordinal: {{ option.ordinal }}, group: {{ option.group_letter }} -->
     </selectoption>
