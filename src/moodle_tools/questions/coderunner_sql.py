@@ -1,6 +1,5 @@
 """This module implements SQL questions in Moodle CodeRunner."""
 
-import io
 import json
 import random
 import re
@@ -9,7 +8,7 @@ import string
 import tempfile
 from base64 import b64encode
 from collections.abc import Generator, Iterable
-from contextlib import contextmanager, redirect_stdout
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TypedDict, cast
 
@@ -17,7 +16,11 @@ import duckdb
 from jinja2 import Environment, PackageLoader, select_autoescape
 from loguru import logger
 
+from moodle_tools.enums import CRGrader
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
+from moodle_tools.questions.cr_testeval.cr_testeval import CRDisplayType, CRTestCase, CRTestEval
+from moodle_tools.questions.cr_testeval.ddl_testeval import DDLTestCase
+from moodle_tools.questions.cr_testeval.dql_testeval import DQLTestCase
 from moodle_tools.utils import ParsingError, preprocess_text
 
 DB_CONNECTION_ERROR = (
@@ -67,6 +70,7 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
     ACE_LANG = "sql"
     MAX_ROWS = 50
     MAX_WIDTH = 500
+    EVALUATOR_CLASS = CRTestEval
 
     def __init__(
         self,
@@ -80,10 +84,12 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         grade: float = 1.0,
         general_feedback: str = "",
         answer_preload: str = "",
-        all_or_nothing: bool = True,
+        all_or_nothing: bool = False,
         check_results: bool = False,
         parser: str | None = None,
         extra: dict[str, str | dict[str, Any]] | None = None,
+        grader: CRGrader = CRGrader.EQUALITY_GRADER,
+        is_combinator: bool = True,
         internal_copy: bool = False,
         database_connection: bool = True,
         **flags: bool,
@@ -106,6 +112,8 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
                 if the results match.
             parser: Code parser for formatting the correct answer and testcases.
             extra: Extra information for parsing the question.
+            grader: Grader to use for the question.
+            is_combinator: If True, the question automatically builds testcases with TWIG
             internal_copy: Flag to create an internal copy for debugging purposes.
             database_connection: If True, connect to the provided database to fetch the expected
                 result. If False, use the provided result.
@@ -149,22 +157,42 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=grader,
+            is_combinator=is_combinator,
             internal_copy=internal_copy,
             **flags,
         )
 
     @property
     def files(self) -> list[dict[str, str]]:
-        if self.inmemory_db:
-            # If the database is in memory, we don't need to send it
-            return []
-        with self.database_path.open("rb") as file:
-            files = {
-                "name": self.database_path.name,
-                "encoding": b64encode(file.read()).decode("utf-8"),
-            }
+        files = []
 
-        return [files]
+        if not self.inmemory_db:
+            with self.database_path.open("rb") as file:
+                files.append(
+                    {
+                        "name": self.database_path.name,
+                        "encoding": b64encode(file.read()).decode("utf-8"),
+                    }
+                )
+
+        with (Path(__file__).parent / "cr_testeval" / "cr_testeval.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "cr_testeval.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        with (Path(__file__).parent / "cr_testeval" / "__init__.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "__init__.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        return files
 
     def cleanup(self) -> None:
         logger.debug("Cleaning up {}.", self.__class__.__name__)
@@ -172,6 +200,89 @@ class CoderunnerSQLQuestion(CoderunnerQuestion):
         if self.inmemory_db:
             logger.debug("Removing temporary DB file.")
             self.database_path.unlink()
+
+    def fetch_expected_result(self, testcase: Testcase) -> str:
+        if not self.database_connection:
+            raise ParsingError(DB_CONNECTION_ERROR)
+
+        cr_testcase = CRTestCase(
+            testcode=testcase["code"],
+            extra=testcase["description"],
+            expected_result="",
+            testcase_max=testcase.get("grade", 1.0),
+            additional_info=testcase.get("additional_info", {}),
+            hide_rest_if_fail=testcase.get("hiderestiffail", False),
+            display=CRDisplayType.from_str(testcase.get("show", "SHOW")),
+        )
+
+        received_result, _, _, _ = self.EVALUATOR_CLASS.evaluate_testcase(
+            testcase=cr_testcase,
+            student_answer=self.answer,
+            hide_rest_if_fail=False,
+            db_working=str(self.database_path),
+            db_files=str(self.files),
+            max_rows=self.MAX_ROWS,
+            max_width=self.MAX_WIDTH,
+        )
+
+        return received_result
+
+    def update_testcase_from_extra(self, testcase: Testcase) -> None:
+        testcase["code"] = self.render_test_templates(testcase)
+
+    def render_test_templates(self, testcase: Testcase) -> str:
+        """Replace test templates with the respective Jinja templates and render them.
+
+        The tests are modified in-place. The function returns the same list it received.
+
+        Args:
+            testcase: the testcase.
+
+        Returns:
+            str: The rendered test code.
+        """
+        rendered_statements = []
+
+        test_statements = [t.strip() for t in testcase["code"].split(";") if t.strip()]
+        rendered_statements = [
+            self.enhance_statement(statement, testcase) for statement in test_statements
+        ]
+
+        return "\n\n".join(rendered_statements)
+
+    def enhance_statement(self, statement: str, testcase: Testcase) -> str:
+        additional_info = testcase.get("additional_info", {})
+        rendered_statement = ""
+
+        match statement.split(" "):
+            case ["MT_testkeywordpresent", keyword]:
+                additional_info["keyword_present"] = keyword.lower()
+
+                testcase["code"] = ""
+
+            case _:
+                if statement.startswith("MT_"):
+                    logger.warning(
+                        "Test code {} does not match any known template.", testcase["code"]
+                    )
+                else:
+                    rendered_statement = statement + ";"
+
+        testcase["additional_info"] = additional_info
+
+        return rendered_statement
+
+    def validate_query(self, testcase: Testcase) -> None:
+        keyword_present = re.search(r"keyword '([^']+)' is present\.", testcase["result"])
+        additional_info = testcase.get("additional_info", {})
+
+        if "keyword_present" in additional_info and not keyword_present:
+            raise ParsingError(
+                "Testcase {} expects the keyword '{}' to be present, "
+                "but it was not found in the result.",
+                testcase["description"],
+                additional_info["keyword_present"],
+            )
 
 
 class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
@@ -185,6 +296,7 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
         """["Test", "testcode"], ["Bewertung", "awarded"]]"""
     )
     TEST_TEMPLATE = "testlogic_ddl.py.j2"
+    EVALUATOR_CLASS = DDLTestCase
 
     def __init__(
         self,
@@ -220,6 +332,8 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=CRGrader.TEMPLATE_GRADER,
+            is_combinator=True,
             internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
@@ -227,6 +341,19 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
 
         if check_results:
             self.check_results()
+
+    @property
+    def files(self) -> list[dict[str, str]]:
+        files = super().files
+        with (Path(__file__).parent / "cr_testeval" / "ddl_testeval.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "ddl_testeval.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        return files
 
     def update_testcase_from_extra(self, testcase: Testcase) -> None:
         self.put_flextypes_to_testcases(testcase)
@@ -280,150 +407,58 @@ class CoderunnerDDLQuestion(CoderunnerSQLQuestion):
                 testcase_extra["flex_datatypes"] = table_flex_types
                 testcase["extra"] = testcase_extra
 
-    @staticmethod
-    def render_test_templates(testcase: Testcase) -> str:
-        """Replace test templates with the respective Jinja templates and render them.
-
-        The tests are modified in-place. The function returns the same list it received.
-
-        Args:
-            testcase: the testcase.
-
-        Returns:
-            str: The rendered test code.
-        """
-        rendered_statements = []
-
-        test_statements = [t.strip() for t in testcase["code"].split(";") if t.strip()]
-        for statement in test_statements:
-            match statement.split(" "):
-                case ["MT_testtablecorrectness", table_name, *tests]:
-                    flex_datatypes_str = ""
-                    if isinstance(testcase["extra"], dict):
-                        flex_datatypes: list[FlexType] = testcase["extra"].get(
-                            "flex_datatypes", []
+    def enhance_statement(self, statement: str, testcase: Testcase) -> str:
+        """Enhance the statement with the respective Jinja template."""
+        match statement.split(" "):
+            case ["MT_testtablecorrectness", table_name, *tests]:
+                flex_datatypes_str = ""
+                if isinstance(testcase["extra"], dict):
+                    flex_datatypes: list[FlexType] = testcase["extra"].get("flex_datatypes", [])
+                    flex_datatypes_str = (
+                        json.dumps(
+                            {
+                                ft["attribute"]: ft["allowed"]
+                                for ft in flex_datatypes
+                                if table_name in ft["used_in"]
+                            },
+                            indent=4,
+                            ensure_ascii=False,
                         )
-                        flex_datatypes_str = (
-                            json.dumps(
-                                {
-                                    ft["attribute"]: ft["allowed"]
-                                    for ft in flex_datatypes
-                                    if table_name in ft["used_in"]
-                                },
-                                indent=4,
-                                ensure_ascii=False,
-                            )
-                            .replace("'", "''")
-                            .replace('"', "'")
-                        )
+                        .replace("'", "''")
+                        .replace('"', "'")
+                    )
 
-                    templates: Iterable[Path] = [
-                        Path(template)
-                        for template in JinjaEnv.list_templates(
-                            filter_func=lambda n: n.startswith("ddl_check_tablecorrectness/")
+                templates: Iterable[Path] = [
+                    Path(template)
+                    for template in JinjaEnv.list_templates(
+                        filter_func=lambda n: n.startswith("ddl_check_tablecorrectness/")
+                    )
+                ]
+
+                # If tests are provided, filter the templates to only include those
+                if tests:
+                    templates = filter(
+                        lambda t: t.name.split(".")[0].split("-")[1] in tests, templates
+                    )
+
+                rendered_statement = "\n\n----------\n\n".join(
+                    [
+                        JinjaEnv.get_template(str(template)).render(
+                            tablename=table_name, flex_datatypes=flex_datatypes_str
                         )
+                        for template in templates
                     ]
+                )
+            case _:
+                rendered_statement = super().enhance_statement(statement, testcase)
 
-                    # If tests are provided, filter the templates to only include those
-                    if tests:
-                        templates = filter(
-                            lambda t: t.name.split(".")[0].split("-")[1] in tests, templates
-                        )
-
-                    rendered_statements.append(
-                        "\n\n----------\n\n".join(
-                            [
-                                JinjaEnv.get_template(str(template)).render(
-                                    tablename=table_name, flex_datatypes=flex_datatypes_str
-                                )
-                                for template in templates
-                            ]
-                        )
-                    )
-
-                case _:
-                    if statement.startswith("MT_"):
-                        logger.warning(
-                            "Test code {} does not match any known template.", testcase["code"]
-                        )
-                    else:
-                        rendered_statements.append(statement + ";")
-
-        return "\n\n".join(rendered_statements)
-
-    def fetch_expected_result(self, testcase: Testcase) -> str:
-        if not self.database_connection:
-            raise ParsingError(DB_CONNECTION_ERROR)
-
-        # A DDL/DML test might include multiple statements, so we need to split them
-        statements = [code for code in testcase["code"].split(";") if code.strip()]
-        stdout_capture = io.StringIO()
-        with redirect_stdout(stdout_capture), open_tmp_db_connection(self.database_path) as con:
-            con.sql(self.answer)
-            for statement in statements:
-                try:
-                    res = con.sql(statement)
-                    if res:
-                        res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
-                    else:
-                        print(res)
-                except (duckdb.ConstraintException, duckdb.ConversionException) as e:
-                    # DuckDB prints the individual constraint implementation in the error message
-                    # so we have to filter it out.
-
-                    match_tut = re.search(r"INSERT INTO (.+?) ", statement)
-
-                    if not match_tut:
-                        print(e)
-                        continue
-
-                    table_under_test = match_tut.group(1)
-
-                    testcase_extra = cast("dict[str, Any]", testcase["extra"])
-
-                    flex_datatypes = cast(
-                        "list[FlexType]", testcase_extra.get("flex_datatypes", [])
-                    )
-
-                    table_flex_types = [
-                        flex_types
-                        for flex_types in flex_datatypes
-                        if table_under_test in flex_types.get("used_in", [])
-                    ]
-
-                    table_flex_dt = [ft.get("allowed", []) for ft in table_flex_types]
-
-                    table_has_flex_enum = any(
-                        "ENUM" in item for allowed in table_flex_dt for item in allowed
-                    ) and not all("ENUM" in item for allowed in table_flex_dt for item in allowed)
-
-                    match_check = re.search(
-                        r"^Constraint Error: CHECK constraint failed on table (.+?) .*$", str(e)
-                    )
-
-                    match_enum = re.search(r"^Conversion Error: Could not convert.*$", str(e))
-
-                    if (match_check or match_enum) and table_has_flex_enum:
-                        additional_info = cast("dict[str, Any]", testcase["additional_info"])
-                        flex_enum_tables = additional_info.get("flex_enum_tables", [])
-                        if table_under_test not in flex_enum_tables:
-                            flex_enum_tables.append(table_under_test)
-                            additional_info["flex_enum_tables"] = flex_enum_tables
-                            testcase["additional_info"] = additional_info
-
-                        print(f"CHECK constraint failed or wrong ENUM in table {table_under_test}")
-                    elif match_check:
-                        print(f"CHECK constraint failed on table {table_under_test}")
-                    else:
-                        print(e)
-                except duckdb.Error as e:
-                    print(e)
-
-        return stdout_capture.getvalue()
+        return rendered_statement
 
     def validate_query(self, testcase: Testcase) -> None:
+        super().validate_query(testcase)
+
         if "## non_viable_flex_type ##" in testcase["result"]:
-            logger.warning(
+            raise ParsingError(
                 "Non-viable flex type detected in test case {}. "
                 "Please check that the set of possible types matches the sample solution.",
                 testcase.get("description", "Untitled test"),
@@ -437,6 +472,7 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
     RESULT_COLUMNS_DEFAULT = ""  # TODO
     RESULT_COLUMNS_DEBUG = ""  # TODO
     TEST_TEMPLATE = "testlogic_dql.py.j2"
+    EVALUATOR_CLASS = DQLTestCase
 
     def __init__(
         self,
@@ -472,6 +508,8 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=CRGrader.TEMPLATE_GRADER,
+            is_combinator=True,
             internal_copy=internal_copy,
             database_connection=database_connection,
             **flags,
@@ -483,26 +521,25 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
         # We use standardized test names and hide all tests but the first for this type of question
         for i, testcase in enumerate(self.testcases):
             testcase["description"] = f"Testfall {i + 1}"
-            if i > 0 and "hidden" not in testcase:
-                testcase["show"] = "HIDE"
+            if "group" in testcase.get("additional_info", {}):
+                testcase["description"] += f" ({testcase['additional_info']['group']})"
+        #     if i > 0 and "hidden" not in testcase:
+        #         testcase["show"] = "HIDE"
 
         if check_results:
             self.check_results()
 
-    def fetch_expected_result(self, testcase: Testcase) -> str:
-        if not self.database_connection:
-            raise ParsingError(DB_CONNECTION_ERROR)
+        groups_grades = {
+            (t["additional_info"]["group"], t["grade"])
+            for t in self.testcases
+            if "group" in t.get("additional_info", {})
+        }
 
-        stdout_capture = io.StringIO()
-        with redirect_stdout(stdout_capture), open_tmp_db_connection(self.database_path) as con:
-            con.sql(testcase["code"])
-            res = con.sql(self.answer)
-            if res:
-                res.show(max_width=self.MAX_WIDTH, max_rows=self.MAX_ROWS)  # type: ignore
-            else:
-                print(res)
-
-        return stdout_capture.getvalue()
+        if len(groups_grades) > len({g[0] for g in groups_grades}):
+            raise ParsingError(
+                "Some test cases have ambiguous grades for test case groups. "
+                "Please ensure that each group has a common grade."
+            )
 
     def extract_expected_output_schema(self, query: str) -> str:
         """Extract the output schema of a query from its operators and its result.
@@ -557,3 +594,47 @@ class CoderunnerDQLQuestion(CoderunnerSQLQuestion):
                 output_elements.append(column_name)
 
         return "\nErgebnisschema:\n\n" + ", ".join(output_elements)
+
+    def enhance_statement(self, statement: str, testcase: Testcase) -> str:
+        """Enhance the statement with the respective Jinja template."""
+        match statement.split(" "):
+            case ["MT_requiredtables", *required_tables]:
+                additional_info = testcase.get("additional_info", {})
+                additional_info["required_tables"] = required_tables
+                testcase["additional_info"] = additional_info
+
+                rendered_statement = ""
+            case _:
+                rendered_statement = super().enhance_statement(statement, testcase)
+
+        return rendered_statement
+
+    def validate_query(self, testcase: Testcase) -> None:
+        """Validate the query and ensure it does not contain any non-viable flex types."""
+        super().validate_query(testcase)
+
+        additional_info = testcase.get("additional_info", {})
+
+        if (
+            "required_tables" in additional_info
+            and "All required tables are present." not in testcase["result"]
+        ):
+            raise ParsingError(
+                "Test case {} expects the following tables to be present: {}, "
+                "but the expected answer does not query them.",
+                testcase.get("description", "Untitled test"),
+                ", ".join(additional_info["required_tables"]),
+            )
+
+    @property
+    def files(self) -> list[dict[str, str]]:
+        files = super().files
+        with (Path(__file__).parent / "cr_testeval" / "dql_testeval.py").open("rb") as file:
+            files.append(
+                {
+                    "name": "dql_testeval.py",
+                    "encoding": b64encode(file.read()).decode("utf-8"),
+                }
+            )
+
+        return files

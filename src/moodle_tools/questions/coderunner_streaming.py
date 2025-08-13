@@ -10,6 +10,7 @@ from typing import Any
 
 from isda_streaming import data_stream, synopsis
 
+from moodle_tools.enums import CRGrader
 from moodle_tools.questions.coderunner import CoderunnerQuestion, Testcase
 
 ISDA_STREAMING_IMPORTS = """
@@ -87,6 +88,8 @@ class CoderunnerStreamingQuestion(CoderunnerQuestion):
             check_results=check_results,
             parser=parser,
             extra=extra,
+            grader=CRGrader.EQUALITY_GRADER,
+            is_combinator=True,
             internal_copy=internal_copy,
             **flags,
         )
